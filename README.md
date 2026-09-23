@@ -11,7 +11,7 @@ to 15. Choosing a lower-value target or outer ring can keep you under the cap.
 
 - **Godot 4.7.2 Standard**, pinned through the first playable milestone.
 - Typed GDScript, native Godot scenes, and the Compatibility renderer.
-- Windows x86_64 is the first export target. Browser export is deferred.
+- Windows x86_64 and browser exports use matching Godot 4.7.2 templates.
 - Procedural 2D shapes and Godot's bundled font; no external art dependencies.
 
 ## Open and run
@@ -108,6 +108,25 @@ Keep `RangeClub.exe` and `RangeClub.pck` together when copying the build. The
 executable is an unsigned development build. Generated exports are ignored by
 Git. The `.gdignore` prevents Godot from importing local build output.
 
+## Play in a browser
+
+Install the matching **4.7.2 Standard web export templates** through **Editor >
+Manage Export Templates**, then run:
+
+```powershell
+New-Item -ItemType Directory -Force builds/web | Out-Null
+& $godot --headless --path . --export-release Web
+python -m http.server 8765 --directory builds/web
+```
+
+Open `http://localhost:8765/`. A local web server is required; opening the
+HTML file directly will not load the game data. The Web preset uses Godot's
+single-threaded build so the page does not need special cross-origin headers.
+
+The GitHub Pages workflow imports the project, runs the rule tests, exports
+the web build, and deploys it on pushes to `main`. In the repository's Pages
+settings, select **GitHub Actions** as the build and deployment source.
+
 ## Project layout and decisions
 
 - `app/` owns the main scene and five-shot session controller.
@@ -138,4 +157,4 @@ The current opening screen selects a character with a fixed signature rig.
 A future run can retain that opening choice and add rig building, distinct
 encounters, and run-ending failure once the five-shot trial is satisfying.
 
-No remote repository or source license has been selected yet.
+No source license has been selected yet.

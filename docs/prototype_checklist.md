@@ -17,7 +17,9 @@ Verified on 23 September 2026 with Godot `4.7.2.stable.official.ed1daf0bf` and a
 AMD Radeon RX 6600 using OpenGL Compatibility. The exported process rendered
 60 frames and exited with code 0, without reported runtime errors.
 
-No web export was tested.
+The first target milestone was Windows-only. The current trial was later
+exported for web and opened locally in a browser; the rules, character select,
+and range screens rendered and responded to clicks.
 
 ## Earlier — compare two shot methods
 
@@ -69,6 +71,7 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Inspect the strategy and in-round UI at 1280 × 800 and 960 × 720;
       verify character selection, Focus, and board mouse input.
 - [x] Export and launch the current Windows build (60 frames, exit code 0).
+- [x] Export the current trial for web and verify its opening flow in a browser.
 - [ ] Playtest whether the score window makes deliberate outer-ring, Safe,
       and Standard shots useful. Focus and character identities still need
       separate design work.
