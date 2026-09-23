@@ -90,6 +90,14 @@ func _accept_shot(impact: Vector2) -> void:
 	focus_armed = false
 	shot_focused = false
 	shot.cancel()
+	var result_sound: RangeView.ResultSound = RangeView.ResultSound.NONE
+	if TrialRules.is_bust(total_score):
+		result_sound = RangeView.ResultSound.BUST
+	elif TrialRules.is_cleared(total_score):
+		result_sound = RangeView.ResultSound.CLEAR
+	elif TrialRules.is_trial_over(total_score, impacts.size()):
+		result_sound = RangeView.ResultSound.FAIL
+	range_view.play_shot_feedback(last_score > 0, result_sound)
 	if TrialRules.is_trial_over(total_score, impacts.size()) and not TrialRules.is_bust(total_score):
 		best_score = maxi(best_score, total_score)
 
@@ -143,6 +151,7 @@ func _on_cancel_requested() -> void:
 
 
 func _reset_round() -> void:
+	range_view.stop_sound_feedback()
 	shot.cancel()
 	impacts.clear()
 	total_score = 0

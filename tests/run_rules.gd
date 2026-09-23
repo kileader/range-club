@@ -107,6 +107,7 @@ func run() -> void:
 	view.primary_pressed.emit(view.mouse_aim())
 	view.primary_released.emit()
 	_check(main.impacts.is_empty() and main.focus == 1, "early release spends neither shot nor Focus")
+	_check(view.get_node("ImpactDelay").is_stopped(), "cancelled draw has no impact sound queued")
 	view.focus_requested.emit()
 	_check(main.focus_armed, "Focus can be armed before a shot")
 	view.primary_pressed.emit(view.mouse_aim())
@@ -123,6 +124,7 @@ func run() -> void:
 	view.visible_target_centers = centers
 	view.primary_released.emit()
 	_check(main.impacts.size() == 1 and main.focus == 1, "focused Safe center spends then restores Focus")
+	_check(not view.get_node("ImpactDelay").is_stopped(), "accepted shot queues an impact sound")
 	_check(main.last_focus_gain == 1 and main.total_score == 6, "Safe refill and score are shown")
 	view.primary_pressed.emit(view.mouse_aim())
 	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Maera has no free accuracy boost without Focus")
@@ -197,6 +199,7 @@ func run() -> void:
 	_shoot_at(main, view, centers[1], centers)
 	_check(main.total_score == 55 and main.impacts.size() == 4, "fourth shot can clear at the lower edge")
 	_check(main.best_score == 55 and view.get_node("UI/Status").text == "TRIAL CLEARED", "early clear records a valid best score")
+	_check(not view.get_node("ResultDelay").is_stopped(), "clear queues a result sound")
 	view.primary_pressed.emit(centers[2])
 	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.size() == 4, "early clear rejects another shot")
 	view.build_screen_requested.emit()
@@ -204,6 +207,7 @@ func run() -> void:
 	view.build_screen_closed.emit()
 	view.retry_requested.emit()
 	_check(main.impacts.is_empty() and main.total_score == 0, "early clear can retry")
+	_check(view.get_node("ResultDelay").is_stopped(), "retry cancels any pending result sound")
 	for index: int in range(4):
 		_shoot_at(main, view, centers[2], centers)
 	_check(main.total_score == 60 and view.get_node("UI/Status").text == "TRIAL CLEARED", "upper edge clears before the fifth shot")

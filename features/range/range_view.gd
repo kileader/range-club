@@ -15,6 +15,14 @@ const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
 const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres")
 
 enum SelectionPage { RULES, CHARACTERS }
+enum ResultSound { NONE, CLEAR, BUST, FAIL }
+
+const RELEASE_SOUND: AudioStream = preload("res://assets/audio/release.wav")
+const HIT_SOUND: AudioStream = preload("res://assets/audio/hit.wav")
+const MISS_SOUND: AudioStream = preload("res://assets/audio/miss.wav")
+const CLEAR_SOUND: AudioStream = preload("res://assets/audio/clear.wav")
+const BUST_SOUND: AudioStream = preload("res://assets/audio/bust.wav")
+const FAIL_SOUND: AudioStream = preload("res://assets/audio/fail.wav")
 
 const AIM_AREA: Rect2 = Rect2(390.0, 122.0, 824.0, 598.0)
 const RING_COLORS: Array[Color] = [
@@ -50,6 +58,11 @@ const RING_COLORS: Array[Color] = [
 @onready var vey_card: Button = $UI/BuildOverlay/VeyCard
 @onready var choose_hint: Label = $UI/BuildOverlay/ChooseHint
 @onready var back_button: Button = $UI/BuildOverlay/BackButton
+@onready var release_player: AudioStreamPlayer = $ReleaseSound
+@onready var impact_player: AudioStreamPlayer = $ImpactSound
+@onready var result_player: AudioStreamPlayer = $ResultSound
+@onready var impact_delay: Timer = $ImpactDelay
+@onready var result_delay: Timer = $ResultDelay
 
 var visible_reticle: Vector2 = Vector2.ZERO
 var visible_spread_radius: float = 0.0
@@ -76,9 +89,14 @@ var _build_selected: bool = false
 var _selection_page: SelectionPage = SelectionPage.RULES
 var _target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
 var _drawn_phase: ShotModel.Phase = ShotModel.Phase.IDLE
+var _pending_hit: bool = false
+var _pending_result: ResultSound = ResultSound.NONE
 
 
 func _ready() -> void:
+	release_player.stream = RELEASE_SOUND
+	impact_delay.timeout.connect(_play_impact_sound)
+	result_delay.timeout.connect(_play_result_sound)
 	focus_button.pressed.connect(func() -> void: focus_requested.emit())
 	build_button.pressed.connect(func() -> void: build_screen_requested.emit())
 	natural_card.pressed.connect(func() -> void: gear_requested.emit(&"bare_rig"))
@@ -97,6 +115,44 @@ func _ready() -> void:
 	bold_rules_label.text = "BOLD · 6–15\nSmall target"
 	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to tighten the landing circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
 	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hold until they meet.\nRelease after READY. Waiting longer widens gold; hits land randomly inside."
+
+
+func play_shot_feedback(hit: bool, result: ResultSound) -> void:
+	impact_delay.stop()
+	result_delay.stop()
+	_pending_hit = hit
+	_pending_result = result
+	release_player.stop()
+	release_player.play()
+	impact_delay.start()
+	if result != ResultSound.NONE:
+		result_delay.start()
+
+
+func stop_sound_feedback() -> void:
+	impact_delay.stop()
+	result_delay.stop()
+	release_player.stop()
+	impact_player.stop()
+	result_player.stop()
+
+
+func _play_impact_sound() -> void:
+	impact_player.stream = HIT_SOUND if _pending_hit else MISS_SOUND
+	impact_player.play()
+
+
+func _play_result_sound() -> void:
+	match _pending_result:
+		ResultSound.CLEAR:
+			result_player.stream = CLEAR_SOUND
+		ResultSound.BUST:
+			result_player.stream = BUST_SOUND
+		ResultSound.FAIL:
+			result_player.stream = FAIL_SOUND
+		_:
+			return
+	result_player.play()
 
 
 func _unhandled_input(event: InputEvent) -> void:
