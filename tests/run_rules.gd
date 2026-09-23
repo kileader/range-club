@@ -47,6 +47,22 @@ func run() -> void:
 	_check(TrialRules.resolve_hit(bold_center, &"pulse_sight", false, 1.21).points == 15, "Vey loses bonus after deadline")
 	_check(TrialRules.resolve_hit(TargetLayout.score_at(centers[1] + Vector2(32, 0), centers), &"pulse_sight", false, 0.7).points < 11, "Vey bonus requires inner ring")
 	_check(TrialRules.resolve_hit(miss, &"pulse_sight", false, 0.7).points == 0, "miss has no bonus")
+	_check(RunRules.goal_for_stage(2) == 56 and RunRules.cap_for_stage(2) == 60, "run score windows rise by stage")
+	var offer_test_rng := RandomNumberGenerator.new()
+	offer_test_rng.seed = 3909
+	var scenario_order: Array[StringName] = RunRules.draw_scenarios(offer_test_rng)
+	_check(scenario_order.size() == 3 and scenario_order[0] == &"triad" and scenario_order[1] != scenario_order[2], "run draws distinct later scenarios")
+	var owned_test: Array[StringName] = [&"anchor_coil", &"prism_lens"]
+	var offer_test: Array[StringName] = RunRules.draw_offers(owned_test, offer_test_rng)
+	_check(offer_test.size() == 3 and not offer_test.has(&"anchor_coil") and not offer_test.has(&"prism_lens") and offer_test[0] != offer_test[1] and offer_test[1] != offer_test[2], "offers exclude owned modules and duplicates")
+	_check(TrialRules.resolve_hit(safe_center, &"gyro_brace", false, 1.5, &"safe_circuit", [&"anchor_coil"]).points == 11, "Safe scenario and rig bonus stack")
+	_check(TrialRules.resolve_hit(standard_center, &"gyro_brace", true, 1.5, &"standard_relay", [&"recirculator"]).points == 15, "Maera and Standard scenario bonuses stack")
+	_check(TrialRules.resolve_hit(standard_center, &"gyro_brace", true, 1.5, &"standard_relay", [&"recirculator"]).focus_gain == 1, "recirculator refunds spent Focus")
+	_check(TrialRules.resolve_hit(bold_center, &"gyro_brace", false, 1.5, &"bold_surge").points == 18, "Bold scenario changes target value")
+	_check(TrialRules.resolve_hit(TargetLayout.score_at(centers[1] + Vector2(42, 0), centers), &"gyro_brace", false, 1.5, &"triad", [&"prism_lens"]).points == 8, "Prism Lens rewards Standard outer rings")
+	_check(TrialRules.resolve_hit(TargetLayout.score_at(centers[2] + Vector2(13, 0), centers), &"gyro_brace", false, 1.5, &"triad", [&"edge_fuse"]).points == 13, "Edge Fuse rewards Bold outer rings")
+	_check(TrialRules.resolve_hit(safe_center, &"gyro_brace", false, 1.5, &"triad", [&"last_light"], 5).points == 10, "Last Light changes the fifth shot")
+	_check(TrialRules.resolve_hit(safe_center, &"gyro_brace", false, 1.5, &"triad", [&"last_light"], 4).points == 6, "Last Light leaves earlier shots alone")
 	var attached_mark := ImpactRecord.new(1, Vector2(5, -4))
 	_check(attached_mark.position_at(later) == later[1] + Vector2(5, -4), "hit mark follows its target")
 	var miss_mark := ImpactRecord.new(-1, Vector2(700, 600))
@@ -96,155 +112,73 @@ func run() -> void:
 	_check(sampled_off_center, "impact sampling covers more than the circle center")
 	_check(ShotModel.sample_impact(centers[1], 0.0, impact_rng) == centers[1], "zero-radius test shot is exact")
 
-	var main: Node = load("res://app/main.tscn").instantiate()
+	var main: RunController = load("res://app/main.tscn").instantiate() as RunController
 	root.add_child(main)
 	await process_frame
 	var view: RangeView = main.get_node("RangeView")
-	_check(main.selection_open and not main.build_selected, "build strategy opens before the trial")
-	_check(view.get_node("UI/BuildOverlay/Rules").visible and not view.get_node("UI/BuildOverlay/MaeraCard").visible, "opening screen shows rules before characters")
-	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
-	_check(view.get_node("UI/BuildOverlay/MaeraCard").visible and not view.get_node("UI/BuildOverlay/Rules").visible, "next screen shows character strategies")
-	view.get_node("UI/BuildOverlay/HowToPlayButton").emit_signal("pressed")
-	_check(view.get_node("UI/BuildOverlay/Rules").visible, "character screen can return to rules")
+	var run_ui: RunView = main.get_node("RunView")
+	_check(main.phase == RunController.RunPhase.SELECT and main.selection_open and not main.build_selected, "new run begins at character selection")
+	_check(main.scenarios.size() == 3 and main.scenarios[0] == &"triad", "new run has three scenarios")
+	_check(view.get_node("UI/BuildOverlay/Rules").visible, "opening screen explains rules")
+	main.scenarios[1] = &"standard_relay"
+	main.scenarios[2] = &"safe_circuit"
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
 	view.gear_requested.emit(&"gyro_brace")
-	_check(main.equipped.id == &"gyro_brace" and not main.selection_open and main.focus == 1, "selecting Maera starts with one Focus")
+	_check(main.phase == RunController.RunPhase.SHOOT and main.equipped.id == &"gyro_brace" and main.focus == 1, "choosing Maera starts the first trial")
+	_check(view.get_node("UI/BuildButton").visible, "character can change before the first shot")
 	view.primary_pressed.emit(view.mouse_aim())
 	view.primary_released.emit()
-	_check(main.impacts.is_empty() and main.focus == 1, "early release spends neither shot nor Focus")
-	_check(view.get_node("ImpactDelay").is_stopped(), "cancelled draw has no impact sound queued")
-	view.focus_requested.emit()
-	_check(main.focus_armed, "Focus can be armed before a shot")
-	view.primary_pressed.emit(view.mouse_aim())
-	_check(main.shot_focused and is_equal_approx(main.shot.spread_scale, 0.6), "Maera's tighter circle requires Focus")
-	main._physics_process(0.1)
-	_check(is_equal_approx(main.range_time, 0.1), "Maera's Focus does not slow targets")
-	view.primary_released.emit()
-	_check(main.focus == 1 and main.focus_armed, "early focused release refunds armed Focus")
-	view.primary_pressed.emit(view.mouse_aim())
-	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0])
-	view.visible_reticle = centers[0]
-	view.visible_spread_radius = 0.0
-	view.visible_reticle_valid = true
-	view.visible_target_centers = centers
-	view.primary_released.emit()
-	_check(main.impacts.size() == 1 and main.focus == 1, "focused Safe center spends then restores Focus")
-	_check(not view.get_node("ImpactDelay").is_stopped(), "accepted shot queues an impact sound")
-	_check(main.last_focus_gain == 1 and main.total_score == 6, "Safe refill and score are shown")
-	view.primary_pressed.emit(view.mouse_aim())
-	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Maera has no free accuracy boost without Focus")
-	view.cancel_requested.emit()
-	view.build_screen_requested.emit()
-	_check(not main.selection_open, "build cannot change after trial starts")
-	view.gear_requested.emit(&"pulse_sight")
-	_check(main.equipped.id == &"gyro_brace", "build selection requires strategy screen")
-	view.focus_requested.emit()
-	for index: int in range(4):
-		view.primary_pressed.emit(view.mouse_aim())
-		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
-		view.visible_reticle = centers[1]
-		view.visible_spread_radius = 0.0
-		view.visible_reticle_valid = true
-		view.visible_target_centers = centers
-		view.primary_released.emit()
-		if index == 0:
-			_check(main.total_score == 19 and main.last_bonus == "BRACED +3" and main.focus == 0, "focused Standard bonus spends Focus and appears in play")
-	_check(main.impacts.size() == 5 and main.total_score == 49, "Maera's focused Standard route clears in five shots")
-	_check(main.impacts[1].target_index == 1 and main.impacts[1].position_at(later) == later[1], "recorded center hit stays centered as target moves")
-	_check(main.best_score == 49, "completed trial saves best")
-	view.primary_pressed.emit(view.mouse_aim())
-	_check(main.impacts.size() == 5, "sixth shot is rejected")
-	view.retry_requested.emit()
-	_check(main.impacts.is_empty() and main.focus == 1 and main.equipped.id == &"gyro_brace", "retry keeps build and resets Focus")
-	var click_aim := Vector2(734, 401)
-	view.primary_pressed.emit(click_aim)
-	_check(main.shot.aim_point == click_aim, "shot starts at the click position")
-	view.cancel_requested.emit()
-	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.is_empty(), "cancel spends no shot")
+	_check(main.impacts.is_empty(), "early release spends no shot")
 	for index: int in range(5):
-		view.primary_pressed.emit(view.mouse_aim())
-		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0])
-		view.visible_reticle = centers[0]
-		view.visible_spread_radius = 0.0
-		view.visible_reticle_valid = true
-		view.visible_target_centers = centers
-		view.primary_released.emit()
-	_check(main.total_score == 30, "five safe centers cannot clear the trial")
-	_check(main.focus == 2, "Safe refills Focus only to the cap")
-	view.build_screen_requested.emit()
-	_check(main.selection_open, "build strategy can reopen between trials")
-	_check(view.get_node("UI/BuildOverlay/MaeraCard").visible, "change character opens character choices")
-	view.get_node("UI/BuildOverlay/HowToPlayButton").emit_signal("pressed")
-	_check(view.get_node("UI/BuildOverlay/Rules").visible, "rules remain available while changing character")
+		_shoot_at(main, view, centers[1], centers)
+	_check(main.total_score == 50 and main.impacts.size() == 5, "five Standard centers clear the opening trial")
+	_check(main.phase == RunController.RunPhase.REWARD and run_ui.visible, "clear opens the reward screen")
+	_check(run_ui.get_node("Panel/NextTrial").text.contains("STANDARD RELAY"), "reward previews the next scenario")
+	_check(main.offers.size() == 3 and main.offers[0] != main.offers[1] and main.offers[1] != main.offers[2], "reward contains three distinct choices")
+	run_ui.upgrade_selected.emit(&"not_an_offer")
+	_check(main.phase == RunController.RunPhase.REWARD and main.upgrades.is_empty(), "unoffered module cannot be installed")
+	view.primary_pressed.emit(centers[2])
+	_check(main.impacts.size() == 5, "reward phase rejects range input")
+	var first_upgrade: StringName = main.offers[0]
+	run_ui.get_node("Panel/OfferOne").emit_signal("pressed")
+	_check(main.stage == 1 and main.phase == RunController.RunPhase.SHOOT and not run_ui.visible, "choosing a module starts trial two")
+	_check(main.upgrades == [first_upgrade] and main.focus == 1 and main.total_score == 0 and main.impacts.is_empty(), "module and Focus carry while trial score resets")
+	_check(view.get_node("UI/StageLabel").text.contains("STANDARD RELAY"), "range displays the active scenario")
+	_check(not view.get_node("UI/BuildButton").visible, "character is fixed after trial one")
+	_shoot_at(main, view, centers[0], centers)
+	for index: int in range(4):
+		_shoot_at(main, view, centers[1], centers)
+	_check(main.total_score >= 52 and main.total_score <= 56 and main.phase == RunController.RunPhase.REWARD, "Safe then four Standard hits clear the relay")
+	_check(main.focus == 2, "Safe restores Focus for later trials")
+	_check(main.offers.size() == 3 and not main.offers.has(first_upgrade), "later offers exclude installed modules")
+	var second_upgrade: StringName = main.offers[0]
+	run_ui.get_node("Panel/OfferOne").emit_signal("pressed")
+	_check(main.stage == 2 and main.upgrades == [first_upgrade, second_upgrade] and main.focus == 2, "second module and Focus reach the final trial")
+	for index: int in range(3):
+		_shoot_at(main, view, centers[2], centers)
+	_shoot_at(main, view, centers[1] + Vector2(77, 0), centers)
+	_shoot_at(main, view, centers[1], centers)
+	_check(main.total_score == 56 and main.phase == RunController.RunPhase.RESULT, "mixed target route clears the final trial")
+	_check(run_ui.get_node("Panel/Heading").text == "RUN COMPLETE" and run_ui.visible, "winning run shows result")
+	run_ui.get_node("Panel/NewRunButton").emit_signal("pressed")
+	_check(main.phase == RunController.RunPhase.SELECT and main.stage == 0 and main.upgrades.is_empty() and main.focus == 1, "new run clears all temporary progression")
+	_check(not run_ui.visible and not main.build_selected and view.get_node("UI/BuildOverlay/Rules").visible, "new run returns to opening rules")
+	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
+	view.gear_requested.emit(&"bare_rig")
+	for index: int in range(5):
+		_shoot_at(main, view, Vector2(700, 620), centers)
+	_check(main.phase == RunController.RunPhase.RESULT and run_ui.get_node("Panel/Heading").text == "RUN ENDED", "five misses end the run")
+	run_ui.get_node("Panel/NewRunButton").emit_signal("pressed")
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
 	view.gear_requested.emit(&"pulse_sight")
-	_check(main.equipped.id == &"pulse_sight" and main.impacts.is_empty() and main.focus == 1, "Vey starts a new trial")
-	_check(is_equal_approx(main.equipped.focus_time_scale, 0.5), "Vey's Focus slows targets")
-	view.primary_pressed.emit(view.mouse_aim())
-	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Vey has ordinary spread without Focus")
-	_check(is_equal_approx(main.shot.precision_peak_seconds, 1.0), "Vey uses the early precision peak")
-	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[2])
-	view.visible_reticle = centers[2]
-	view.visible_spread_radius = 0.0
-	view.visible_reticle_valid = true
-	view.visible_target_centers = centers
-	view.primary_released.emit()
-	_check(main.total_score == 18 and main.last_bonus == "QUICK HIT +3", "Vey's quick shot earns tempo bonus")
-	main.impact_rng.seed = 1309
-	view.primary_pressed.emit(view.mouse_aim())
-	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
-	view.visible_reticle = centers[1]
-	view.visible_spread_radius = 20.0
-	view.visible_reticle_valid = true
-	view.visible_target_centers = centers
-	view.primary_released.emit()
-	_check(main.impacts[1].position_at(centers).distance_to(centers[1]) <= 20.001, "accepted hit stays inside the displayed circle")
-	view.cancel_requested.emit()
-	view.build_screen_requested.emit()
-	_check(not main.selection_open, "strategy screen cannot interrupt an active trial")
-	main._reset_round()
 	for index: int in range(3):
-		_shoot_at(main, view, centers[2], centers)
-	_check(main.total_score == 45 and not TrialRules.is_trial_over(main.total_score, main.impacts.size()), "three Bold centers leave the trial active")
-	_shoot_at(main, view, centers[0], centers)
-	_check(main.total_score == 51 and main.impacts.size() == 4, "Safe can finish after three Bold centers")
-	view.retry_requested.emit()
-	for index: int in range(3):
-		_shoot_at(main, view, centers[2], centers)
-	_shoot_at(main, view, centers[1] + Vector2(32, 0), centers)
-	_check(main.total_score == 51 and main.impacts.size() == 4, "Standard outer ring can finish the trial")
-	_check(main.best_score == 51 and view.get_node("UI/Status").text == "TRIAL CLEARED", "early clear records a valid best score")
-	_check(not view.get_node("ResultDelay").is_stopped(), "clear queues a result sound")
-	view.primary_pressed.emit(centers[2])
-	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.size() == 4, "early clear rejects another shot")
-	view.build_screen_requested.emit()
-	_check(main.selection_open, "strategy screen reopens after an early clear")
-	_check(view.get_node("UI/BuildOverlay/MaeraCard").visible, "character choices appear after a clear")
-	view.build_screen_closed.emit()
-	view.retry_requested.emit()
-	_check(main.impacts.is_empty() and main.total_score == 0, "early clear can retry")
-	_check(view.get_node("ResultDelay").is_stopped(), "retry cancels any pending result sound")
-	for index: int in range(3):
-		_shoot_at(main, view, centers[2], centers)
-	_shoot_at(main, view, centers[1] + Vector2(30, 0), centers)
-	_check(main.total_score == 52 and view.get_node("UI/Status").text == "TRIAL CLEARED", "upper edge clears before the fifth shot")
-	view.retry_requested.emit()
-	for point: Vector2 in [centers[2], centers[2], centers[1], centers[0], centers[2]]:
-		_shoot_at(main, view, point, centers)
-	_check(main.total_score == 61 and main.impacts.size() == 5, "score above the cap busts")
-	_check(view.get_node("UI/Status").text == "BUST — OVER 52" and main.best_score == 52, "bust is shown and does not replace best valid score")
-	view.retry_requested.emit()
-	_check(main.impacts.is_empty(), "busted trial can retry")
-	_shoot_at(main, view, centers[2], centers, 0.52)
-	_shoot_at(main, view, centers[2], centers, 0.52)
-	_shoot_at(main, view, centers[1], centers)
-	_shoot_at(main, view, centers[2], centers)
-	_check(main.total_score == 61 and main.impacts.size() == 4, "a bonus can bust before the fifth shot")
+		_shoot_at(main, view, centers[2], centers, 0.52)
+	_check(main.total_score == 54 and main.impacts.size() == 3 and main.phase == RunController.RunPhase.RESULT, "Vey quick Bold streak busts early")
+	_check(run_ui.get_node("Panel/Heading").text == "RUN ENDED", "bust ends the run")
 	view.primary_pressed.emit(centers[0])
-	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.size() == 4, "early bust rejects another shot")
-
+	_check(main.impacts.size() == 3, "ended run rejects another shot")
 	if failures == 0:
-		print("All target, dispersion, Focus, build, and trial assertions passed.")
+		print("All target, Focus, build, trial, and run assertions passed.")
 	quit(1 if failures > 0 else 0)
 
 

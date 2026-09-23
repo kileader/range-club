@@ -74,15 +74,26 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Export the current trial for web and verify its opening flow in a browser.
 - [x] Playtest the narrower 58–60 window. Kevin found four Bold shots followed
       by a focused Standard or Safe finish was still the easiest route.
-- [ ] Playtest 48–52 with Bold radius 24 (formerly 45). Do mixed target routes
-      compete with Bold-first play, or is the new Bold target simply frustrating?
-      Kevin reports Maera often lands below 48. Test her focused Standard
-      inner-half +3 bonus as a route through Safe and Standard; check whether
-      it creates a choice or simply makes Focus automatic.
+- [x] Playtest 48–52 with Bold radius 24. After Maera gained a focused
+      Standard route, Kevin found the three character strategies distinct
+      and worth building a run around.
+
+## Now — first short run
+
+- [x] Three five-shot score windows with run-ending failure and final victory.
+- [x] Two different later target rules drawn per run and previewed before
+      choosing a rig module.
+- [x] Three random nonduplicate module offers after each nonfinal clear;
+      choices alter scoring or Focus rules and remain for the run.
+- [x] Character and Focus carry; score and shots reset between trials. A new
+      run clears temporary modules and reshuffles scenarios.
+- [x] Assertions cover offers, stacking, a full win, failure, bust, and reset.
+- [x] Inspect the opening and range in a local browser, and render the reward
+      and result screens at 1280 × 800. Export and launch the Windows build.
+- [ ] Kevin playtests whether the module choice changes plans rather than
+      merely adding points to the usual route.
 
 ## Later
 
-Tune the shot mechanic from playtest feedback before building a run. If the
-roguelike layer is pursued, it needs distinct encounters, meaningful route and
-rig choices, temporary builds, and run-ending failure. Merely repeating this
-trial at higher score goals would not establish that loop.
+Tune the second and third windows from complete-run results before adding
+more content, permanent progression, or persistence.

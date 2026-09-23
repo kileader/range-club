@@ -60,6 +60,15 @@ theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
 text = "ARCANE TEST RANGE"
 
+[node name="ScenarioRule" type="Label" parent="UI"]
+offset_left = 420.0
+offset_top = 207.0
+offset_right = 1190.0
+offset_bottom = 237.0
+theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
+theme_override_font_sizes/font_size = 17
+text = "Base target scoring."
+
 [node name="ArchiveMark" type="Label" parent="UI"]
 offset_left = 413.0
 offset_top = 143.0
@@ -140,15 +149,6 @@ theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 17
 text = "Arm Focus before a shot.\nHold to aim; release at gold."
 
-[node name="RetryButton" type="Button" parent="UI"]
-visible = false
-offset_left = 64.0
-offset_top = 677.0
-offset_right = 349.0
-offset_bottom = 721.0
-theme_override_font_sizes/font_size = 17
-text = "RETRY WITH CURRENT RIG"
-
 [node name="Footer" type="Label" parent="UI"]
 offset_left = 64.0
 offset_top = 748.0
@@ -212,7 +212,7 @@ offset_right = 1060.0
 offset_bottom = 145.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
-text = "THE TRIAD TRIAL"
+text = "THE RANGE RUN"
 
 [node name="Heading" type="Label" parent="UI/BuildOverlay"]
 offset_left = 220.0
@@ -221,7 +221,7 @@ offset_right = 1060.0
 offset_bottom = 196.0
 theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 34
-text = "How the trial works"
+text = "How the run works"
 
 [node name="Rules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 220.0
@@ -320,7 +320,7 @@ offset_right = 825.0
 offset_bottom = 668.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 16
-text = "Pick a character to begin. You can switch between trials."
+text = "Pick a character for three trials. Build your rig between clears."
 
 [node name="HowToPlayButton" type="Button" parent="UI/BuildOverlay"]
 visible = false

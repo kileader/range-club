@@ -7,7 +7,6 @@ signal gear_requested(gear_id: StringName)
 signal build_screen_requested
 signal build_screen_closed
 signal focus_requested
-signal retry_requested
 signal cancel_requested
 
 const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
@@ -34,6 +33,8 @@ const RING_COLORS: Array[Color] = [
 ]
 
 @onready var title_label: Label = $UI/Title
+@onready var stage_label: Label = $UI/StageLabel
+@onready var scenario_label: Label = $UI/ScenarioRule
 @onready var description_label: Label = $UI/Description
 @onready var score_label: Label = $UI/ScoreLine
 @onready var status_label: Label = $UI/Status
@@ -41,7 +42,6 @@ const RING_COLORS: Array[Color] = [
 @onready var footer_label: Label = $UI/Footer
 @onready var focus_button: Button = $UI/FocusButton
 @onready var build_button: Button = $UI/BuildButton
-@onready var retry_button: Button = $UI/RetryButton
 @onready var target_labels: Array[Label] = [$UI/SafeLabel, $UI/StandardLabel, $UI/BoldLabel]
 @onready var build_overlay: Control = $UI/BuildOverlay
 @onready var heading_label: Label = $UI/BuildOverlay/Heading
@@ -76,6 +76,11 @@ var _last_score: int = -1
 var _best_score: int = -1
 var _round_size: int = 5
 var _goal_score: int = 40
+var _cap_score: int = 52
+var _stage: int = 0
+var _scenario_id: StringName = &"triad"
+var _upgrades: Array[StringName] = []
+var _allow_character_change: bool = false
 var _equipped: BuildDef
 var _last_target: String = ""
 var _last_bonus: String = ""
@@ -105,11 +110,10 @@ func _ready() -> void:
 	back_button.pressed.connect(func() -> void: build_screen_closed.emit())
 	rules_next_button.pressed.connect(func() -> void: _set_selection_page(SelectionPage.CHARACTERS))
 	how_to_play_button.pressed.connect(func() -> void: _set_selection_page(SelectionPage.RULES))
-	retry_button.pressed.connect(func() -> void: retry_requested.emit())
 	natural_card.text = _card_text(BARE_RIG)
 	maera_card.text = _card_text(GYRO_BRACE)
 	vey_card.text = _card_text(PULSE_SIGHT)
-	rules_label.text = "Up to 5 shots · Reach %d–%d. Above %d busts.\nRings count 1 (edge) to 10 (center); Safe caps at 6, Bold adds 5." % [TrialRules.GOAL_SCORE, TrialRules.BUST_SCORE, TrialRules.BUST_SCORE]
+	rules_label.text = "Three trials · 5 shots each. First gate %d–%d; above it busts.\nRings count 1 (edge) to 10 (center); Safe caps at 6, Bold adds 5." % [TrialRules.GOAL_SCORE, TrialRules.BUST_SCORE]
 	safe_rules_label.text = "SAFE · 1–6\nLarge target\nInner half: 6 +1 Focus"
 	standard_rules_label.text = "STANDARD · 1–10\nMedium target"
 	bold_rules_label.text = "BOLD · 6–15\nSmall target"
@@ -193,6 +197,7 @@ func present(
 	best_score: int,
 	round_size: int,
 	goal_score: int,
+	cap_score: int,
 	equipped: BuildDef,
 	last_target: String,
 	last_bonus: String,
@@ -202,7 +207,11 @@ func present(
 	focus_armed: bool,
 	shot_focused: bool,
 	selection_open: bool,
-	build_selected: bool
+	build_selected: bool,
+	stage: int,
+	scenario_id: StringName,
+	upgrades: Array[StringName],
+	allow_character_change: bool
 ) -> void:
 	_shot = shot
 	_impacts = impacts
@@ -211,6 +220,11 @@ func present(
 	_best_score = best_score
 	_round_size = round_size
 	_goal_score = goal_score
+	_cap_score = cap_score
+	_stage = stage
+	_scenario_id = scenario_id
+	_upgrades = upgrades
+	_allow_character_change = allow_character_change
 	_equipped = equipped
 	_last_target = last_target
 	_last_bonus = last_bonus
@@ -234,15 +248,18 @@ func present(
 
 
 func _update_labels() -> void:
-	var completed: bool = TrialRules.is_trial_over(_total_score, _impacts.size())
+	var completed: bool = TrialRules.is_trial_over(_total_score, _impacts.size(), _goal_score, _cap_score)
 	var shot_number: int = _impacts.size() if completed else _impacts.size() + 1
 	title_label.text = "Choose your\nmark."
-	description_label.text = "Reach %d–%d in up to five shots.\nAbove %d busts." % [_goal_score, TrialRules.BUST_SCORE, TrialRules.BUST_SCORE]
-	score_label.text = "SHOT %d / %d     SCORE %d / %d–%d" % [shot_number, _round_size, _total_score, _goal_score, TrialRules.BUST_SCORE]
+	description_label.text = "Reach %d–%d in up to five shots.\nAbove %d busts." % [_goal_score, _cap_score, _cap_score]
+	score_label.text = "SHOT %d / %d     SCORE %d / %d–%d" % [shot_number, _round_size, _total_score, _goal_score, _cap_score]
+	stage_label.text = "%02d / %s" % [_stage + 1, RunRules.scenario_title(_scenario_id)]
+	scenario_label.text = RunRules.scenario_rule(_scenario_id)
 	build_overlay.visible = _selection_open
 	back_button.visible = _build_selected
 	_update_selection_page()
-	build_button.disabled = not _build_selected or _shot.phase != ShotModel.Phase.IDLE or (not _impacts.is_empty() and not completed)
+	build_button.visible = _allow_character_change
+	build_button.disabled = not _allow_character_change or _shot.phase != ShotModel.Phase.IDLE
 	focus_button.disabled = _selection_open or _focus <= 0 or _shot.phase != ShotModel.Phase.IDLE or completed
 	if _shot_focused:
 		focus_button.text = "FOCUS ACTIVE · CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS ACTIVE · SLOW + TIGHT"
@@ -250,16 +267,15 @@ func _update_labels() -> void:
 		focus_button.text = "FOCUS ARMED · %d / %d" % [_focus, TrialRules.MAX_FOCUS]
 	else:
 		focus_button.text = "FOCUS %d / %d · ARM (F)" % [_focus, TrialRules.MAX_FOCUS]
-	retry_button.visible = completed
 	var best_text: String = "—" if _best_score < 0 else str(_best_score)
-	footer_label.text = "%s / %s     BEST %s     FOCUS %d / %d" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text, _focus, TrialRules.MAX_FOCUS]
+	footer_label.text = "%s / %s     BEST %s     FOCUS %d / %d     RIG %s" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text, _focus, TrialRules.MAX_FOCUS, _upgrade_names()]
 	if completed:
-		if TrialRules.is_bust(_total_score):
-			status_label.text = "BUST — OVER %d" % TrialRules.BUST_SCORE
-			instruction_label.text = "Aim for lower-value rings or\ntargets near the cap. Retry?"
+		if TrialRules.is_bust(_total_score, _cap_score):
+			status_label.text = "BUST — OVER %d" % _cap_score
+			instruction_label.text = "The run is over."
 		else:
-			status_label.text = "TRIAL CLEARED" if TrialRules.is_cleared(_total_score) else "TRIAL FAILED"
-			instruction_label.text = "Retry this character or open\nCharacter Strategy to switch."
+			status_label.text = "TRIAL CLEARED" if TrialRules.is_cleared(_total_score, _goal_score, _cap_score) else "TRIAL FAILED"
+			instruction_label.text = "Choose the next rig module." if TrialRules.is_cleared(_total_score, _goal_score, _cap_score) else "The run is over."
 	elif _shot.phase == ShotModel.Phase.DRAW:
 		if _shot_focused:
 			status_label.text = "FOCUS — CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS — SLOW + TIGHT"
@@ -296,6 +312,15 @@ func _card_text(build: BuildDef) -> String:
 	return "%s / %s\n\n%s\n\n%s\n\nSELECT" % [build.operator_name.to_upper(), build.display_name.to_upper(), build.strategy, build.tradeoff]
 
 
+func _upgrade_names() -> String:
+	if _upgrades.is_empty():
+		return "NONE"
+	var names: PackedStringArray = []
+	for upgrade_id: StringName in _upgrades:
+		names.append(RunRules.upgrade_title(upgrade_id))
+	return ", ".join(names)
+
+
 func _spread_status() -> String:
 	if _shot.elapsed < _shot.precision_peak_seconds - 0.12:
 		return "READY — CIRCLE SHRINKING"
@@ -311,7 +336,7 @@ func _set_selection_page(page: SelectionPage) -> void:
 
 func _update_selection_page() -> void:
 	var showing_rules: bool = _selection_page == SelectionPage.RULES
-	heading_label.text = "How the trial works" if showing_rules else "Choose your marksman"
+	heading_label.text = "How the run works" if showing_rules else "Choose your marksman"
 	rules_label.visible = showing_rules
 	safe_rules_label.visible = showing_rules
 	standard_rules_label.visible = showing_rules
@@ -335,7 +360,7 @@ func _draw() -> void:
 	for impact: ImpactRecord in _impacts:
 		_draw_impact_mark(impact.position_at(visible_target_centers))
 	visible_reticle_valid = false
-	if _shot == null or TrialRules.is_trial_over(_total_score, _impacts.size()):
+	if _shot == null or TrialRules.is_trial_over(_total_score, _impacts.size(), _goal_score, _cap_score):
 		_drawn_phase = ShotModel.Phase.IDLE
 		return
 	_drawn_phase = _shot.phase

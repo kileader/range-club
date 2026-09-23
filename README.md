@@ -1,11 +1,12 @@
 # Range Club
 
-A small fantasy-tech target-range prototype about choosing risk and handling
-for each trial. Read the brief rules screen, choose a character on the next
-screen, then reach **48–52 points in up to five shots**. You clear as soon as
-you enter that window; going above 52 busts immediately. If all five shots
-end below 48, you fail. Safe scores up to 6, Standard up to 10, and Bold up
-to 15. Choosing a lower-value target or outer ring can keep you under the cap.
+A small fantasy-tech target-range run about choosing risk, character, and rig.
+Choose a character, then clear three five-shot trials with score windows of
+**48–52**, **52–56**, and **56–60**. Enter the window to clear; going above its
+cap busts immediately. Finishing five shots below the window ends the run.
+After each of the first two clears, choose one of three random rig modules.
+The next trial's special rule is shown before that choice. Character, modules,
+and remaining Focus carry forward; score and shots reset.
 
 ## Stack
 
@@ -20,7 +21,7 @@ to 15. Choosing a lower-value target or outer ring can keep you under the cap.
 1. Download and extract [Godot 4.7.2 Standard for Windows x86_64](https://godotengine.org/download/archive/4.7.2-stable/).
 2. Import this repository's `project.godot` in the Godot Project Manager.
 3. Open the project and press **F6** to run the selected scene, or **F5** to run the project.
-4. Choose a character and play a trial of up to five shots; close the window to exit.
+4. Choose a character and play a run of up to three five-shot trials; close the window to exit.
 
 The targets move on predictable paths. Aim with the mouse before holding left
 mouse; the shot starts at that position. The gold landing circle shrinks toward
@@ -54,9 +55,14 @@ Each build turns the same rules into a different plan:
   add 3 points.
 
 The character screen shows each bonus and drawback before play; the rules
-screen can be revisited from there. Both reopen between trials. Character
-choices are locked during an active trial. **Retry** keeps the current choice
-and resets Focus to one.
+screen can be revisited from there. Character choice is fixed after the first
+shot. A new run resets the character, modules, Focus, and encounter order.
+
+The later trials draw two different rules from Safe Circuit (Safe inner hits
+score +3), Standard Relay (Standard inner hits score +2), and Bold Surge (Bold
+hits score +3). The five module types support Safe scoring, Standard outer
+rings, Bold outer rings, Focus refunds on Standard, or a final Safe shot. Offers
+exclude modules already installed. There is no permanent progression or save.
 
 The gold circle is the full possible landing area. The footer records your
 best non-busted trial score. Hit marks stay on the moving target; misses stay
@@ -88,10 +94,9 @@ by Git; put a `.gdignore` file inside it if you keep tools there yourself.
 ```
 
 The version must start with `4.7.2.stable`. Check the output for errors as well as
-the exit code. The assertions cover ring boundaries, moving target positions,
-shot phases, dispersion bounds, Focus costs and bonuses, five accepted shots,
-and retry. They
-cannot judge feel.
+the exit code. The assertions cover ring boundaries, moving targets,
+dispersion, Focus, three-trial progression, module offers, win/failure/bust
+paths, and new-run reset. They cannot judge feel.
 Current visual and export checks are recorded in
 [the prototype checklist](docs/prototype_checklist.md).
 
@@ -153,13 +158,9 @@ input/render mismatch.
 
 ## Next decision
 
-Play a few trials with each character. Note whether the visible landing circle
-makes misses understandable, whether the late-hold penalty changes release
-decisions, and whether Maera still feels automatic. Tune the spread curve and
-score goal before adding longer-run progression.
-
-The current opening screen selects a character with a fixed signature rig.
-A future run can retain that opening choice and add rig building, distinct
-encounters, and run-ending failure once the five-shot trial is satisfying.
+Play several complete runs with different characters. Check whether the three
+offered modules lead to different plans for the revealed next trial, whether
+Focus carry matters, and whether the 52–56 and 56–60 windows remain reachable
+without forcing Bold on every shot. Tune the run before adding more content.
 
 No source license has been selected yet.

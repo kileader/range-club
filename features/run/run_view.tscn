@@ -1,0 +1,99 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/run/run_view.gd" id="1_view"]
+
+[node name="RunView" type="CanvasLayer"]
+visible = false
+layer = 2
+script = ExtResource("1_view")
+
+[node name="Shade" type="ColorRect" parent="."]
+offset_right = 1280.0
+offset_bottom = 800.0
+mouse_filter = 0
+color = Color(0.035, 0.066, 0.052, 1)
+
+[node name="Panel" type="ColorRect" parent="."]
+offset_left = 140.0
+offset_top = 78.0
+offset_right = 1140.0
+offset_bottom = 728.0
+color = Color(0.102, 0.164, 0.129, 1)
+
+[node name="Eyebrow" type="Label" parent="Panel"]
+offset_left = 42.0
+offset_top = 34.0
+offset_right = 958.0
+offset_bottom = 59.0
+theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
+theme_override_font_sizes/font_size = 16
+text = "RANGE CLUB · THE RUN"
+
+[node name="Heading" type="Label" parent="Panel"]
+offset_left = 42.0
+offset_top = 69.0
+offset_right = 958.0
+offset_bottom = 124.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 38
+text = "TRIAL 1 CLEARED"
+
+[node name="Summary" type="Label" parent="Panel"]
+offset_left = 42.0
+offset_top = 129.0
+offset_right = 958.0
+offset_bottom = 165.0
+theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+text = "Choose one rig module for the next trial."
+
+[node name="NextTrial" type="Label" parent="Panel"]
+offset_left = 42.0
+offset_top = 185.0
+offset_right = 958.0
+offset_bottom = 255.0
+theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
+theme_override_font_sizes/font_size = 21
+text = "NEXT · STANDARD RELAY · 52–56\nStandard inner hits score +2."
+
+[node name="Installed" type="Label" parent="Panel"]
+offset_left = 42.0
+offset_top = 268.0
+offset_right = 958.0
+offset_bottom = 296.0
+theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
+theme_override_font_sizes/font_size = 16
+text = "INSTALLED · NONE"
+
+[node name="OfferOne" type="Button" parent="Panel"]
+offset_left = 42.0
+offset_top = 326.0
+offset_right = 324.0
+offset_bottom = 590.0
+theme_override_font_sizes/font_size = 19
+text = "ANCHOR COIL\n\nSafe inner hits score +2.\n\nINSTALL"
+
+[node name="OfferTwo" type="Button" parent="Panel"]
+offset_left = 359.0
+offset_top = 326.0
+offset_right = 641.0
+offset_bottom = 590.0
+theme_override_font_sizes/font_size = 19
+text = "PRISM LENS\n\nStandard rings 4–7 score +3.\n\nINSTALL"
+
+[node name="OfferThree" type="Button" parent="Panel"]
+offset_left = 676.0
+offset_top = 326.0
+offset_right = 958.0
+offset_bottom = 590.0
+theme_override_font_sizes/font_size = 19
+text = "EDGE FUSE\n\nBold outer rings 1–5 score +3.\n\nINSTALL"
+
+[node name="NewRunButton" type="Button" parent="Panel"]
+visible = false
+offset_left = 359.0
+offset_top = 355.0
+offset_right = 641.0
+offset_bottom = 420.0
+theme_override_font_sizes/font_size = 20
+text = "NEW RUN"
