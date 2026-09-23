@@ -33,7 +33,7 @@ var visible_reticle_valid: bool = false
 var visible_target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
 
 var _shot: ShotModel
-var _impacts: Array[Vector2] = []
+var _impacts: Array[ImpactRecord] = []
 var _total_score: int = 0
 var _last_score: int = -1
 var _best_score: int = -1
@@ -79,7 +79,7 @@ func mouse_aim() -> Vector2:
 
 func present(
 	shot: ShotModel,
-	impacts: Array[Vector2],
+	impacts: Array[ImpactRecord],
 	total_score: int,
 	last_score: int,
 	best_score: int,
@@ -146,8 +146,8 @@ func _update_labels() -> void:
 
 func _draw() -> void:
 	_draw_range()
-	for point: Vector2 in _impacts:
-		_draw_impact_mark(point)
+	for impact: ImpactRecord in _impacts:
+		_draw_impact_mark(impact.position_at(visible_target_centers))
 	visible_reticle_valid = false
 	if _shot == null or _impacts.size() >= _round_size:
 		_drawn_phase = ShotModel.Phase.IDLE

@@ -33,6 +33,7 @@ steers quickly without a lock. A cyan ring shows an active focus lock. Choices
 are locked during a trial. **Retry** keeps the current preset.
 
 The gold reticle is the exact impact point. The footer records your best score.
+Hit marks stay on the moving target; misses stay on the backstop.
 The earlier sway and three-press timing experiments remain in Git history.
 
 For this local checkout, the portable editor is already in `.tools/godot/`:

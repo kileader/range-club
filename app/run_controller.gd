@@ -10,7 +10,7 @@ const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres"
 @onready var range_view: RangeView = $RangeView
 
 var shot: ShotModel = ShotModel.new()
-var impacts: Array[Vector2] = []
+var impacts: Array[ImpactRecord] = []
 var total_score: int = 0
 var last_score: int = -1
 var best_score: int = -1
@@ -61,7 +61,11 @@ func _accept_shot(visible_impact: Vector2) -> void:
 	last_score = result.score
 	last_target = result.target
 	total_score += last_score
-	impacts.append(visible_impact)
+	var hit_target: int = result.target_index
+	var stored_point: Vector2 = visible_impact
+	if hit_target >= 0:
+		stored_point -= range_view.visible_target_centers[hit_target]
+	impacts.append(ImpactRecord.new(hit_target, stored_point))
 	shot.cancel()
 	if impacts.size() == ARROWS_PER_ROUND:
 		gear_unlocked = true

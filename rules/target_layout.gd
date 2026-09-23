@@ -31,5 +31,5 @@ static func score_at(impact: Vector2, target_centers: Array[Vector2]) -> Diction
 				score = mini(ring, 6)
 			elif target == 2:
 				score = ring + 5
-			return {"score": score, "ring": ring, "target": NAMES[target]}
-	return {"score": 0, "ring": 0, "target": "MISS"}
+			return {"score": score, "ring": ring, "target": NAMES[target], "target_index": target}
+	return {"score": 0, "ring": 0, "target": "MISS", "target_index": -1}

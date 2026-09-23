@@ -23,6 +23,10 @@ func run() -> void:
 	_check(is_equal_approx(later[1].y, centers[1].y), "standard target slides horizontally")
 	_check(later[2].x != centers[2].x and later[2].y != centers[2].y, "bold target moves diagonally")
 	_check(TargetLayout.score_at(later[2], later).score == 15, "moving target scores at displayed center")
+	var attached_mark := ImpactRecord.new(1, Vector2(5, -4))
+	_check(attached_mark.position_at(later) == later[1] + Vector2(5, -4), "hit mark follows its target")
+	var miss_mark := ImpactRecord.new(-1, Vector2(700, 600))
+	_check(miss_mark.position_at(later) == Vector2(700, 600), "miss mark stays on the backstop")
 
 	var shot: ShotModel = ShotModel.new()
 	shot.start_hold(centers[1])
@@ -65,6 +69,7 @@ func run() -> void:
 		view.visible_target_centers = centers
 		view.primary_released.emit()
 	_check(main.impacts.size() == 5 and main.total_score == 50, "five displayed center hits total fifty")
+	_check(main.impacts[0].target_index == 1 and main.impacts[0].position_at(later) == later[1], "recorded center hit stays centered as target moves")
 	_check(main.gear_unlocked and main.best_score == 50, "completed trial unlocks builds and saves best")
 	view.primary_pressed.emit()
 	_check(main.impacts.size() == 5, "sixth shot is rejected")
