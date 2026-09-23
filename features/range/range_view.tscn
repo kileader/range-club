@@ -249,7 +249,7 @@ offset_right = 1060.0
 offset_bottom = 510.0
 theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
 theme_override_font_sizes/font_size = 19
-text = "FOCUS · Start with 1 (max 2). Press F to slow targets and tighten the circle.\nRelease after READY spends 1 Focus; an early release cancels."
+text = "FOCUS · Start with 1 (max 2). Press F to tighten the landing circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels."
 
 [node name="ControlRules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 220.0
@@ -284,7 +284,7 @@ offset_top = 250.0
 offset_right = 773.0
 offset_bottom = 625.0
 theme_override_font_sizes/font_size = 18
-text = "MAERA / GYRO BRACE\n\nFocus: much smaller\nlanding circle.\n\nSlow aim speed.\n\nSELECT"
+text = "MAERA / GYRO BRACE\n\nFocus: much smaller\nlanding circle.\n\nTargets keep full speed.\n\nSELECT"
 
 [node name="VeyCard" type="Button" parent="UI/BuildOverlay"]
 visible = false

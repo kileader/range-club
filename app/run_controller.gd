@@ -1,6 +1,5 @@
 extends Node
 
-const REST_POINT: Vector2 = Vector2(820.0, 645.0)
 const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
 const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
 const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres")
@@ -40,19 +39,19 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if not selection_open and impacts.size() < TrialRules.SHOTS_PER_TRIAL:
-		var time_scale: float = TrialRules.FOCUS_TIME_SCALE if shot_focused else 1.0
+		var time_scale: float = equipped.focus_time_scale if shot_focused else 1.0
 		range_time += delta * time_scale
 		shot.tick(delta, range_view.mouse_aim())
 	_refresh_view()
 
 
-func _on_primary_pressed() -> void:
+func _on_primary_pressed(aim_position: Vector2) -> void:
 	if selection_open or impacts.size() >= TrialRules.SHOTS_PER_TRIAL:
 		return
 	if shot.phase == ShotModel.Phase.IDLE:
 		shot_focused = focus_armed and focus > 0
 		shot.configure(equipped.steering_scale, equipped.focus_spread_scale if shot_focused else 1.0)
-		shot.start_hold(REST_POINT)
+		shot.start_hold(aim_position)
 	_refresh_view()
 
 

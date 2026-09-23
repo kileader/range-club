@@ -91,16 +91,18 @@ func run() -> void:
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
 	view.gear_requested.emit(&"gyro_brace")
 	_check(main.equipped.id == &"gyro_brace" and not main.selection_open and main.focus == 1, "selecting Maera starts with one Focus")
-	view.primary_pressed.emit()
+	view.primary_pressed.emit(view.mouse_aim())
 	view.primary_released.emit()
 	_check(main.impacts.is_empty() and main.focus == 1, "early release spends neither shot nor Focus")
 	view.focus_requested.emit()
 	_check(main.focus_armed, "Focus can be armed before a shot")
-	view.primary_pressed.emit()
+	view.primary_pressed.emit(view.mouse_aim())
 	_check(main.shot_focused and is_equal_approx(main.shot.spread_scale, 0.6), "Maera's tighter circle requires Focus")
+	main._physics_process(0.1)
+	_check(is_equal_approx(main.range_time, 0.1), "Maera's Focus does not slow targets")
 	view.primary_released.emit()
 	_check(main.focus == 1 and main.focus_armed, "early focused release refunds armed Focus")
-	view.primary_pressed.emit()
+	view.primary_pressed.emit(view.mouse_aim())
 	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0])
 	view.visible_reticle = centers[0]
 	view.visible_spread_radius = 0.0
@@ -109,7 +111,7 @@ func run() -> void:
 	view.primary_released.emit()
 	_check(main.impacts.size() == 1 and main.focus == 1, "focused Safe center spends then restores Focus")
 	_check(main.last_focus_gain == 1 and main.total_score == 6, "Safe refill and score are shown")
-	view.primary_pressed.emit()
+	view.primary_pressed.emit(view.mouse_aim())
 	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Maera has no free accuracy boost without Focus")
 	view.cancel_requested.emit()
 	view.build_screen_requested.emit()
@@ -117,7 +119,7 @@ func run() -> void:
 	view.gear_requested.emit(&"pulse_sight")
 	_check(main.equipped.id == &"gyro_brace", "build selection requires strategy screen")
 	for index: int in range(4):
-		view.primary_pressed.emit()
+		view.primary_pressed.emit(view.mouse_aim())
 		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
 		view.visible_reticle = centers[1]
 		view.visible_spread_radius = 0.0
@@ -127,16 +129,17 @@ func run() -> void:
 	_check(main.impacts.size() == 5 and main.total_score == 46, "five Maera shots total forty-six")
 	_check(main.impacts[1].target_index == 1 and main.impacts[1].position_at(later) == later[1], "recorded center hit stays centered as target moves")
 	_check(main.best_score == 46, "completed trial saves best")
-	view.primary_pressed.emit()
+	view.primary_pressed.emit(view.mouse_aim())
 	_check(main.impacts.size() == 5, "sixth shot is rejected")
 	view.retry_requested.emit()
 	_check(main.impacts.is_empty() and main.focus == 1 and main.equipped.id == &"gyro_brace", "retry keeps build and resets Focus")
-	view.primary_pressed.emit()
-	_check(main.shot.aim_point == main.REST_POINT, "shot starts from fixed rest point")
+	var click_aim := Vector2(734, 401)
+	view.primary_pressed.emit(click_aim)
+	_check(main.shot.aim_point == click_aim, "shot starts at the click position")
 	view.cancel_requested.emit()
 	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.is_empty(), "cancel spends no shot")
 	for index: int in range(5):
-		view.primary_pressed.emit()
+		view.primary_pressed.emit(view.mouse_aim())
 		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0])
 		view.visible_reticle = centers[0]
 		view.visible_spread_radius = 0.0
@@ -151,7 +154,8 @@ func run() -> void:
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
 	view.gear_requested.emit(&"pulse_sight")
 	_check(main.equipped.id == &"pulse_sight" and main.impacts.is_empty() and main.focus == 1, "Vey starts a new trial")
-	view.primary_pressed.emit()
+	_check(is_equal_approx(main.equipped.focus_time_scale, 0.5), "Vey's Focus slows targets")
+	view.primary_pressed.emit(view.mouse_aim())
 	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Vey has ordinary spread without Focus")
 	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[2])
 	view.visible_reticle = centers[2]
@@ -161,7 +165,7 @@ func run() -> void:
 	view.primary_released.emit()
 	_check(main.total_score == 18 and main.last_bonus == "QUICK HIT +3", "Vey's quick shot earns tempo bonus")
 	main.impact_rng.seed = 1309
-	view.primary_pressed.emit()
+	view.primary_pressed.emit(view.mouse_aim())
 	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
 	view.visible_reticle = centers[1]
 	view.visible_spread_radius = 20.0

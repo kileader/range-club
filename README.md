@@ -21,16 +21,17 @@ character-specific advantage.
 3. Open the project and press **F6** to run the selected scene, or **F5** to run the project.
 4. Choose a character and play a five-shot trial; close the window to exit.
 
-The targets move on predictable paths. Hold left mouse to charge and steer
-from the fixed rest point. The visible landing circle shrinks until 1.5
+The targets move on predictable paths. Aim with the mouse before holding left
+mouse; the shot starts at that position. The visible landing circle shrinks until 1.5
 seconds, then widens and pulses as a penalty for holding longer. Release after
 **READY**; the shot lands at a random point inside the last circle actually
 shown. A miss still spends a shot. Releasing early or pressing **Esc** cancels
 without spending one. There is no passive aim sway.
 
 You start with one **Focus** and can hold at most two. Press **F** or the Focus
-button before a shot to arm it. That shot's targets move at half speed and
-its landing circle is smaller; Focus is spent when you release a ready shot.
+button before a shot to arm it. Focus makes the landing circle smaller.
+It also halves target speed for The Natural and Vey; Maera's targets keep
+moving at full speed. Focus is spent when you release a ready shot.
 A Safe inner hit (ring 6–10) restores
 one Focus. An early release or **Esc** cancels without spending a shot or Focus.
 
@@ -38,8 +39,9 @@ Each build turns the same rules into a different plan:
 
 - **The Natural / Bare Rig:** balanced aim speed. A Standard or
   Bold bullseye without Focus adds 2 points.
-- **Maera / Gyro Brace:** slower aim. Spending Focus makes the landing circle
-  40% smaller, improving her odds without guaranteeing a hit.
+- **Maera / Gyro Brace:** spending Focus makes the landing circle 40% smaller,
+  but her targets keep moving at full speed. It improves her odds without
+  guaranteeing a hit.
 - **Vey / Pulse Sight:** faster aim. Hit near the center of
   Standard or Bold within 1.2 seconds of starting the shot to add 3 points.
 

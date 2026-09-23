@@ -1,7 +1,7 @@
 class_name RangeView
 extends Node2D
 
-signal primary_pressed
+signal primary_pressed(aim_position: Vector2)
 signal primary_released
 signal gear_requested(gear_id: StringName)
 signal build_screen_requested
@@ -95,14 +95,14 @@ func _ready() -> void:
 	safe_rules_label.text = "SAFE · 6\nLarge target\nInner-half hit: +1 Focus"
 	standard_rules_label.text = "STANDARD · 10\nMedium target"
 	bold_rules_label.text = "BOLD · 15\nSmall target"
-	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to slow targets and tighten the circle.\nRelease after READY spends 1 Focus; an early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
+	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to tighten the landing circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
 	control_rules_label.text = "Hold mouse: the landing circle shrinks, then widens and pulses.\nRelease after READY; the hit lands randomly inside it. Misses count."
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if not _selection_open and event.pressed and AIM_AREA.has_point(event.position):
-			primary_pressed.emit()
+			primary_pressed.emit(_clamp_aim(event.position))
 			get_viewport().set_input_as_handled()
 		elif not _selection_open and not event.pressed:
 			primary_released.emit()
@@ -122,6 +122,10 @@ func _notification(what: int) -> void:
 
 func mouse_aim() -> Vector2:
 	var position_on_canvas: Vector2 = get_viewport().get_mouse_position()
+	return _clamp_aim(position_on_canvas)
+
+
+func _clamp_aim(position_on_canvas: Vector2) -> Vector2:
 	return position_on_canvas.clamp(Vector2(410.0, 176.0), Vector2(1194.0, 660.0))
 
 
@@ -185,11 +189,11 @@ func _update_labels() -> void:
 	build_button.disabled = not _build_selected or _shot.phase != ShotModel.Phase.IDLE or (not _impacts.is_empty() and not completed)
 	focus_button.disabled = _selection_open or _focus <= 0 or _shot.phase != ShotModel.Phase.IDLE or completed
 	if _shot_focused:
-		focus_button.text = "FOCUS ACTIVE · TARGETS SLOWED"
+		focus_button.text = "FOCUS ACTIVE · CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS ACTIVE · SLOW + TIGHT"
 	elif _focus_armed:
-		focus_button.text = "NEXT SHOT SLOWED · %d / %d FOCUS" % [_focus, TrialRules.MAX_FOCUS]
+		focus_button.text = "FOCUS ARMED · %d / %d" % [_focus, TrialRules.MAX_FOCUS]
 	else:
-		focus_button.text = "FOCUS %d / %d · SLOW NEXT (F)" % [_focus, TrialRules.MAX_FOCUS]
+		focus_button.text = "FOCUS %d / %d · ARM (F)" % [_focus, TrialRules.MAX_FOCUS]
 	retry_button.visible = completed
 	var best_text: String = "—" if _best_score < 0 else str(_best_score)
 	footer_label.text = "%s / %s     BEST %s     FOCUS %d / %d" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text, _focus, TrialRules.MAX_FOCUS]
@@ -197,7 +201,10 @@ func _update_labels() -> void:
 		status_label.text = "TRIAL CLEARED" if _total_score >= _goal_score else "TRIAL FAILED"
 		instruction_label.text = "Retry this character or open\nCharacter Strategy to switch."
 	elif _shot.phase == ShotModel.Phase.DRAW:
-		status_label.text = "FOCUS ACTIVE — TARGETS SLOWED" if _shot_focused else "CHARGING — WAIT FOR READY"
+		if _shot_focused:
+			status_label.text = "FOCUS — CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS — SLOW + TIGHT"
+		else:
+			status_label.text = "CHARGING — WAIT FOR READY"
 		instruction_label.text = "Hold to shrink the circle.\nEarly release cancels."
 	elif _shot.phase == ShotModel.Phase.READY:
 		if _equipped.id == &"pulse_sight":
@@ -217,7 +224,7 @@ func _update_labels() -> void:
 			elif not _last_bonus.is_empty():
 				status_label.text += " · " + _last_bonus
 		if _focus > 0:
-			instruction_label.text = "Press F to tighten next shot.\nHold to shrink the circle."
+			instruction_label.text = "Press F for a tighter circle.\nHold to shrink it further."
 		else:
 			instruction_label.text = "Hit near Safe's center for Focus.\nHold to shrink the circle."
 
@@ -262,7 +269,8 @@ func _draw() -> void:
 		return
 	_drawn_phase = _shot.phase
 	if _shot.phase == ShotModel.Phase.IDLE:
-		_draw_crosshair(Vector2(820.0, 645.0), Color("b6c7b6"), 12.0)
+		if AIM_AREA.has_point(get_viewport().get_mouse_position()):
+			_draw_crosshair(mouse_aim(), Color("b6c7b6"), 12.0)
 	elif _shot.phase == ShotModel.Phase.DRAW:
 		_draw_spread_circle(_shot.aim_point, _shot.spread_radius, false)
 	elif _shot.phase == ShotModel.Phase.READY:

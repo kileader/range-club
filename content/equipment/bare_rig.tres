@@ -13,3 +13,4 @@ strategy = "+2: bullseye on Standard\nor Bold, without Focus."
 tradeoff = "Balanced aim speed."
 steering_scale = 1.0
 focus_spread_scale = 0.8
+focus_time_scale = 0.5

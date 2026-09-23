@@ -5,7 +5,6 @@ const SHOTS_PER_TRIAL: int = 5
 const GOAL_SCORE: int = 55
 const START_FOCUS: int = 1
 const MAX_FOCUS: int = 2
-const FOCUS_TIME_SCALE: float = 0.5
 const SAFE_FOCUS_RING: int = 6
 const VEY_TEMPO_RING: int = 8
 const VEY_TEMPO_SECONDS: float = 1.2

@@ -45,14 +45,17 @@ Definition of Done: five-shot play offers a target choice, the starter rig is
 challenging, and the player can compare two upgrades against a bare rig.
 
 - [x] Three target sizes and score ceilings, with a goal above five safe centers.
-- [x] Fixed rest point, moving targets, and build tradeoffs for focus or speed.
+- [x] Moving targets and build tradeoffs for Focus or speed. Shots start at the
+      mouse position, so travel from a fixed rest point cannot eat the best
+      precision window.
 - [x] Three character/build presets; bare rig remains selectable and choices
       are locked during each trial.
 - [x] Hit marks remain attached to their moving targets.
 - [x] Full-screen rules and character-choice screens separate target economy
       from each character's bonus and drawback.
-- [x] Five-shot Focus economy: earn on Safe, spend for slower targets, and
-      pursue Natural precision, Maera's tighter landing circle, or Vey quick-hit bonuses.
+- [x] Five-shot Focus economy: earn on Safe, spend for a tighter circle, and
+      pursue Natural precision, Maera's extra-tight Focus without target
+      slowdown, or Vey quick-hit bonuses.
 - [x] Replace perfect lock-on with visible random spread. Holding shrinks the
       landing circle to a peak, then it blooms and pulses; impact is sampled
       only inside the last displayed circle.

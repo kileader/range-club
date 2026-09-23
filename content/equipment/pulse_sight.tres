@@ -13,3 +13,4 @@ strategy = "+3: near-center hit on\nStandard or Bold in 1.2s."
 tradeoff = "Fast aim speed."
 steering_scale = 1.6
 focus_spread_scale = 0.8
+focus_time_scale = 0.5
