@@ -220,7 +220,7 @@ func present(
 	_focus_armed = focus_armed
 	_shot_focused = shot_focused
 	if selection_open and not _selection_open:
-		_selection_page = SelectionPage.RULES
+		_selection_page = SelectionPage.CHARACTERS if build_selected else SelectionPage.RULES
 	_selection_open = selection_open
 	_build_selected = build_selected
 	_target_centers = TargetLayout.centers_at(_range_time)

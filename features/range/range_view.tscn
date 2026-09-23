@@ -112,7 +112,7 @@ offset_top = 499.0
 offset_right = 349.0
 offset_bottom = 543.0
 theme_override_font_sizes/font_size = 17
-text = "CHARACTER STRATEGY"
+text = "CHANGE CHARACTER"
 
 [node name="FocusButton" type="Button" parent="UI"]
 offset_left = 64.0
@@ -283,7 +283,7 @@ offset_top = 652.0
 offset_right = 855.0
 offset_bottom = 699.0
 theme_override_font_sizes/font_size = 17
-text = "CHOOSE CHARACTER →"
+text = "CHOOSE CHARACTER"
 
 [node name="NaturalCard" type="Button" parent="UI/BuildOverlay"]
 visible = false
