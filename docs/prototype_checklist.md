@@ -48,12 +48,27 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Fixed rest point, moving targets, and build tradeoffs for focus or speed.
 - [x] Three character/build presets; bare rig remains selectable and choices
       are locked during each trial.
-- [x] Rule assertions for motion, scoring, focus, unlock, selection, and retry.
-- [ ] Kevin plays the range and reports whether target choice feels strategic.
-- [x] Inspect final UI at 1280 × 800 and 960 × 720, including completed and
-      Maera-selected states; verify mouse input and launch Windows export.
+- [x] Hit marks remain attached to their moving targets.
+- [x] Full-screen build choice explains the target economy and each build's
+      scoring opportunity and tradeoff.
+- [x] Five-shot Focus economy: earn on Safe, spend for slower targets, and
+      pursue Natural precision, Maera tether, or Vey quick-hit bonuses.
+- [x] Rule assertions for motion, scoring, Focus, selection, and retry.
+- [x] Inspect the strategy and in-round UI at 1280 × 800 and 960 × 720;
+      verify character selection, Focus, and board mouse input.
+- [x] Export and launch the current Windows build (60 frames, exit code 0).
+- [ ] Kevin plays the range and reports whether Focus choices feel strategic.
 
 ## Later
 
-Tune from playtest feedback, then consider a tiny three-round run. Do not add
-progression just to disguise a weak shooting loop.
+Tune from playtest feedback, then consider a tiny three-round run. Keep the
+opening character choice and the same three targets. Raise the score goal each
+round (45 → 55 → 65 is a starting point) and let the player build the rig
+between rounds. Offer three visible rig modules after each cleared round and
+pick one permanent module: handling, Focus economy, or demanding-hit scoring.
+Two picks across three rounds are enough for the first run. Tune the thresholds
+against the actual upgrade effects. Do not add progression just to disguise a
+weak shooting loop. A deck and draw order are outside this version.
+
+Target scenarios can be considered later if score goals and rig upgrades alone
+stop creating meaningful decisions. Keep one scenario for this slice.

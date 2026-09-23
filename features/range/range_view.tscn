@@ -78,7 +78,7 @@ offset_right = 360.0
 offset_bottom = 355.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
-text = "SHOT 1 / 5     SCORE 0 / 40"
+text = "SHOT 1 / 5     SCORE 0 / 55"
 
 [node name="Description" type="Label" parent="UI"]
 offset_left = 64.0
@@ -87,31 +87,23 @@ offset_right = 343.0
 offset_bottom = 430.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 18
-text = "Three moving targets.\nScore 40 in five shots."
+text = "Three moving targets.\nScore 55 in five shots."
 
-[node name="GyroButton" type="Button" parent="UI"]
+[node name="BuildButton" type="Button" parent="UI"]
 offset_left = 64.0
-offset_top = 485.0
+offset_top = 499.0
 offset_right = 349.0
-offset_bottom = 521.0
+offset_bottom = 543.0
 theme_override_font_sizes/font_size = 17
-text = "MAERA · GYRO BRACE"
+text = "CHARACTER STRATEGY"
 
-[node name="PulseButton" type="Button" parent="UI"]
-offset_left = 64.0
-offset_top = 526.0
-offset_right = 349.0
-offset_bottom = 562.0
-theme_override_font_sizes/font_size = 17
-text = "VEY · PULSE SIGHT"
-
-[node name="StarterButton" type="Button" parent="UI"]
+[node name="FocusButton" type="Button" parent="UI"]
 offset_left = 64.0
 offset_top = 444.0
 offset_right = 349.0
-offset_bottom = 480.0
+offset_bottom = 488.0
 theme_override_font_sizes/font_size = 17
-text = "● THE NATURAL · BARE RIG"
+text = "FOCUS 1 / 2 · ARM"
 
 [node name="Status" type="Label" parent="UI"]
 offset_left = 64.0
@@ -120,7 +112,7 @@ offset_right = 353.0
 offset_bottom = 600.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 15
-text = "THE NATURAL / VETERAN MARKSMAN"
+text = "CHOOSE A BUILD TO BEGIN"
 
 [node name="NextStep" type="Label" parent="UI"]
 offset_left = 64.0
@@ -129,7 +121,7 @@ offset_right = 351.0
 offset_bottom = 668.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 17
-text = "Track by hand; a light focus lock.\nHold to steer. Release at gold."
+text = "Arm Focus before a shot.\nHold to aim; release at gold."
 
 [node name="RetryButton" type="Button" parent="UI"]
 visible = false
@@ -147,7 +139,7 @@ offset_right = 1214.0
 offset_bottom = 773.0
 theme_override_colors/font_color = Color(0.51, 0.60, 0.52, 1)
 theme_override_font_sizes/font_size = 15
-text = "THE NATURAL / BARE RIG     BEST —     SAFE 6  /  STANDARD 10  /  BOLD 15"
+text = "SAFE INNER HIT → +1 FOCUS     STANDARD 10     BOLD 15"
 
 [node name="SafeLabel" type="Label" parent="UI"]
 offset_left = 460.0
@@ -178,3 +170,89 @@ theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
 theme_override_font_sizes/font_size = 17
 text = "BOLD · 15"
 horizontal_alignment = 1
+
+[node name="BuildOverlay" type="Control" parent="UI"]
+offset_right = 1280.0
+offset_bottom = 800.0
+mouse_filter = 0
+
+[node name="Shade" type="ColorRect" parent="UI/BuildOverlay"]
+offset_right = 1280.0
+offset_bottom = 800.0
+color = Color(0.035, 0.066, 0.052, 1)
+
+[node name="Panel" type="ColorRect" parent="UI/BuildOverlay"]
+offset_left = 190.0
+offset_top = 90.0
+offset_right = 1090.0
+offset_bottom = 710.0
+color = Color(0.102, 0.164, 0.129, 1)
+
+[node name="Eyebrow" type="Label" parent="UI/BuildOverlay"]
+offset_left = 220.0
+offset_top = 119.0
+offset_right = 1060.0
+offset_bottom = 145.0
+theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
+theme_override_font_sizes/font_size = 16
+text = "THE TRIAD TRIAL"
+
+[node name="Heading" type="Label" parent="UI/BuildOverlay"]
+offset_left = 220.0
+offset_top = 147.0
+offset_right = 1060.0
+offset_bottom = 196.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 34
+text = "Choose your marksman"
+
+[node name="Rules" type="Label" parent="UI/BuildOverlay"]
+offset_left = 220.0
+offset_top = 207.0
+offset_right = 1060.0
+offset_bottom = 311.0
+theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
+theme_override_font_sizes/font_size = 18
+text = "5 shots · 55 points to clear. Safe ≤6: inner hit earns 1 Focus. Standard ≤10. Bold ≤15.\nStart with 1 Focus; hold at most 2. Arm it before a shot to slow targets by half.\nA miss spends the shot. Focus is spent only when you release."
+
+[node name="NaturalCard" type="Button" parent="UI/BuildOverlay"]
+offset_left = 220.0
+offset_top = 320.0
+offset_right = 485.0
+offset_bottom = 625.0
+theme_override_font_sizes/font_size = 18
+text = "THE NATURAL / BARE RIG\n\nUnfocused center: +2.\nReward precise manual aim.\n\nBalanced steering.\nNo automatic correction.\n\nSELECT"
+
+[node name="MaeraCard" type="Button" parent="UI/BuildOverlay"]
+offset_left = 508.0
+offset_top = 320.0
+offset_right = 773.0
+offset_bottom = 625.0
+theme_override_font_sizes/font_size = 18
+text = "MAERA / GYRO BRACE\n\nSpend Focus to tether.\nPlan your high-value shot.\n\nSlow steering.\nTether is never free.\n\nSELECT"
+
+[node name="VeyCard" type="Button" parent="UI/BuildOverlay"]
+offset_left = 796.0
+offset_top = 320.0
+offset_right = 1061.0
+offset_bottom = 625.0
+theme_override_font_sizes/font_size = 18
+text = "VEY / PULSE SIGHT\n\nQuick inner hit: +3.\nStandard or Bold only.\n\nFast steering, no tether.\nRushing risks a miss.\n\nSELECT"
+
+[node name="ChooseHint" type="Label" parent="UI/BuildOverlay"]
+offset_left = 220.0
+offset_top = 651.0
+offset_right = 825.0
+offset_bottom = 685.0
+theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
+theme_override_font_sizes/font_size = 16
+text = "Pick a character to begin. You can switch between trials."
+
+[node name="BackButton" type="Button" parent="UI/BuildOverlay"]
+visible = false
+offset_left = 902.0
+offset_top = 649.0
+offset_right = 1061.0
+offset_bottom = 689.0
+theme_override_font_sizes/font_size = 16
+text = "BACK"

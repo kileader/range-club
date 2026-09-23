@@ -4,8 +4,15 @@ extends Node2D
 signal primary_pressed
 signal primary_released
 signal gear_requested(gear_id: StringName)
+signal build_screen_requested
+signal build_screen_closed
+signal focus_requested
 signal retry_requested
 signal cancel_requested
+
+const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
+const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
+const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres")
 
 const AIM_AREA: Rect2 = Rect2(390.0, 122.0, 824.0, 598.0)
 const RING_COLORS: Array[Color] = [
@@ -22,11 +29,16 @@ const RING_COLORS: Array[Color] = [
 @onready var status_label: Label = $UI/Status
 @onready var instruction_label: Label = $UI/NextStep
 @onready var footer_label: Label = $UI/Footer
-@onready var gyro_button: Button = $UI/GyroButton
-@onready var pulse_button: Button = $UI/PulseButton
-@onready var starter_button: Button = $UI/StarterButton
+@onready var focus_button: Button = $UI/FocusButton
+@onready var build_button: Button = $UI/BuildButton
 @onready var retry_button: Button = $UI/RetryButton
 @onready var target_labels: Array[Label] = [$UI/SafeLabel, $UI/StandardLabel, $UI/BoldLabel]
+@onready var build_overlay: Control = $UI/BuildOverlay
+@onready var rules_label: Label = $UI/BuildOverlay/Rules
+@onready var natural_card: Button = $UI/BuildOverlay/NaturalCard
+@onready var maera_card: Button = $UI/BuildOverlay/MaeraCard
+@onready var vey_card: Button = $UI/BuildOverlay/VeyCard
+@onready var back_button: Button = $UI/BuildOverlay/BackButton
 
 var visible_reticle: Vector2 = Vector2.ZERO
 var visible_reticle_valid: bool = false
@@ -39,31 +51,47 @@ var _last_score: int = -1
 var _best_score: int = -1
 var _round_size: int = 5
 var _goal_score: int = 40
-var _gear_unlocked: bool = false
 var _equipped: BuildDef
 var _last_target: String = ""
+var _last_bonus: String = ""
+var _last_focus_gain: int = 0
 var _range_time: float = 0.0
+var _focus: int = TrialRules.START_FOCUS
+var _focus_armed: bool = false
+var _shot_focused: bool = false
+var _selection_open: bool = true
+var _build_selected: bool = false
 var _target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
 var _drawn_phase: ShotModel.Phase = ShotModel.Phase.IDLE
 
 
 func _ready() -> void:
-	gyro_button.pressed.connect(func() -> void: gear_requested.emit(&"gyro_brace"))
-	pulse_button.pressed.connect(func() -> void: gear_requested.emit(&"pulse_sight"))
-	starter_button.pressed.connect(func() -> void: gear_requested.emit(&"bare_rig"))
+	focus_button.pressed.connect(func() -> void: focus_requested.emit())
+	build_button.pressed.connect(func() -> void: build_screen_requested.emit())
+	natural_card.pressed.connect(func() -> void: gear_requested.emit(&"bare_rig"))
+	maera_card.pressed.connect(func() -> void: gear_requested.emit(&"gyro_brace"))
+	vey_card.pressed.connect(func() -> void: gear_requested.emit(&"pulse_sight"))
+	back_button.pressed.connect(func() -> void: build_screen_closed.emit())
 	retry_button.pressed.connect(func() -> void: retry_requested.emit())
+	natural_card.text = _card_text(BARE_RIG)
+	maera_card.text = _card_text(GYRO_BRACE)
+	vey_card.text = _card_text(PULSE_SIGHT)
+	rules_label.text = "5 shots · %d to clear. Five Standard centers only score 50.\nSafe ≤6 / Standard ≤10 / Bold ≤15. Safe inner hit earns 1 Focus.\nStart with %d Focus (max %d). Arm before a shot to halve target speed.\nA miss spends the shot; only a ready release spends Focus." % [TrialRules.GOAL_SCORE, TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed and AIM_AREA.has_point(event.position):
+		if not _selection_open and event.pressed and AIM_AREA.has_point(event.position):
 			primary_pressed.emit()
 			get_viewport().set_input_as_handled()
-		elif not event.pressed:
+		elif not _selection_open and not event.pressed:
 			primary_released.emit()
 			get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		cancel_requested.emit()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_F and not _selection_open:
+		focus_requested.emit()
 		get_viewport().set_input_as_handled()
 
 
@@ -85,10 +113,16 @@ func present(
 	best_score: int,
 	round_size: int,
 	goal_score: int,
-	gear_unlocked: bool,
 	equipped: BuildDef,
 	last_target: String,
-	range_time: float
+	last_bonus: String,
+	last_focus_gain: int,
+	range_time: float,
+	focus: int,
+	focus_armed: bool,
+	shot_focused: bool,
+	selection_open: bool,
+	build_selected: bool
 ) -> void:
 	_shot = shot
 	_impacts = impacts
@@ -97,10 +131,16 @@ func present(
 	_best_score = best_score
 	_round_size = round_size
 	_goal_score = goal_score
-	_gear_unlocked = gear_unlocked
 	_equipped = equipped
 	_last_target = last_target
+	_last_bonus = last_bonus
+	_last_focus_gain = last_focus_gain
 	_range_time = range_time
+	_focus = focus
+	_focus_armed = focus_armed
+	_shot_focused = shot_focused
+	_selection_open = selection_open
+	_build_selected = build_selected
 	_target_centers = TargetLayout.centers_at(_range_time)
 	for target: int in range(target_labels.size()):
 		var label: Label = target_labels[target]
@@ -113,38 +153,63 @@ func present(
 
 func _update_labels() -> void:
 	var completed: bool = _impacts.size() >= _round_size
-	var arrow_number: int = mini(_impacts.size() + 1, _round_size)
+	var shot_number: int = mini(_impacts.size() + 1, _round_size)
 	title_label.text = "Choose your\nmark."
 	description_label.text = "Three moving targets.\nScore %d in five shots." % _goal_score
-	score_label.text = "SHOT %d / %d     SCORE %d / %d" % [arrow_number, _round_size, _total_score, _goal_score]
-	gyro_button.text = ("● " if _equipped.id == &"gyro_brace" else "") + "MAERA · GYRO BRACE"
-	pulse_button.text = ("● " if _equipped.id == &"pulse_sight" else "") + "VEY · PULSE SIGHT"
-	starter_button.text = ("● " if _equipped.id == &"bare_rig" else "") + "THE NATURAL · BARE RIG"
-	gyro_button.disabled = not _gear_unlocked or _shot.phase != ShotModel.Phase.IDLE or (not _impacts.is_empty() and not completed)
-	pulse_button.disabled = gyro_button.disabled
-	starter_button.disabled = gyro_button.disabled
+	score_label.text = "SHOT %d / %d     SCORE %d / %d" % [shot_number, _round_size, _total_score, _goal_score]
+	build_overlay.visible = _selection_open
+	back_button.visible = _build_selected
+	build_button.disabled = not _build_selected or _shot.phase != ShotModel.Phase.IDLE or (not _impacts.is_empty() and not completed)
+	focus_button.disabled = _selection_open or _focus <= 0 or _shot.phase != ShotModel.Phase.IDLE or completed
+	if _shot_focused:
+		focus_button.text = "FOCUS ACTIVE · TARGETS SLOWED"
+	elif _focus_armed:
+		focus_button.text = "● FOCUS ARMED · %d / %d" % [_focus, TrialRules.MAX_FOCUS]
+	else:
+		focus_button.text = "FOCUS %d / %d · ARM (F)" % [_focus, TrialRules.MAX_FOCUS]
 	retry_button.visible = completed
 	var best_text: String = "—" if _best_score < 0 else str(_best_score)
-	footer_label.text = "%s / %s     BEST %s     SAFE 6  /  STANDARD 10  /  BOLD 15" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text]
+	footer_label.text = "%s / %s     BEST %s     FOCUS %d / %d" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text, _focus, TrialRules.MAX_FOCUS]
 	if completed:
 		status_label.text = "TRIAL CLEARED" if _total_score >= _goal_score else "TRIAL FAILED"
-		instruction_label.text = "Choose a marksman and rig.\nEach handles the aim differently."
+		instruction_label.text = "Retry this character or open\nCharacter Strategy to switch."
 	elif _shot.phase == ShotModel.Phase.DRAW:
-		status_label.text = "DRAWING — WAIT FOR READY"
-		instruction_label.text = "Hold left mouse to track.\nEarly release cancels."
+		status_label.text = "FOCUSED DRAW — TARGETS SLOWED" if _shot_focused else "DRAWING — WAIT FOR READY"
+		instruction_label.text = "Hold left mouse to track.\nEarly release keeps Focus."
 	elif _shot.phase == ShotModel.Phase.READY:
-		status_label.text = "READY — RELEASE ON THE MARK"
-		instruction_label.text = "Track the moving target.\nCyan ring means focus lock."
+		if _shot.target_locked:
+			status_label.text = "TETHER LOCKED — RELEASE"
+		elif _equipped.id == &"pulse_sight":
+			var quick_remaining: float = maxf(TrialRules.VEY_TEMPO_SECONDS - _shot.elapsed, 0.0)
+			status_label.text = "QUICK +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else "QUICK WINDOW CLOSED"
+		else:
+			status_label.text = "READY — RELEASE ON THE MARK"
+		instruction_label.text = "Inner 8–10 +3 for quick Vey.\nGold reticle is the hit." if _equipped.id == &"pulse_sight" else "Track the moving target.\nGold reticle is the hit."
 	else:
 		status_label.text = "%s / %s" % [_equipped.operator_name.to_upper(), _equipped.operator_role]
 		if _last_score == 0:
-			status_label.text = "MISS — TRY THE NEXT ARROW"
+			status_label.text = "MISS — TRY THE NEXT SHOT"
 		elif _last_score > 0:
-			status_label.text = "%s +%d — NEXT SHOT" % [_last_target, _last_score]
-		instruction_label.text = "%s\nHold to steer. Release at gold." % _equipped.description
+			status_label.text = "%s +%d" % [_last_target, _last_score]
+			if _last_focus_gain > 0:
+				status_label.text += " · FOCUS +1"
+			elif not _last_bonus.is_empty():
+				status_label.text += " · " + _last_bonus
+		if _focus > 0:
+			instruction_label.text = "Press F to arm Focus.\nHold to aim; release at gold."
+		else:
+			instruction_label.text = "Safe inner hit refills Focus.\nHold to aim; release at gold."
+
+
+func _card_text(build: BuildDef) -> String:
+	return "%s / %s\n\n%s\n\n%s\n\nSELECT CHARACTER" % [build.operator_name.to_upper(), build.display_name.to_upper(), build.strategy, build.tradeoff]
 
 
 func _draw() -> void:
+	if _selection_open:
+		visible_reticle_valid = false
+		_drawn_phase = ShotModel.Phase.IDLE
+		return
 	_draw_range()
 	for impact: ImpactRecord in _impacts:
 		_draw_impact_mark(impact.position_at(visible_target_centers))
