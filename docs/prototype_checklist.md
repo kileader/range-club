@@ -88,6 +88,9 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Character and Focus carry; score and shots reset between trials. A new
       run clears temporary modules and reshuffles scenarios.
 - [x] Assertions cover offers, stacking, a full win, failure, bust, and reset.
+- [x] Replace one score-only module with a Stabilizing Sight that extends the
+      smallest-circle release window without changing its best precision.
+- [x] Add an in-trial rig menu showing installed modules and their effects.
 - [x] Inspect the opening and range in a local browser, and render the reward
       and result screens at 1280 × 800. Export and launch the Windows build.
 - [ ] Kevin playtests whether the module choice changes plans rather than

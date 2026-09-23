@@ -60,9 +60,6 @@ static func resolve_hit(
 		if upgrades.has(&"anchor_coil") and hit.target_index == 0 and hit.ring >= SAFE_FOCUS_RING:
 			points += 2
 			bonus = _append_bonus(bonus, "ANCHOR +2")
-		if upgrades.has(&"prism_lens") and hit.target_index == 1 and hit.ring >= 4 and hit.ring <= 7:
-			points += 3
-			bonus = _append_bonus(bonus, "PRISM +3")
 		if upgrades.has(&"edge_fuse") and hit.target_index == 2 and hit.ring <= 5:
 			points += 3
 			bonus = _append_bonus(bonus, "EDGE +3")

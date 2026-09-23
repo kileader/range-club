@@ -97,3 +97,34 @@ offset_right = 641.0
 offset_bottom = 420.0
 theme_override_font_sizes/font_size = 20
 text = "NEW RUN"
+
+[node name="LoadoutOne" type="Label" parent="Panel"]
+visible = false
+offset_left = 42.0
+offset_top = 326.0
+offset_right = 466.0
+offset_bottom = 510.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 21
+autowrap_mode = 3
+text = "STABILIZING SIGHT\n\nSmallest landing circle holds for 0.7s before widening."
+
+[node name="LoadoutTwo" type="Label" parent="Panel"]
+visible = false
+offset_left = 534.0
+offset_top = 326.0
+offset_right = 958.0
+offset_bottom = 510.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 21
+autowrap_mode = 3
+text = "RECIRCULATOR\n\nFocused Standard inner hits refund Focus."
+
+[node name="CloseButton" type="Button" parent="Panel"]
+visible = false
+offset_left = 359.0
+offset_top = 555.0
+offset_right = 641.0
+offset_bottom = 610.0
+theme_override_font_sizes/font_size = 20
+text = "RETURN TO RANGE"

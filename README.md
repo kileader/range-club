@@ -7,6 +7,7 @@ cap busts immediately. Finishing five shots below the window ends the run.
 After each of the first two clears, choose one of three random rig modules.
 The next trial's special rule is shown before that choice. Character, modules,
 and remaining Focus carry forward; score and shots reset.
+Use **View Rig** during a trial to review installed modules and their effects.
 
 ## Stack
 
@@ -27,7 +28,8 @@ The targets move on predictable paths. Aim with the mouse before holding left
 mouse; the shot starts at that position. The gold landing circle shrinks toward
 the dashed cyan ring, which previews its smallest possible size at 1.5 seconds
 for Natural and Maera, or 1.0 second for Vey.
-It then widens and pulses as a penalty for holding longer. Release after
+It then widens and pulses as a penalty for holding longer, unless a Stabilizing
+Sight extends the smallest-circle window. Release after
 **READY**; the shot lands at a random point inside the last circle actually
 shown. A miss still spends a shot. Releasing early or pressing **Esc** cancels
 without spending one. There is no passive aim sway.
@@ -60,8 +62,9 @@ shot. A new run resets the character, modules, Focus, and encounter order.
 
 The later trials draw two different rules from Safe Circuit (Safe inner hits
 score +3), Standard Relay (Standard inner hits score +2), and Bold Surge (Bold
-hits score +3). The five module types support Safe scoring, Standard outer
-rings, Bold outer rings, Focus refunds on Standard, or a final Safe shot. Offers
+hits score +3). The five module types support Safe scoring, a Stabilizing Sight
+that holds the minimum landing circle for 0.7 seconds before it widens, Bold
+outer rings, Focus refunds on Standard, or a final Safe shot. Offers
 exclude modules already installed. There is no permanent progression or save.
 
 The gold circle is the full possible landing area. The footer records your
@@ -95,7 +98,7 @@ by Git; put a `.gdignore` file inside it if you keep tools there yourself.
 
 The version must start with `4.7.2.stable`. Check the output for errors as well as
 the exit code. The assertions cover ring boundaries, moving targets,
-dispersion, Focus, three-trial progression, module offers, win/failure/bust
+dispersion, the Stabilizing Sight, Focus, three-trial progression, module offers, win/failure/bust
 paths, and new-run reset. They cannot judge feel.
 Current visual and export checks are recorded in
 [the prototype checklist](docs/prototype_checklist.md).

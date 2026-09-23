@@ -3,7 +3,7 @@ extends RefCounted
 
 const TRIAL_COUNT: int = 3
 const SCENARIO_POOL: Array[StringName] = [&"safe_circuit", &"standard_relay", &"bold_surge"]
-const UPGRADE_POOL: Array[StringName] = [&"anchor_coil", &"prism_lens", &"edge_fuse", &"recirculator", &"last_light"]
+const UPGRADE_POOL: Array[StringName] = [&"anchor_coil", &"stabilizing_sight", &"edge_fuse", &"recirculator", &"last_light"]
 
 
 static func goal_for_stage(stage: int) -> int:
@@ -52,7 +52,7 @@ static func scenario_rule(id: StringName) -> String:
 static func upgrade_title(id: StringName) -> String:
 	match id:
 		&"anchor_coil": return "ANCHOR COIL"
-		&"prism_lens": return "PRISM LENS"
+		&"stabilizing_sight": return "STABILIZING SIGHT"
 		&"edge_fuse": return "EDGE FUSE"
 		&"recirculator": return "RECIRCULATOR"
 		&"last_light": return "LAST LIGHT"
@@ -62,7 +62,7 @@ static func upgrade_title(id: StringName) -> String:
 static func upgrade_rule(id: StringName) -> String:
 	match id:
 		&"anchor_coil": return "Safe inner hits\nscore +2."
-		&"prism_lens": return "Standard rings 4–7\nscore +3."
+		&"stabilizing_sight": return "Smallest landing circle holds\nfor 0.7s before widening."
 		&"edge_fuse": return "Bold outer rings 1–5\nscore +3."
 		&"recirculator": return "Focused Standard inner\nhits refund Focus."
 		&"last_light": return "Safe hits score +4\non shot five."

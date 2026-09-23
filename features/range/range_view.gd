@@ -5,6 +5,7 @@ signal primary_pressed(aim_position: Vector2)
 signal primary_released
 signal gear_requested(gear_id: StringName)
 signal build_screen_requested
+signal rig_details_requested
 signal build_screen_closed
 signal focus_requested
 signal cancel_requested
@@ -42,6 +43,7 @@ const RING_COLORS: Array[Color] = [
 @onready var footer_label: Label = $UI/Footer
 @onready var focus_button: Button = $UI/FocusButton
 @onready var build_button: Button = $UI/BuildButton
+@onready var rig_details_button: Button = $UI/RigDetailsButton
 @onready var target_labels: Array[Label] = [$UI/SafeLabel, $UI/StandardLabel, $UI/BoldLabel]
 @onready var build_overlay: Control = $UI/BuildOverlay
 @onready var heading_label: Label = $UI/BuildOverlay/Heading
@@ -81,6 +83,7 @@ var _stage: int = 0
 var _scenario_id: StringName = &"triad"
 var _upgrades: Array[StringName] = []
 var _allow_character_change: bool = false
+var _allow_rig_details: bool = false
 var _equipped: BuildDef
 var _last_target: String = ""
 var _last_bonus: String = ""
@@ -104,6 +107,7 @@ func _ready() -> void:
 	result_delay.timeout.connect(_play_result_sound)
 	focus_button.pressed.connect(func() -> void: focus_requested.emit())
 	build_button.pressed.connect(func() -> void: build_screen_requested.emit())
+	rig_details_button.pressed.connect(func() -> void: rig_details_requested.emit())
 	natural_card.pressed.connect(func() -> void: gear_requested.emit(&"bare_rig"))
 	maera_card.pressed.connect(func() -> void: gear_requested.emit(&"gyro_brace"))
 	vey_card.pressed.connect(func() -> void: gear_requested.emit(&"pulse_sight"))
@@ -211,7 +215,8 @@ func present(
 	stage: int,
 	scenario_id: StringName,
 	upgrades: Array[StringName],
-	allow_character_change: bool
+	allow_character_change: bool,
+	allow_rig_details: bool
 ) -> void:
 	_shot = shot
 	_impacts = impacts
@@ -225,6 +230,7 @@ func present(
 	_scenario_id = scenario_id
 	_upgrades = upgrades
 	_allow_character_change = allow_character_change
+	_allow_rig_details = allow_rig_details
 	_equipped = equipped
 	_last_target = last_target
 	_last_bonus = last_bonus
@@ -260,6 +266,8 @@ func _update_labels() -> void:
 	_update_selection_page()
 	build_button.visible = _allow_character_change
 	build_button.disabled = not _allow_character_change or _shot.phase != ShotModel.Phase.IDLE
+	rig_details_button.visible = _allow_rig_details
+	rig_details_button.disabled = _shot.phase != ShotModel.Phase.IDLE
 	focus_button.disabled = _selection_open or _focus <= 0 or _shot.phase != ShotModel.Phase.IDLE or completed
 	if _shot_focused:
 		focus_button.text = "FOCUS ACTIVE · CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS ACTIVE · SLOW + TIGHT"
@@ -324,6 +332,8 @@ func _upgrade_names() -> String:
 func _spread_status() -> String:
 	if _shot.elapsed < _shot.precision_peak_seconds - 0.12:
 		return "READY — CIRCLE SHRINKING"
+	if _shot.elapsed <= _shot.precision_peak_seconds + _shot.minimum_hold_seconds:
+		return "STABLE — RELEASE" if _shot.minimum_hold_seconds > 0.0 else "TIGHTEST — RELEASE"
 	if _shot.elapsed <= _shot.precision_peak_seconds + 0.12:
 		return "TIGHTEST — RELEASE"
 	return "CIRCLE WIDENING"

@@ -3,6 +3,7 @@ extends CanvasLayer
 
 signal upgrade_selected(upgrade_id: StringName)
 signal new_run_requested
+signal loadout_closed
 
 @onready var heading: Label = $Panel/Heading
 @onready var summary: Label = $Panel/Summary
@@ -10,6 +11,8 @@ signal new_run_requested
 @onready var installed: Label = $Panel/Installed
 @onready var offer_buttons: Array[Button] = [$Panel/OfferOne, $Panel/OfferTwo, $Panel/OfferThree]
 @onready var new_run_button: Button = $Panel/NewRunButton
+@onready var close_button: Button = $Panel/CloseButton
+@onready var loadout_cards: Array[Label] = [$Panel/LoadoutOne, $Panel/LoadoutTwo]
 
 var _offers: Array[StringName] = []
 
@@ -19,6 +22,7 @@ func _ready() -> void:
 	offer_buttons[1].pressed.connect(func() -> void: _choose(1))
 	offer_buttons[2].pressed.connect(func() -> void: _choose(2))
 	new_run_button.pressed.connect(func() -> void: new_run_requested.emit())
+	close_button.pressed.connect(func() -> void: loadout_closed.emit())
 	visible = false
 
 
@@ -34,6 +38,8 @@ func show_reward(completed_stage: int, score: int, next_id: StringName, offers: 
 		if button.visible:
 			button.text = "%s\n\n%s\n\nINSTALL" % [RunRules.upgrade_title(_offers[index]), RunRules.upgrade_rule(_offers[index])]
 	new_run_button.visible = false
+	close_button.visible = false
+	_set_loadout_cards_visible(false)
 	visible = true
 
 
@@ -46,11 +52,39 @@ func show_result(won: bool, stage: int, score: int, upgrades: Array[StringName],
 	for button: Button in offer_buttons:
 		button.visible = false
 	new_run_button.visible = true
+	close_button.visible = false
+	_set_loadout_cards_visible(false)
+	visible = true
+
+
+func show_loadout(character: BuildDef, stage: int, scenario_id: StringName, upgrades: Array[StringName], focus: int) -> void:
+	_offers.clear()
+	heading.text = "CURRENT RIG"
+	summary.text = "%s / %s · Focus %d / %d" % [character.operator_name, character.display_name, focus, TrialRules.MAX_FOCUS]
+	next_trial.text = "TRIAL %d · %s · %d–%d\n%s" % [stage + 1, RunRules.scenario_title(scenario_id), RunRules.goal_for_stage(stage), RunRules.cap_for_stage(stage), RunRules.scenario_rule(scenario_id)]
+	installed.text = "INSTALLED MODULES · %d" % upgrades.size()
+	for button: Button in offer_buttons:
+		button.visible = false
+	new_run_button.visible = false
+	for index: int in range(loadout_cards.size()):
+		var card: Label = loadout_cards[index]
+		card.visible = index < upgrades.size()
+		if card.visible:
+			card.text = "%s\n\n%s" % [RunRules.upgrade_title(upgrades[index]), RunRules.upgrade_rule(upgrades[index]).replace("\n", " ")]
+	if upgrades.is_empty():
+		loadout_cards[0].visible = true
+		loadout_cards[0].text = "NO MODULES YET\n\nClear this trial to choose one."
+	close_button.visible = true
 	visible = true
 
 
 func hide_screen() -> void:
 	visible = false
+
+
+func _set_loadout_cards_visible(show_cards: bool) -> void:
+	for card: Label in loadout_cards:
+		card.visible = show_cards
 
 
 func _choose(index: int) -> void:

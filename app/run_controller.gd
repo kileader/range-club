@@ -1,7 +1,7 @@
 class_name RunController
 extends Node
 
-enum RunPhase { SELECT, SHOOT, REWARD, RESULT }
+enum RunPhase { SELECT, SHOOT, REWARD, RESULT, LOADOUT }
 
 const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
 const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
@@ -41,11 +41,13 @@ func _ready() -> void:
 	range_view.primary_released.connect(_on_primary_released)
 	range_view.gear_requested.connect(_on_gear_requested)
 	range_view.build_screen_requested.connect(_on_build_screen_requested)
+	range_view.rig_details_requested.connect(_on_rig_details_requested)
 	range_view.build_screen_closed.connect(_on_build_screen_closed)
 	range_view.focus_requested.connect(_on_focus_requested)
 	range_view.cancel_requested.connect(_on_cancel_requested)
 	run_view.upgrade_selected.connect(_on_upgrade_selected)
 	run_view.new_run_requested.connect(_start_new_run)
+	run_view.loadout_closed.connect(_on_loadout_closed)
 	_start_new_run()
 
 
@@ -62,7 +64,7 @@ func _on_primary_pressed(aim_position: Vector2) -> void:
 		return
 	if shot.phase == ShotModel.Phase.IDLE:
 		shot_focused = focus_armed and focus > 0
-		shot.configure(equipped.steering_scale, equipped.focus_spread_scale if shot_focused else 1.0, equipped.precision_peak_seconds)
+		shot.configure(equipped.steering_scale, equipped.focus_spread_scale if shot_focused else 1.0, equipped.precision_peak_seconds, ShotModel.STABILIZING_SIGHT_HOLD_SECONDS if upgrades.has(&"stabilizing_sight") else 0.0)
 		shot.start_hold(aim_position)
 	_refresh_view()
 
@@ -155,6 +157,22 @@ func _on_build_screen_closed() -> void:
 		_refresh_view()
 
 
+func _on_rig_details_requested() -> void:
+	if phase != RunPhase.SHOOT or shot.phase != ShotModel.Phase.IDLE or _trial_over():
+		return
+	phase = RunPhase.LOADOUT
+	run_view.show_loadout(equipped, stage, scenarios[stage], upgrades, focus)
+	_refresh_view()
+
+
+func _on_loadout_closed() -> void:
+	if phase != RunPhase.LOADOUT:
+		return
+	phase = RunPhase.SHOOT
+	run_view.hide_screen()
+	_refresh_view()
+
+
 func _on_focus_requested() -> void:
 	if phase == RunPhase.SHOOT and focus > 0 and shot.phase == ShotModel.Phase.IDLE and not _trial_over():
 		focus_armed = not focus_armed
@@ -179,6 +197,9 @@ func _on_gear_requested(gear_id: StringName) -> void:
 
 
 func _on_cancel_requested() -> void:
+	if phase == RunPhase.LOADOUT:
+		_on_loadout_closed()
+		return
 	if phase == RunPhase.SELECT:
 		_on_build_screen_closed()
 		return
@@ -238,5 +259,6 @@ func _refresh_view() -> void:
 		TrialRules.SHOTS_PER_TRIAL, _goal(), _cap(), equipped, last_target,
 		last_bonus, last_focus_gain, range_time, focus, focus_armed,
 		shot_focused, selection_open, build_selected, stage, scenarios[stage],
-		upgrades, phase == RunPhase.SHOOT and stage == 0 and impacts.is_empty()
+		upgrades, phase == RunPhase.SHOOT and stage == 0 and impacts.is_empty(),
+		phase == RunPhase.SHOOT and build_selected and not _trial_over()
 	)
