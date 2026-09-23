@@ -1,0 +1,89 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/range/range_view.gd" id="1_view"]
+
+[node name="RangeView" type="Node2D"]
+script = ExtResource("1_view")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ClubLabel" type="Label" parent="UI"]
+offset_left = 64.0
+offset_top = 40.0
+offset_right = 350.0
+offset_bottom = 82.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 32
+text = "RANGE CLUB"
+
+[node name="StageLabel" type="Label" parent="UI"]
+offset_left = 900.0
+offset_top = 51.0
+offset_right = 1214.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.66, 0.73, 0.64, 1)
+theme_override_font_sizes/font_size = 16
+text = "01 / THE FIRST TARGET"
+horizontal_alignment = 2
+
+[node name="Divider" type="ColorRect" parent="UI"]
+offset_left = 64.0
+offset_top = 99.0
+offset_right = 1214.0
+offset_bottom = 100.0
+mouse_filter = 2
+color = Color(0.19, 0.26, 0.21, 1)
+
+[node name="RangeLabel" type="Label" parent="UI"]
+offset_left = 64.0
+offset_top = 185.0
+offset_right = 355.0
+offset_bottom = 211.0
+theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
+theme_override_font_sizes/font_size = 16
+text = "PRACTICE RANGE"
+
+[node name="Title" type="Label" parent="UI"]
+offset_left = 64.0
+offset_top = 226.0
+offset_right = 363.0
+offset_bottom = 341.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 42
+text = "Every arrow\nstarts here."
+
+[node name="Description" type="Label" parent="UI"]
+offset_left = 64.0
+offset_top = 375.0
+offset_right = 343.0
+offset_bottom = 471.0
+theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
+theme_override_font_sizes/font_size = 19
+text = "A quiet lane. Ten rings.\nThe beginning of a club."
+
+[node name="Status" type="Label" parent="UI"]
+offset_left = 64.0
+offset_top = 535.0
+offset_right = 353.0
+offset_bottom = 561.0
+theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
+theme_override_font_sizes/font_size = 16
+text = "FOUNDATION PROTOTYPE"
+
+[node name="NextStep" type="Label" parent="UI"]
+offset_left = 64.0
+offset_top = 574.0
+offset_right = 351.0
+offset_bottom = 646.0
+theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
+theme_override_font_sizes/font_size = 17
+text = "Shooting comes next:\naim, draw, and release."
+
+[node name="Footer" type="Label" parent="UI"]
+offset_left = 64.0
+offset_top = 748.0
+offset_right = 1214.0
+offset_bottom = 773.0
+theme_override_colors/font_color = Color(0.51, 0.60, 0.52, 1)
+theme_override_font_sizes/font_size = 15
+text = "RANGE 01                                      SHOOTING SANDBOX                                      WORK IN PROGRESS"

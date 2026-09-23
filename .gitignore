@@ -1,0 +1,13 @@
+# Godot-generated cache and local editor state.
+.godot/
+/android/
+export_credentials.cfg
+
+# Local engine downloads, validation output, and exported builds.
+.tools/
+builds/
+
+# Personal editor settings.
+.vscode/
+.idea/
+*.tmp
