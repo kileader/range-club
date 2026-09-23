@@ -23,7 +23,7 @@ offset_right = 1214.0
 offset_bottom = 80.0
 theme_override_colors/font_color = Color(0.66, 0.73, 0.64, 1)
 theme_override_font_sizes/font_size = 16
-text = "01 / THE FIRST TARGET"
+text = "01 / TRIAD TRIAL"
 horizontal_alignment = 2
 
 [node name="Divider" type="ColorRect" parent="UI"]
@@ -41,7 +41,7 @@ offset_right = 355.0
 offset_bottom = 211.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
-text = "PRACTICE RANGE"
+text = "ARCANE TEST RANGE"
 
 [node name="ArchiveMark" type="Label" parent="UI"]
 offset_left = 413.0
@@ -69,7 +69,7 @@ offset_right = 363.0
 offset_bottom = 318.0
 theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
 theme_override_font_sizes/font_size = 42
-text = "Find your\nrelease."
+text = "Choose your\nmark."
 
 [node name="ScoreLine" type="Label" parent="UI"]
 offset_left = 64.0
@@ -78,7 +78,7 @@ offset_right = 360.0
 offset_bottom = 355.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
-text = "ARROW 1 / 5     SCORE 0 / 50"
+text = "SHOT 1 / 5     SCORE 0 / 40"
 
 [node name="Description" type="Label" parent="UI"]
 offset_left = 64.0
@@ -87,41 +87,49 @@ offset_right = 343.0
 offset_bottom = 430.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 18
-text = "One target. Two shot styles.\nTry five arrows with each."
+text = "Three targets. Five shots.\nScore 40 to clear the trial."
 
 [node name="HoldButton" type="Button" parent="UI"]
 offset_left = 64.0
-offset_top = 449.0
+offset_top = 485.0
 offset_right = 349.0
-offset_bottom = 490.0
+offset_bottom = 521.0
 theme_override_font_sizes/font_size = 17
-text = "● HOLD & SWAY"
+text = "MAERA · GYRO BRACE"
 
 [node name="TimingButton" type="Button" parent="UI"]
 offset_left = 64.0
-offset_top = 499.0
+offset_top = 526.0
 offset_right = 349.0
-offset_bottom = 540.0
+offset_bottom = 562.0
 theme_override_font_sizes/font_size = 17
-text = "3-PRESS TIMING"
+text = "VEY · PULSE SIGHT"
+
+[node name="StarterButton" type="Button" parent="UI"]
+offset_left = 64.0
+offset_top = 444.0
+offset_right = 349.0
+offset_bottom = 480.0
+theme_override_font_sizes/font_size = 17
+text = "● THE NATURAL · BARE RIG"
 
 [node name="Status" type="Label" parent="UI"]
 offset_left = 64.0
-offset_top = 560.0
+offset_top = 576.0
 offset_right = 353.0
-offset_bottom = 584.0
+offset_bottom = 600.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 15
-text = "SIMPLE KIT. STEADY HAND."
+text = "THE NATURAL / VETERAN MARKSMAN"
 
 [node name="NextStep" type="Label" parent="UI"]
 offset_left = 64.0
-offset_top = 598.0
+offset_top = 610.0
 offset_right = 351.0
-offset_bottom = 658.0
+offset_bottom = 668.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 17
-text = "Hold left mouse to draw.\nRelease at the gold reticle."
+text = "No assist. Trust your release.\nHold to steer. Release at gold."
 
 [node name="RetryButton" type="Button" parent="UI"]
 visible = false
@@ -130,7 +138,7 @@ offset_top = 677.0
 offset_right = 349.0
 offset_bottom = 721.0
 theme_override_font_sizes/font_size = 17
-text = "RETRY FIVE ARROWS"
+text = "RETRY WITH CURRENT RIG"
 
 [node name="Footer" type="Label" parent="UI"]
 offset_left = 64.0
@@ -139,4 +147,34 @@ offset_right = 1214.0
 offset_bottom = 773.0
 theme_override_colors/font_color = Color(0.51, 0.60, 0.52, 1)
 theme_override_font_sizes/font_size = 15
-text = "BEST FIVE   HOLD — / 50     TIMING — / 50                           RANGE 01"
+text = "THE NATURAL / BARE RIG     BEST —     SAFE 6  /  STANDARD 10  /  BOLD 15"
+
+[node name="SafeLabel" type="Label" parent="UI"]
+offset_left = 460.0
+offset_top = 529.0
+offset_right = 600.0
+offset_bottom = 554.0
+theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
+theme_override_font_sizes/font_size = 17
+text = "SAFE · 6"
+horizontal_alignment = 1
+
+[node name="StandardLabel" type="Label" parent="UI"]
+offset_left = 730.0
+offset_top = 495.0
+offset_right = 910.0
+offset_bottom = 520.0
+theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
+theme_override_font_sizes/font_size = 17
+text = "STANDARD · 10"
+horizontal_alignment = 1
+
+[node name="BoldLabel" type="Label" parent="UI"]
+offset_left = 1015.0
+offset_top = 456.0
+offset_right = 1145.0
+offset_bottom = 480.0
+theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
+theme_override_font_sizes/font_size = 17
+text = "BOLD · 15"
+horizontal_alignment = 1

@@ -41,7 +41,21 @@ Its draw is slower, release sweep is slower and narrower, and draw error moves
 the impact less vertically. Compare again before changing the hold mode. These
 values are playtest starting points, not balance claims.
 
+## Now — fantasy-tech target strategy
+
+Definition of Done: five-shot play offers a target choice, the starter rig is
+challenging, and the player can compare two upgrades against a bare rig.
+
+- [x] Three target sizes and score ceilings, with a goal above five safe centers.
+- [x] Fixed rest point, harder sway, and gear tradeoffs for steadiness or speed.
+- [x] Three character/build presets; bare rig remains selectable and choices
+      are locked during each trial.
+- [x] Rule assertions for scoring, unlock, selection, in-round lock, and retry.
+- [ ] Kevin plays the range and reports whether target choice feels strategic.
+- [x] Inspect final UI at 1280 × 800 and 960 × 720, including completed and
+      Maera-selected states; verify mouse input and launch Windows export.
+
 ## Later
 
-Two contrasting builds after the mechanic decision; then the tiny three-round
-run. Do not add content just to disguise a weak shooting loop.
+Tune from playtest feedback, then consider a tiny three-round run. Do not add
+progression just to disguise a weak shooting loop.

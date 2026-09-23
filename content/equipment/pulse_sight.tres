@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuildDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/build_def.gd" id="1_equipment"]
+
+[resource]
+script = ExtResource("1_equipment")
+id = &"pulse_sight"
+operator_name = "Vey"
+operator_role = "ARC SCOUT"
+display_name = "Pulse Sight"
+description = "Aether sight snaps; drift grows."
+sway_scale = 1.15
+steering_scale = 1.6

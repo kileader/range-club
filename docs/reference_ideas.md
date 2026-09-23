@@ -30,14 +30,15 @@ belong to a later playable slice.
 
 ## Yusuf Dikeç — character and build philosophy
 
-- **In the range now:** `SIMPLE KIT. STEADY HAND.` is the first hint. It should
-  invite a future empty-accessory build without implying that equipment is
-  useless.
-- **First build sandbox:** make the empty accessory slot a valid choice. Pair it
-  with the proposed Stillness technique: a longer, steadier settling window
-  after readiness, in exchange for slower early handling or a shorter peak
-  window. Tune this against accessory builds under the same seed and five-arrow
-  conditions. Do not give it a universal accuracy bonus.
+- **In the range now:** the original veteran marksman **The Natural** uses the
+  Bare Rig in the first trial and remains selectable afterward. It has no hidden
+  bonus. Maera the rune smith uses a steadier brace; Vey the arc scout uses a
+  faster sight. These character/build presets make the handling tradeoff part
+  of each marksman's identity.
+- **Later build sandbox:** consider a Stillness technique with a longer,
+  steadier settling window and a handling cost. Tune it against accessory
+  builds under the same five-shot conditions; do not give it a universal
+  accuracy bonus.
 - **Later character:** an original veteran club member nicknamed **The Natural**,
   with relaxed posture and sparse kit. They teach that practice and a clear
   release can matter more than adding another device. Their portrait, name,

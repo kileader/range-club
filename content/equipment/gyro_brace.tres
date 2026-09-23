@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuildDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/build_def.gd" id="1_equipment"]
+
+[resource]
+script = ExtResource("1_equipment")
+id = &"gyro_brace"
+operator_name = "Maera"
+operator_role = "RUNE SMITH"
+display_name = "Gyro Brace"
+description = "Rune gyros steady; steering slows."
+sway_scale = 0.55
+steering_scale = 0.7

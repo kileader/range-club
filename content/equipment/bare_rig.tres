@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="BuildDef" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/definitions/build_def.gd" id="1_equipment"]
+
+[resource]
+script = ExtResource("1_equipment")
+id = &"bare_rig"
+operator_name = "The Natural"
+operator_role = "VETERAN MARKSMAN"
+display_name = "Bare Rig"
+description = "No assist. Trust your release."
+sway_scale = 1.0
+steering_scale = 1.0

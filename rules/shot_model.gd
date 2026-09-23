@@ -4,7 +4,7 @@ extends RefCounted
 enum Phase { IDLE, HOLD_DRAW, HOLD_READY, TIMING_DRAW, TIMING_RELEASE }
 
 const DRAW_READY_SECONDS: float = 0.52
-const HOLD_STEER_SPEED: float = 520.0
+const HOLD_STEER_SPEED: float = 340.0
 const TIMING_DRAW_SECONDS: float = 0.95
 const TIMING_SWEEP_SECONDS: float = 1.2
 const IDEAL_DRAW: float = 0.72
@@ -17,6 +17,13 @@ var impact_point: Vector2 = Vector2.ZERO
 var elapsed: float = 0.0
 var draw_level: float = 0.0
 var locked_draw: float = 0.0
+var sway_scale: float = 1.0
+var steering_scale: float = 1.0
+
+
+func configure(steering_multiplier: float, sway_multiplier: float) -> void:
+	steering_scale = maxf(steering_multiplier, 0.2)
+	sway_scale = maxf(sway_multiplier, 0.2)
 
 
 func start_hold(initial_aim: Vector2) -> void:
@@ -54,14 +61,14 @@ func tick(delta: float, mouse_aim: Vector2) -> void:
 	match phase:
 		Phase.HOLD_DRAW, Phase.HOLD_READY:
 			elapsed += delta
-			aim_point = aim_point.move_toward(mouse_aim, HOLD_STEER_SPEED * delta)
+			aim_point = aim_point.move_toward(mouse_aim, HOLD_STEER_SPEED * steering_scale * delta)
 			draw_level = minf(elapsed / DRAW_READY_SECONDS, 1.0)
 			if elapsed >= DRAW_READY_SECONDS:
 				phase = Phase.HOLD_READY
 				var ready_time: float = elapsed - DRAW_READY_SECONDS
-				var settled: float = lerpf(34.0, 9.0, clampf(ready_time / 0.8, 0.0, 1.0))
-				var fatigue: float = maxf(ready_time - 1.35, 0.0) * 12.0
-				var amplitude: float = minf(settled + fatigue, 55.0)
+				var settled: float = lerpf(85.0, 45.0, clampf(ready_time / 0.8, 0.0, 1.0))
+				var fatigue: float = maxf(ready_time - 0.9, 0.0) * 18.0
+				var amplitude: float = minf((settled + fatigue) * sway_scale, 110.0)
 				impact_point = aim_point + Vector2(
 					sin(ready_time * 5.5) * amplitude,
 					sin(ready_time * 4.1 + 1.2) * amplitude * 0.72
