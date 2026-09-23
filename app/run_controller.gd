@@ -50,7 +50,7 @@ func _on_primary_pressed(aim_position: Vector2) -> void:
 		return
 	if shot.phase == ShotModel.Phase.IDLE:
 		shot_focused = focus_armed and focus > 0
-		shot.configure(equipped.steering_scale, equipped.focus_spread_scale if shot_focused else 1.0)
+		shot.configure(equipped.steering_scale, equipped.focus_spread_scale if shot_focused else 1.0, equipped.precision_peak_seconds)
 		shot.start_hold(aim_position)
 	_refresh_view()
 

@@ -9,5 +9,6 @@ extends Resource
 @export_multiline var strategy: String
 @export_multiline var tradeoff: String
 @export_range(0.2, 3.0, 0.05) var steering_scale: float = 1.0
+@export_range(0.6, 2.0, 0.05) var precision_peak_seconds: float = 1.5
 @export_range(0.1, 1.0, 0.05) var focus_spread_scale: float = 0.8
 @export_range(0.1, 1.0, 0.05) var focus_time_scale: float = 0.5

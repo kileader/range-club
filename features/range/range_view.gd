@@ -209,7 +209,10 @@ func _update_labels() -> void:
 	elif _shot.phase == ShotModel.Phase.READY:
 		if _equipped.id == &"pulse_sight":
 			var quick_remaining: float = maxf(TrialRules.VEY_TEMPO_SECONDS - _shot.elapsed, 0.0)
-			status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else _spread_status()
+			if quick_remaining > 0.0 and absf(_shot.elapsed - _shot.precision_peak_seconds) <= 0.08:
+				status_label.text = "TIGHTEST — +3 AVAILABLE"
+			else:
+				status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else _spread_status()
 		else:
 			status_label.text = _spread_status()
 		instruction_label.text = "Cyan ring = smallest possible.\nGold circle = possible hit area."
@@ -234,9 +237,9 @@ func _card_text(build: BuildDef) -> String:
 
 
 func _spread_status() -> String:
-	if _shot.elapsed < ShotModel.PRECISION_PEAK_SECONDS - 0.12:
+	if _shot.elapsed < _shot.precision_peak_seconds - 0.12:
 		return "READY — CIRCLE SHRINKING"
-	if _shot.elapsed <= ShotModel.PRECISION_PEAK_SECONDS + 0.12:
+	if _shot.elapsed <= _shot.precision_peak_seconds + 0.12:
 		return "TIGHTEST — RELEASE"
 	return "CIRCLE WIDENING"
 
@@ -286,7 +289,6 @@ func _draw() -> void:
 		visible_spread_radius = _shot.spread_radius
 		visible_reticle_valid = true
 		_draw_spread_circle(visible_reticle, visible_spread_radius, true)
-	_draw_gauge()
 
 
 func _draw_range() -> void:
@@ -340,14 +342,6 @@ func _draw_spread_circle(center: Vector2, radius: float, ready: bool) -> void:
 	draw_circle(center, radius, Color(color.r, color.g, color.b, 0.12), true, -1.0, true)
 	draw_arc(center, radius, 0.0, TAU, 64, color, 2.0, true)
 	draw_circle(center, 2.5, color, true, -1.0, true)
-
-
-func _draw_gauge() -> void:
-	if _shot.phase != ShotModel.Phase.DRAW:
-		return
-	var gauge: Rect2 = Rect2(650.0, 682.0, 340.0, 18.0)
-	draw_rect(gauge, Color("2d3e32"))
-	draw_rect(Rect2(gauge.position, Vector2(gauge.size.x * _shot.draw_level, gauge.size.y)), Color("83a998"))
 
 
 func _panel_style(color: Color, radius: int) -> StyleBoxFlat:

@@ -65,7 +65,13 @@ func run() -> void:
 	_check(is_equal_approx(shot.spread_radius, ShotModel.MIN_SPREAD_RADIUS * 0.6), "Maera Focus tightens spread")
 	_check(is_equal_approx(shot.minimum_spread_radius(), shot.spread_radius), "focused preview matches the smaller circle")
 	_check(shot.impact_point == centers[1], "Maera still steers rather than snapping")
-	shot.configure(1.6, 1.0)
+	shot.configure(1.6, 1.0, 1.0)
+	shot.start_hold(centers[2])
+	shot.tick(1.0, centers[2])
+	_check(shot.phase == ShotModel.Phase.READY and is_equal_approx(shot.spread_radius, shot.minimum_spread_radius()), "Vey reaches minimum spread before the bonus deadline")
+	_check(shot.elapsed <= TrialRules.VEY_TEMPO_SECONDS, "Vey's precision peak leaves time for his bonus")
+	shot.tick(0.2, centers[2])
+	_check(shot.spread_radius > shot.minimum_spread_radius(), "Vey's circle widens before his bonus expires")
 	shot.start_hold(Vector2(820, 645))
 	shot.tick(0.5, centers[2])
 	_check(shot.aim_point.distance_to(centers[2]) > 0.0, "fast steering still has travel time")
@@ -159,6 +165,7 @@ func run() -> void:
 	_check(is_equal_approx(main.equipped.focus_time_scale, 0.5), "Vey's Focus slows targets")
 	view.primary_pressed.emit(view.mouse_aim())
 	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Vey has ordinary spread without Focus")
+	_check(is_equal_approx(main.shot.precision_peak_seconds, 1.0), "Vey uses the early precision peak")
 	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[2])
 	view.visible_reticle = centers[2]
 	view.visible_spread_radius = 0.0

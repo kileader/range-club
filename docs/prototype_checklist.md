@@ -30,7 +30,7 @@ or retry without carrying over arrows or score.
 - [x] Ring scoring, visible impact marks, five-arrow total, mode switch, retry.
 - [x] Scoring boundary, cancellation, shot progression, fifth-arrow, and reset assertions.
 - [x] Rendered release check: impact equals the reticle shown in both modes.
-- [x] Simulated board and gauge mouse clicks through Godot's input path.
+- [x] Simulated board mouse clicks and hold/release through Godot's input path.
 - [x] Inspected the interface at 1280 × 800 and 960 × 720; exported and
       launched a Windows build outside the editor.
 - [x] Kevin tried both and preferred aiming over the timing bars.
@@ -61,12 +61,15 @@ challenging, and the player can compare two upgrades against a bare rig.
       only inside the last displayed circle.
 - [x] Preview the minimum spread with a cyan ring and cue the tightest release
       window in the in-round status.
+- [x] Move Vey's precision peak inside his bonus window and remove the
+      redundant ready gauge.
 - [x] Rule assertions for motion, scoring, Focus, selection, and retry.
 - [x] Inspect the strategy and in-round UI at 1280 × 800 and 960 × 720;
       verify character selection, Focus, and board mouse input.
 - [x] Export and launch the current Windows build (60 frames, exit code 0).
-- [ ] Kevin plays the new dispersion version and reports whether misses feel
-      fair, late holding creates tension, and Maera no longer feels automatic.
+- [ ] Rework the target/Focus economy: five centered Bold shots at minimum
+      spread each score at least 12, guaranteeing the 55-point gate without
+      Focus. A Safe refill gives up too much score for Focus to repay it.
 
 ## Later
 

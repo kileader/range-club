@@ -23,7 +23,8 @@ character-specific advantage.
 
 The targets move on predictable paths. Aim with the mouse before holding left
 mouse; the shot starts at that position. The gold landing circle shrinks toward
-the dashed cyan ring, which previews its smallest possible size at 1.5 seconds.
+the dashed cyan ring, which previews its smallest possible size at 1.5 seconds
+for Natural and Maera, or 1.0 second for Vey.
 It then widens and pulses as a penalty for holding longer. Release after
 **READY**; the shot lands at a random point inside the last circle actually
 shown. A miss still spends a shot. Releasing early or pressing **Esc** cancels
@@ -43,8 +44,9 @@ Each build turns the same rules into a different plan:
 - **Maera / Gyro Brace:** spending Focus makes the landing circle 40% smaller,
   but her targets keep moving at full speed. It improves her odds without
   guaranteeing a hit.
-- **Vey / Pulse Sight:** faster aim. Hit near the center of
-  Standard or Bold within 1.2 seconds of starting the shot to add 3 points.
+- **Vey / Pulse Sight:** faster aim and a 1.0-second precision peak. Hit near
+  the center of Standard or Bold within 1.2 seconds of starting the shot to
+  add 3 points.
 
 The character screen shows each bonus and drawback before play; the rules
 screen can be revisited from there. Both reopen between trials. Character
