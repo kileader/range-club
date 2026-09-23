@@ -7,6 +7,8 @@ const BUST_SCORE: int = 52
 const START_FOCUS: int = 1
 const MAX_FOCUS: int = 2
 const SAFE_FOCUS_RING: int = 6
+const MAERA_FOCUS_RING: int = 6
+const MAERA_STANDARD_BONUS: int = 3
 const VEY_TEMPO_RING: int = 8
 const VEY_TEMPO_SECONDS: float = 1.2
 
@@ -30,6 +32,9 @@ static func resolve_hit(hit: Dictionary, build_id: StringName, spent_focus: bool
 	if points > 0:
 		if hit.target_index == 0 and hit.ring >= SAFE_FOCUS_RING:
 			focus_gain = 1
+		elif hit.target_index == 1 and build_id == &"gyro_brace" and spent_focus and hit.ring >= MAERA_FOCUS_RING:
+			points += MAERA_STANDARD_BONUS
+			bonus = "BRACED +3"
 		elif hit.target_index > 0 and build_id == &"bare_rig" and not spent_focus and hit.ring == 10:
 			points += 2
 			bonus = "PRECISION +2"

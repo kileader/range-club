@@ -39,6 +39,10 @@ func run() -> void:
 	_check(TrialRules.resolve_hit(bold_center, &"bare_rig", true, 0.7).points == 15, "Focus suppresses Natural precision bonus")
 	_check(TrialRules.resolve_hit(safe_center, &"bare_rig", false, 0.7).points == 6, "Natural bonus excludes Safe")
 	_check(TrialRules.resolve_hit(standard_center, &"gyro_brace", false, 0.7).points == 10, "Maera has no passive score bonus")
+	_check(TrialRules.resolve_hit(standard_center, &"gyro_brace", true, 0.7).points == 13, "Maera's focused Standard inner hit gains three")
+	_check(TrialRules.resolve_hit(standard_center, &"gyro_brace", true, 0.7).bonus == "BRACED +3", "Maera's focused bonus is shown")
+	_check(TrialRules.resolve_hit(TargetLayout.score_at(centers[1] + Vector2(42, 0), centers), &"gyro_brace", true, 0.7).points == 5, "Maera's Standard outer ring earns no bonus")
+	_check(TrialRules.resolve_hit(bold_center, &"gyro_brace", true, 0.7).points == 15, "Maera's bonus excludes Bold")
 	_check(TrialRules.resolve_hit(bold_center, &"pulse_sight", false, 1.2).points == 18, "Vey earns quick inner bonus at deadline")
 	_check(TrialRules.resolve_hit(bold_center, &"pulse_sight", false, 1.21).points == 15, "Vey loses bonus after deadline")
 	_check(TrialRules.resolve_hit(TargetLayout.score_at(centers[1] + Vector2(32, 0), centers), &"pulse_sight", false, 0.7).points < 11, "Vey bonus requires inner ring")
@@ -134,6 +138,7 @@ func run() -> void:
 	_check(not main.selection_open, "build cannot change after trial starts")
 	view.gear_requested.emit(&"pulse_sight")
 	_check(main.equipped.id == &"gyro_brace", "build selection requires strategy screen")
+	view.focus_requested.emit()
 	for index: int in range(4):
 		view.primary_pressed.emit(view.mouse_aim())
 		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
@@ -142,9 +147,11 @@ func run() -> void:
 		view.visible_reticle_valid = true
 		view.visible_target_centers = centers
 		view.primary_released.emit()
-	_check(main.impacts.size() == 5 and main.total_score == 46, "five Maera shots total forty-six")
+		if index == 0:
+			_check(main.total_score == 19 and main.last_bonus == "BRACED +3" and main.focus == 0, "focused Standard bonus spends Focus and appears in play")
+	_check(main.impacts.size() == 5 and main.total_score == 49, "Maera's focused Standard route clears in five shots")
 	_check(main.impacts[1].target_index == 1 and main.impacts[1].position_at(later) == later[1], "recorded center hit stays centered as target moves")
-	_check(main.best_score == 46, "completed trial saves best")
+	_check(main.best_score == 49, "completed trial saves best")
 	view.primary_pressed.emit(view.mouse_aim())
 	_check(main.impacts.size() == 5, "sixth shot is rejected")
 	view.retry_requested.emit()

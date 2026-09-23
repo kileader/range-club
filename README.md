@@ -46,9 +46,9 @@ Each build turns the same rules into a different plan:
 
 - **The Natural / Bare Rig:** balanced aim speed. A Standard or
   Bold bullseye without Focus adds 2 points.
-- **Maera / Gyro Brace:** spending Focus makes the landing circle 40% smaller,
-  but her targets keep moving at full speed. It improves her odds without
-  guaranteeing a hit.
+- **Maera / Gyro Brace:** spending Focus makes the landing circle 40% smaller.
+  A focused Standard hit in rings 6–10 adds 3 points; her targets keep moving
+  at full speed. This makes Safe's Focus refill useful for a Standard route.
 - **Vey / Pulse Sight:** faster aim and a 1.0-second precision peak. Hit near
   the center of Standard or Bold within 1.2 seconds of starting the shot to
   add 3 points.

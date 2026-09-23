@@ -76,7 +76,9 @@ challenging, and the player can compare two upgrades against a bare rig.
       by a focused Standard or Safe finish was still the easiest route.
 - [ ] Playtest 48–52 with Bold radius 24 (formerly 45). Do mixed target routes
       compete with Bold-first play, or is the new Bold target simply frustrating?
-      Focus and character identities need separate work.
+      Kevin reports Maera often lands below 48. Test her focused Standard
+      inner-half +3 bonus as a route through Safe and Standard; check whether
+      it creates a choice or simply makes Focus automatic.
 
 ## Later
 
