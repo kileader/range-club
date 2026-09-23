@@ -43,6 +43,25 @@ theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
 text = "PRACTICE RANGE"
 
+[node name="ArchiveMark" type="Label" parent="UI"]
+offset_left = 413.0
+offset_top = 143.0
+offset_right = 552.0
+offset_bottom = 164.0
+theme_override_colors/font_color = Color(0.41, 0.53, 0.43, 1)
+theme_override_font_sizes/font_size = 13
+text = "LANE 3909"
+
+[node name="FishNotice" type="Label" parent="UI"]
+offset_left = 1050.0
+offset_top = 143.0
+offset_right = 1190.0
+offset_bottom = 164.0
+theme_override_colors/font_color = Color(0.41, 0.53, 0.43, 1)
+theme_override_font_sizes/font_size = 12
+text = "NO FISH DARTS"
+horizontal_alignment = 2
+
 [node name="Title" type="Label" parent="UI"]
 offset_left = 64.0
 offset_top = 226.0
@@ -68,7 +87,7 @@ offset_right = 353.0
 offset_bottom = 561.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
-text = "FOUNDATION PROTOTYPE"
+text = "SIMPLE KIT. STEADY HAND."
 
 [node name="NextStep" type="Label" parent="UI"]
 offset_left = 64.0

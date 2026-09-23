@@ -69,6 +69,8 @@ Git. The `.gdignore` prevents Godot from importing local build output.
 - `features/range/` holds the range scene, labels, and target drawing.
 - `docs/technical_foundation.md` preserves the original design proposal.
 - `docs/prototype_checklist.md` tracks the immediate acceptance checks and next step.
+- `docs/reference_ideas.md` records the small references already in the range
+  and the character/build direction for later slices.
 
 The presentation uses a 1280 × 800 design canvas, scaled proportionally with
 letterboxing at other aspect ratios. Target rings are drawn using fractions of
