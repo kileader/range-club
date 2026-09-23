@@ -22,8 +22,9 @@ character-specific advantage.
 4. Choose a character and play a five-shot trial; close the window to exit.
 
 The targets move on predictable paths. Aim with the mouse before holding left
-mouse; the shot starts at that position. The visible landing circle shrinks until 1.5
-seconds, then widens and pulses as a penalty for holding longer. Release after
+mouse; the shot starts at that position. The gold landing circle shrinks toward
+the dashed cyan ring, which previews its smallest possible size at 1.5 seconds.
+It then widens and pulses as a penalty for holding longer. Release after
 **READY**; the shot lands at a random point inside the last circle actually
 shown. A miss still spends a shot. Releasing early or pressing **Esc** cancels
 without spending one. There is no passive aim sway.

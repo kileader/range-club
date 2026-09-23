@@ -22,6 +22,10 @@ var spread_scale: float = 1.0
 var spread_radius: float = START_SPREAD_RADIUS
 
 
+func minimum_spread_radius() -> float:
+	return MIN_SPREAD_RADIUS * spread_scale
+
+
 func configure(steering_multiplier: float, spread_multiplier: float) -> void:
 	steering_scale = maxf(steering_multiplier, 0.2)
 	spread_scale = clampf(spread_multiplier, 0.1, 1.0)

@@ -96,7 +96,7 @@ func _ready() -> void:
 	standard_rules_label.text = "STANDARD · 10\nMedium target"
 	bold_rules_label.text = "BOLD · 15\nSmall target"
 	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to tighten the landing circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
-	control_rules_label.text = "Hold mouse: the landing circle shrinks, then widens and pulses.\nRelease after READY; the hit lands randomly inside it. Misses count."
+	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hold until they meet.\nRelease after READY. Waiting longer widens gold; hits land randomly inside."
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -209,10 +209,10 @@ func _update_labels() -> void:
 	elif _shot.phase == ShotModel.Phase.READY:
 		if _equipped.id == &"pulse_sight":
 			var quick_remaining: float = maxf(TrialRules.VEY_TEMPO_SECONDS - _shot.elapsed, 0.0)
-			status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else "QUICK BONUS EXPIRED"
+			status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else _spread_status()
 		else:
-			status_label.text = "READY — RELEASE WHILE TIGHT"
-		instruction_label.text = "Near center before timer: +3.\nHit lands inside gold circle." if _equipped.id == &"pulse_sight" else "Track the moving target.\nHit lands inside gold circle."
+			status_label.text = _spread_status()
+		instruction_label.text = "Cyan ring = smallest possible.\nGold circle = possible hit area."
 	else:
 		status_label.text = "%s / %s" % [_equipped.operator_name.to_upper(), _equipped.operator_role]
 		if _last_score == 0:
@@ -231,6 +231,14 @@ func _update_labels() -> void:
 
 func _card_text(build: BuildDef) -> String:
 	return "%s / %s\n\n%s\n\n%s\n\nSELECT" % [build.operator_name.to_upper(), build.display_name.to_upper(), build.strategy, build.tradeoff]
+
+
+func _spread_status() -> String:
+	if _shot.elapsed < ShotModel.PRECISION_PEAK_SECONDS - 0.12:
+		return "READY — CIRCLE SHRINKING"
+	if _shot.elapsed <= ShotModel.PRECISION_PEAK_SECONDS + 0.12:
+		return "TIGHTEST — RELEASE"
+	return "CIRCLE WIDENING"
 
 
 func _set_selection_page(page: SelectionPage) -> void:
@@ -322,6 +330,13 @@ func _draw_crosshair(point: Vector2, color: Color, size: float) -> void:
 
 func _draw_spread_circle(center: Vector2, radius: float, ready: bool) -> void:
 	var color: Color = Color("ffd269") if ready else Color("b6c7b6")
+	var minimum_radius: float = _shot.minimum_spread_radius()
+	if radius > minimum_radius + 1.5:
+		for segment: int in range(8):
+			var start_angle: float = segment * TAU / 8.0
+			draw_arc(center, minimum_radius, start_angle, start_angle + TAU / 16.0, 5, Color("8bd7c7"), 1.5, true)
+	elif ready:
+		color = Color("8bd7c7")
 	draw_circle(center, radius, Color(color.r, color.g, color.b, 0.12), true, -1.0, true)
 	draw_arc(center, radius, 0.0, TAU, 64, color, 2.0, true)
 	draw_circle(center, 2.5, color, true, -1.0, true)

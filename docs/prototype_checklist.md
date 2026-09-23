@@ -59,6 +59,8 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Replace perfect lock-on with visible random spread. Holding shrinks the
       landing circle to a peak, then it blooms and pulses; impact is sampled
       only inside the last displayed circle.
+- [x] Preview the minimum spread with a cyan ring and cue the tightest release
+      window in the in-round status.
 - [x] Rule assertions for motion, scoring, Focus, selection, and retry.
 - [x] Inspect the strategy and in-round UI at 1280 × 800 and 960 × 720;
       verify character selection, Focus, and board mouse input.

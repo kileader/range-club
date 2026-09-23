@@ -258,7 +258,7 @@ offset_right = 1060.0
 offset_bottom = 610.0
 theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
 theme_override_font_sizes/font_size = 18
-text = "Hold mouse: the landing circle shrinks, then widens and pulses.\nRelease after READY; the hit lands randomly inside it. Misses count."
+text = "Gold = possible hits; cyan = smallest circle. Hold until they meet.\nRelease after READY. Waiting longer widens gold; hits land randomly inside."
 
 [node name="RulesNextButton" type="Button" parent="UI/BuildOverlay"]
 offset_left = 610.0
