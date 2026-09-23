@@ -41,7 +41,7 @@ history.
 
 ## Now — fantasy-tech target strategy
 
-Definition of Done: five-shot play offers a target choice, the starter rig is
+Definition of Done: up-to-five-shot play offers a target choice, the starter rig is
 challenging, and the player can compare two upgrades against a bare rig.
 
 - [x] Three target sizes and score ceilings, with a goal above five safe centers.
@@ -63,13 +63,15 @@ challenging, and the player can compare two upgrades against a bare rig.
       window in the in-round status.
 - [x] Move Vey's precision peak inside his bonus window and remove the
       redundant ready gauge.
+- [x] Try a darts-style 55–60 score window: clear on entering it, bust above
+      60, or fail below 55 after five shots.
 - [x] Rule assertions for motion, scoring, Focus, selection, and retry.
 - [x] Inspect the strategy and in-round UI at 1280 × 800 and 960 × 720;
       verify character selection, Focus, and board mouse input.
 - [x] Export and launch the current Windows build (60 frames, exit code 0).
-- [ ] Rework the target/Focus economy: five centered Bold shots at minimum
-      spread each score at least 12, guaranteeing the 55-point gate without
-      Focus. A Safe refill gives up too much score for Focus to repay it.
+- [ ] Playtest whether the score window makes deliberate outer-ring, Safe,
+      and Standard shots useful. Focus and character identities still need
+      separate design work.
 
 ## Later
 

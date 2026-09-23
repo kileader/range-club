@@ -8,6 +8,11 @@ func _initialize() -> void:
 
 
 func run() -> void:
+	_check(not TrialRules.is_trial_over(54, 4), "below the window leaves a shot available")
+	_check(TrialRules.is_cleared(55) and TrialRules.is_trial_over(55, 4), "lower window edge clears early")
+	_check(TrialRules.is_cleared(60) and TrialRules.is_trial_over(60, 4), "upper window edge clears early")
+	_check(TrialRules.is_bust(61) and TrialRules.is_trial_over(61, 4), "one point over the cap busts immediately")
+	_check(TrialRules.is_trial_over(54, 5) and not TrialRules.is_cleared(54), "fifth shot below the window fails")
 	_check(Scoring.ring_score(Vector2.ZERO) == 10, "center scores ten")
 	_check(Scoring.ring_score(Vector2(0.1, 0.0)) == 10, "inner boundary scores ten")
 	_check(Scoring.ring_score(Vector2(1.0, 0.0)) == 1, "outer edge scores one")
@@ -185,6 +190,37 @@ func run() -> void:
 	view.cancel_requested.emit()
 	view.build_screen_requested.emit()
 	_check(not main.selection_open, "strategy screen cannot interrupt an active trial")
+	main._reset_round()
+	for index: int in range(3):
+		_shoot_at(main, view, centers[2], centers)
+	_check(main.total_score == 45 and not TrialRules.is_trial_over(main.total_score, main.impacts.size()), "three Bold centers leave the trial active")
+	_shoot_at(main, view, centers[1], centers)
+	_check(main.total_score == 55 and main.impacts.size() == 4, "fourth shot can clear at the lower edge")
+	_check(main.best_score == 55 and view.get_node("UI/Status").text == "TRIAL CLEARED", "early clear records a valid best score")
+	view.primary_pressed.emit(centers[2])
+	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.size() == 4, "early clear rejects another shot")
+	view.build_screen_requested.emit()
+	_check(main.selection_open, "strategy screen reopens after an early clear")
+	view.build_screen_closed.emit()
+	view.retry_requested.emit()
+	_check(main.impacts.is_empty() and main.total_score == 0, "early clear can retry")
+	for index: int in range(4):
+		_shoot_at(main, view, centers[2], centers)
+	_check(main.total_score == 60 and view.get_node("UI/Status").text == "TRIAL CLEARED", "upper edge clears before the fifth shot")
+	view.retry_requested.emit()
+	for point: Vector2 in [centers[2], centers[2], centers[1], centers[0], centers[2]]:
+		_shoot_at(main, view, point, centers)
+	_check(main.total_score == 61 and main.impacts.size() == 5, "score above the cap busts")
+	_check(view.get_node("UI/Status").text == "BUST — OVER 60" and main.best_score == 60, "bust is shown and does not replace best valid score")
+	view.retry_requested.emit()
+	_check(main.impacts.is_empty(), "busted trial can retry")
+	_shoot_at(main, view, centers[2], centers, 0.52)
+	_shoot_at(main, view, centers[2], centers, 0.52)
+	_shoot_at(main, view, centers[1], centers)
+	_shoot_at(main, view, centers[2], centers)
+	_check(main.total_score == 61 and main.impacts.size() == 4, "a bonus can bust before the fifth shot")
+	view.primary_pressed.emit(centers[0])
+	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.size() == 4, "early bust rejects another shot")
 
 	if failures == 0:
 		print("All target, dispersion, Focus, build, and trial assertions passed.")
@@ -195,3 +231,13 @@ func _check(condition: bool, description: String) -> void:
 	if not condition:
 		failures += 1
 		push_error("FAIL: " + description)
+
+
+func _shoot_at(main: Node, view: RangeView, point: Vector2, centers: Array[Vector2], hold_seconds: float = 1.5) -> void:
+	view.primary_pressed.emit(point)
+	main.shot.tick(hold_seconds, point)
+	view.visible_reticle = point
+	view.visible_spread_radius = 0.0
+	view.visible_reticle_valid = true
+	view.visible_target_centers = centers
+	view.primary_released.emit()

@@ -91,7 +91,7 @@ func _ready() -> void:
 	natural_card.text = _card_text(BARE_RIG)
 	maera_card.text = _card_text(GYRO_BRACE)
 	vey_card.text = _card_text(PULSE_SIGHT)
-	rules_label.text = "5 shots · %d to clear. Rings count 1 (edge) to 10 (center).\nSafe caps at 6; Standard uses ring value; Bold adds 5." % TrialRules.GOAL_SCORE
+	rules_label.text = "Up to 5 shots · Reach %d–%d. Above %d busts.\nRings count 1 (edge) to 10 (center); Safe caps at 6, Bold adds 5." % [TrialRules.GOAL_SCORE, TrialRules.BUST_SCORE, TrialRules.BUST_SCORE]
 	safe_rules_label.text = "SAFE · 1–6\nLarge target\nInner half: 6 +1 Focus"
 	standard_rules_label.text = "STANDARD · 1–10\nMedium target"
 	bold_rules_label.text = "BOLD · 6–15\nSmall target"
@@ -178,11 +178,11 @@ func present(
 
 
 func _update_labels() -> void:
-	var completed: bool = _impacts.size() >= _round_size
-	var shot_number: int = mini(_impacts.size() + 1, _round_size)
+	var completed: bool = TrialRules.is_trial_over(_total_score, _impacts.size())
+	var shot_number: int = _impacts.size() if completed else _impacts.size() + 1
 	title_label.text = "Choose your\nmark."
-	description_label.text = "Three moving targets.\nScore %d in five shots." % _goal_score
-	score_label.text = "SHOT %d / %d     SCORE %d / %d" % [shot_number, _round_size, _total_score, _goal_score]
+	description_label.text = "Reach %d–%d in up to five shots.\nAbove %d busts." % [_goal_score, TrialRules.BUST_SCORE, TrialRules.BUST_SCORE]
+	score_label.text = "SHOT %d / %d     SCORE %d / %d–%d" % [shot_number, _round_size, _total_score, _goal_score, TrialRules.BUST_SCORE]
 	build_overlay.visible = _selection_open
 	back_button.visible = _build_selected
 	_update_selection_page()
@@ -198,8 +198,12 @@ func _update_labels() -> void:
 	var best_text: String = "—" if _best_score < 0 else str(_best_score)
 	footer_label.text = "%s / %s     BEST %s     FOCUS %d / %d" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text, _focus, TrialRules.MAX_FOCUS]
 	if completed:
-		status_label.text = "TRIAL CLEARED" if _total_score >= _goal_score else "TRIAL FAILED"
-		instruction_label.text = "Retry this character or open\nCharacter Strategy to switch."
+		if TrialRules.is_bust(_total_score):
+			status_label.text = "BUST — OVER %d" % TrialRules.BUST_SCORE
+			instruction_label.text = "Aim for lower-value rings or\ntargets near the cap. Retry?"
+		else:
+			status_label.text = "TRIAL CLEARED" if TrialRules.is_cleared(_total_score) else "TRIAL FAILED"
+			instruction_label.text = "Retry this character or open\nCharacter Strategy to switch."
 	elif _shot.phase == ShotModel.Phase.DRAW:
 		if _shot_focused:
 			status_label.text = "FOCUS — CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS — SLOW + TIGHT"
@@ -275,7 +279,7 @@ func _draw() -> void:
 	for impact: ImpactRecord in _impacts:
 		_draw_impact_mark(impact.position_at(visible_target_centers))
 	visible_reticle_valid = false
-	if _shot == null or _impacts.size() >= _round_size:
+	if _shot == null or TrialRules.is_trial_over(_total_score, _impacts.size()):
 		_drawn_phase = ShotModel.Phase.IDLE
 		return
 	_drawn_phase = _shot.phase

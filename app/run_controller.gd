@@ -38,7 +38,7 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if not selection_open and impacts.size() < TrialRules.SHOTS_PER_TRIAL:
+	if not selection_open and not TrialRules.is_trial_over(total_score, impacts.size()):
 		var time_scale: float = equipped.focus_time_scale if shot_focused else 1.0
 		range_time += delta * time_scale
 		shot.tick(delta, range_view.mouse_aim())
@@ -46,7 +46,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_primary_pressed(aim_position: Vector2) -> void:
-	if selection_open or impacts.size() >= TrialRules.SHOTS_PER_TRIAL:
+	if selection_open or TrialRules.is_trial_over(total_score, impacts.size()):
 		return
 	if shot.phase == ShotModel.Phase.IDLE:
 		shot_focused = focus_armed and focus > 0
@@ -90,17 +90,17 @@ func _accept_shot(impact: Vector2) -> void:
 	focus_armed = false
 	shot_focused = false
 	shot.cancel()
-	if impacts.size() == TrialRules.SHOTS_PER_TRIAL:
+	if TrialRules.is_trial_over(total_score, impacts.size()) and not TrialRules.is_bust(total_score):
 		best_score = maxi(best_score, total_score)
 
 
 func _on_retry_requested() -> void:
-	if build_selected and impacts.size() == TrialRules.SHOTS_PER_TRIAL:
+	if build_selected and TrialRules.is_trial_over(total_score, impacts.size()):
 		_reset_round()
 
 
 func _on_build_screen_requested() -> void:
-	if build_selected and shot.phase == ShotModel.Phase.IDLE and (impacts.is_empty() or impacts.size() == TrialRules.SHOTS_PER_TRIAL):
+	if build_selected and shot.phase == ShotModel.Phase.IDLE and (impacts.is_empty() or TrialRules.is_trial_over(total_score, impacts.size())):
 		selection_open = true
 		_refresh_view()
 
@@ -112,13 +112,13 @@ func _on_build_screen_closed() -> void:
 
 
 func _on_focus_requested() -> void:
-	if not selection_open and focus > 0 and shot.phase == ShotModel.Phase.IDLE and impacts.size() < TrialRules.SHOTS_PER_TRIAL:
+	if not selection_open and focus > 0 and shot.phase == ShotModel.Phase.IDLE and not TrialRules.is_trial_over(total_score, impacts.size()):
 		focus_armed = not focus_armed
 		_refresh_view()
 
 
 func _on_gear_requested(gear_id: StringName) -> void:
-	if not selection_open or shot.phase != ShotModel.Phase.IDLE or (not impacts.is_empty() and impacts.size() < TrialRules.SHOTS_PER_TRIAL):
+	if not selection_open or shot.phase != ShotModel.Phase.IDLE or (not impacts.is_empty() and not TrialRules.is_trial_over(total_score, impacts.size())):
 		return
 	if gear_id == GYRO_BRACE.id:
 		equipped = GYRO_BRACE

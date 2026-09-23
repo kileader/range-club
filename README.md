@@ -1,11 +1,11 @@
 # Range Club
 
 A small fantasy-tech target-range prototype about choosing risk and handling
-for each five-shot trial. Read the brief rules screen, choose a character on
-the next screen, then score 55 points in five shots. Safe scores up to 6,
-Standard up to 10, and Bold up to 15. Five Standard centers yield only 50
-without a bonus, so clearing the trial requires stronger targets or a
-character-specific advantage.
+for each trial. Read the brief rules screen, choose a character on the next
+screen, then reach **55–60 points in up to five shots**. You clear as soon as
+you enter that window; going above 60 busts immediately. If all five shots
+end below 55, you fail. Safe scores up to 6, Standard up to 10, and Bold up
+to 15. Choosing a lower-value target or outer ring can keep you under the cap.
 
 ## Stack
 
@@ -19,7 +19,7 @@ character-specific advantage.
 1. Download and extract [Godot 4.7.2 Standard for Windows x86_64](https://godotengine.org/download/archive/4.7.2-stable/).
 2. Import this repository's `project.godot` in the Godot Project Manager.
 3. Open the project and press **F6** to run the selected scene, or **F5** to run the project.
-4. Choose a character and play a five-shot trial; close the window to exit.
+4. Choose a character and play a trial of up to five shots; close the window to exit.
 
 The targets move on predictable paths. Aim with the mouse before holding left
 mouse; the shot starts at that position. The gold landing circle shrinks toward
@@ -58,7 +58,8 @@ choices are locked during an active trial. **Retry** keeps the current choice
 and resets Focus to one.
 
 The gold circle is the full possible landing area. The footer records your
-best score. Hit marks stay on the moving target; misses stay on the backstop.
+best non-busted trial score. Hit marks stay on the moving target; misses stay
+on the backstop.
 The earlier sway and three-press timing experiments remain in Git history.
 
 For this local checkout, the portable editor is already in `.tools/godot/`:
