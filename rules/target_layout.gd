@@ -5,11 +5,25 @@ const CENTERS: Array[Vector2] = [Vector2(530.0, 390.0), Vector2(820.0, 390.0), V
 const RADII: Array[float] = [118.0, 78.0, 45.0]
 const NAMES: Array[String] = ["SAFE", "STANDARD", "BOLD"]
 const MAX_SCORES: Array[int] = [6, 10, 15]
+const MOTION_X: Array[float] = [0.0, 55.0, 55.0]
+const MOTION_Y: Array[float] = [25.0, 0.0, 25.0]
+const MOTION_SPEED: Array[float] = [0.9, 1.2, 1.8]
 
 
-static func score_at(impact: Vector2) -> Dictionary:
+static func centers_at(time: float) -> Array[Vector2]:
+	var positions: Array[Vector2] = []
 	for target: int in range(CENTERS.size()):
-		var local: Vector2 = (impact - CENTERS[target]) / RADII[target]
+		var speed: float = MOTION_SPEED[target]
+		positions.append(CENTERS[target] + Vector2(
+			sin(time * speed) * MOTION_X[target],
+			sin(time * speed) * MOTION_Y[target]
+		))
+	return positions
+
+
+static func score_at(impact: Vector2, target_centers: Array[Vector2]) -> Dictionary:
+	for target: int in range(CENTERS.size()):
+		var local: Vector2 = (impact - target_centers[target]) / RADII[target]
 		var ring: int = Scoring.ring_score(local)
 		if ring > 0:
 			var score: int = ring

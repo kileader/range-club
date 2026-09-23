@@ -19,20 +19,21 @@ up to 6, Standard up to 10, and Bold up to 15. Five safe center hits yield only
 3. Open the project and press **F6** to run the selected scene, or **F5** to run the project.
 4. Play a five-shot trial; close the window to exit.
 
-Aim at one of three targets with the mouse. Hold left mouse to draw and steer
-from the fixed rest point, then release when the gold impact reticle is where
-you want it. Releasing before **READY** cancels without spending a shot. Sway
-settles at first, then fatigue increases it. Press **Esc** to cancel a draw.
+The targets move on predictable paths. Aim at one with the mouse, hold left
+mouse to draw and steer from the fixed rest point, then release when the gold
+impact reticle is on the moving mark. Releasing before **READY** cancels
+without spending a shot. There is no random sway. Press **Esc** to cancel a
+draw.
 
 The initial trial uses **The Natural** with a Bare Rig. Completing it unlocks
-three character/build presets: The Natural has no assist; **Maera**, a rune
-smith, uses a Gyro Brace that reduces sway but slows steering; and **Vey**, an
-arc scout, uses a Pulse Sight that steers faster but increases sway. Choices
+three character/build presets: The Natural steers at a balanced speed with a
+small focus lock; **Maera**, a rune smith, uses a Gyro Brace that tethers near
+targets but steers slowly; and **Vey**, an arc scout, uses a Pulse Sight that
+steers quickly without a lock. A cyan ring shows an active focus lock. Choices
 are locked during a trial. **Retry** keeps the current preset.
 
 The gold reticle is the exact impact point. The footer records your best score.
-The previous three-press timing experiment remains in code for comparison but
-is no longer part of the visible play loop.
+The earlier sway and three-press timing experiments remain in Git history.
 
 For this local checkout, the portable editor is already in `.tools/godot/`:
 
@@ -55,8 +56,8 @@ by Git; put a `.gdignore` file inside it if you keep tools there yourself.
 ```
 
 The version must start with `4.7.2.stable`. Check the output for errors as well as
-the exit code. The assertions cover ring boundaries, target scoring, shot phases,
-cancellation, rig locks, five accepted shots, and retry. They cannot judge feel.
+the exit code. The assertions cover ring boundaries, moving target positions,
+shot phases, focus locks, five accepted shots, and retry. They cannot judge feel.
 Current visual and export checks are recorded in
 [the prototype checklist](docs/prototype_checklist.md).
 
@@ -98,8 +99,8 @@ reticle sample that was actually drawn, avoiding a one-frame input/render mismat
 
 ## Next decision
 
-Play a few trials with each rig. Note whether target selection feels strategic,
-whether misses feel fair, and whether one rig dominates. Tune aim and scoring
-before adding longer-run progression.
+Play a few trials with each character/build preset. Note whether tracking a
+moving target feels strategic, whether misses feel fair, and whether one build
+dominates. Tune the motion and scoring before adding longer-run progression.
 
 No remote repository or source license has been selected yet.

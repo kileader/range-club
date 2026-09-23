@@ -19,7 +19,7 @@ AMD Radeon RX 6600 using OpenGL Compatibility. The exported process rendered
 
 No web export was tested.
 
-## Now — compare two shot methods
+## Earlier — compare two shot methods
 
 Definition of Done: five arrows can be shot in each mode on the same target;
 each accepted shot scores the presented impact, and the player can switch modes
@@ -33,13 +33,11 @@ or retry without carrying over arrows or score.
 - [x] Simulated board and gauge mouse clicks through Godot's input path.
 - [x] Inspected the interface at 1280 × 800 and 960 × 720; exported and
       launched a Windows build outside the editor.
-- [ ] Kevin plays several rounds of each and chooses what to keep or change.
+- [x] Kevin tried both and preferred aiming over the timing bars.
 
-First feedback: hold and sway felt much easier, and the timing steps were not
-clear. The timing gauge now sits below the target with numbered instructions.
-Its draw is slower, release sweep is slower and narrower, and draw error moves
-the impact less vertically. Compare again before changing the hold mode. These
-values are playtest starting points, not balance claims.
+Follow-up feedback: passive sway was not fun. Both sway and the timing mode
+were removed from the current playable slice; their experiment remains in Git
+history.
 
 ## Now — fantasy-tech target strategy
 
@@ -47,10 +45,10 @@ Definition of Done: five-shot play offers a target choice, the starter rig is
 challenging, and the player can compare two upgrades against a bare rig.
 
 - [x] Three target sizes and score ceilings, with a goal above five safe centers.
-- [x] Fixed rest point, harder sway, and gear tradeoffs for steadiness or speed.
+- [x] Fixed rest point, moving targets, and build tradeoffs for focus or speed.
 - [x] Three character/build presets; bare rig remains selectable and choices
       are locked during each trial.
-- [x] Rule assertions for scoring, unlock, selection, in-round lock, and retry.
+- [x] Rule assertions for motion, scoring, focus, unlock, selection, and retry.
 - [ ] Kevin plays the range and reports whether target choice feels strategic.
 - [x] Inspect final UI at 1280 × 800 and 960 × 720, including completed and
       Maera-selected states; verify mouse input and launch Windows export.

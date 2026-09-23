@@ -2,8 +2,8 @@
 
 These are original Range Club details informed by things Kevin likes. Keep them
 small enough that the game still makes sense to someone who misses every nod.
-The current range contains three small signs; the character and mechanics below
-belong to a later playable slice.
+The current range contains two small signs and three character/build presets.
+The rival encounter and fuller character presentation belong to later slices.
 
 ## Lucas Pope — visual sensibility and a quiet marker
 
@@ -32,25 +32,18 @@ belong to a later playable slice.
 
 - **In the range now:** the original veteran marksman **The Natural** uses the
   Bare Rig in the first trial and remains selectable afterward. It has no hidden
-  bonus. Maera the rune smith uses a steadier brace; Vey the arc scout uses a
-  faster sight. These character/build presets make the handling tradeoff part
-  of each marksman's identity.
-- **Later build sandbox:** consider a Stillness technique with a longer,
-  steadier settling window and a handling cost. Tune it against accessory
-  builds under the same five-shot conditions; do not give it a universal
-  accuracy bonus.
-- **Later character:** an original veteran club member nicknamed **The Natural**,
-  with relaxed posture and sparse kit. They teach that practice and a clear
-  release can matter more than adding another device. Their portrait, name,
-  story, and dialogue should be our own. A credits or inspiration note can name
-  Dikeç directly. Air-pistol shooting is the real-world inspiration; the bow
-  mechanic is a deliberate translation for this game.
+  bonus. Maera the rune smith uses a target-tethering brace; Vey the arc scout
+  uses a faster sight without focus lock. These presets make the handling
+  tradeoff part of each marksman's identity.
+- **Later character presentation:** give The Natural an original portrait and
+  dialogue about a clear release and sparse kit. A credits or inspiration note
+  can name Dikeç directly. Air-pistol shooting is the real-world inspiration;
+  the range mechanic is a deliberate translation for this game.
 - **Source:** the [International Shooting Sport Federation's account of
   Dikeç's Paris 2024 appearance](https://www.issf-sports.org/news/4439) and
   [official mixed-team result](https://www.issf-sports.org/competitions/results?catId=1&compId=2728&ei=124&eiv=2&view=rsList).
 
 ## Scope rule
 
-Do not let the references expand the first shot milestone. Revisit the character
-and build when the equipment resolver exists; revisit the rival pair only after
-the basic three-round run is fun.
+Do not let the references dictate mechanics. Revisit the rival pair only after
+the basic target-tracking loop proves fun.

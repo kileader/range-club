@@ -87,9 +87,9 @@ offset_right = 343.0
 offset_bottom = 430.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 18
-text = "Three targets. Five shots.\nScore 40 to clear the trial."
+text = "Three moving targets.\nScore 40 in five shots."
 
-[node name="HoldButton" type="Button" parent="UI"]
+[node name="GyroButton" type="Button" parent="UI"]
 offset_left = 64.0
 offset_top = 485.0
 offset_right = 349.0
@@ -97,7 +97,7 @@ offset_bottom = 521.0
 theme_override_font_sizes/font_size = 17
 text = "MAERA · GYRO BRACE"
 
-[node name="TimingButton" type="Button" parent="UI"]
+[node name="PulseButton" type="Button" parent="UI"]
 offset_left = 64.0
 offset_top = 526.0
 offset_right = 349.0
@@ -129,7 +129,7 @@ offset_right = 351.0
 offset_bottom = 668.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 17
-text = "No assist. Trust your release.\nHold to steer. Release at gold."
+text = "Track by hand; a light focus lock.\nHold to steer. Release at gold."
 
 [node name="RetryButton" type="Button" parent="UI"]
 visible = false

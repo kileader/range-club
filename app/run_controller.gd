@@ -10,21 +10,19 @@ const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres"
 @onready var range_view: RangeView = $RangeView
 
 var shot: ShotModel = ShotModel.new()
-var mode: RangeView.ShotMode = RangeView.ShotMode.HOLD
 var impacts: Array[Vector2] = []
 var total_score: int = 0
 var last_score: int = -1
-var best_hold: int = -1
-var best_timing: int = -1
+var best_score: int = -1
 var gear_unlocked: bool = false
 var equipped: BuildDef = BARE_RIG
 var last_target: String = ""
+var range_time: float = 0.0
 
 
 func _ready() -> void:
 	range_view.primary_pressed.connect(_on_primary_pressed)
 	range_view.primary_released.connect(_on_primary_released)
-	range_view.mode_requested.connect(_on_mode_requested)
 	range_view.gear_requested.connect(_on_gear_requested)
 	range_view.retry_requested.connect(_on_retry_requested)
 	range_view.cancel_requested.connect(_on_cancel_requested)
@@ -33,36 +31,24 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if impacts.size() < ARROWS_PER_ROUND:
-		shot.tick(delta, range_view.mouse_aim())
+		range_time += delta
+		shot.tick(delta, range_view.mouse_aim(), TargetLayout.centers_at(range_time))
 	_refresh_view()
 
 
 func _on_primary_pressed() -> void:
 	if impacts.size() >= ARROWS_PER_ROUND:
 		return
-	if mode == RangeView.ShotMode.HOLD:
-		if shot.phase == ShotModel.Phase.IDLE:
-			shot.configure(equipped.steering_scale, equipped.sway_scale)
-			shot.start_hold(REST_POINT)
-	else:
-		match shot.phase:
-			ShotModel.Phase.IDLE:
-				shot.start_timing(range_view.mouse_aim())
-			ShotModel.Phase.TIMING_DRAW:
-				if range_view.visible_draw_valid:
-					shot.lock_draw(range_view.visible_draw_level)
-			ShotModel.Phase.TIMING_RELEASE:
-				if range_view.visible_reticle_valid:
-					_accept_shot(range_view.visible_reticle)
+	if shot.phase == ShotModel.Phase.IDLE:
+		shot.configure(equipped.steering_scale, equipped.lock_radius)
+		shot.start_hold(REST_POINT)
 	_refresh_view()
 
 
 func _on_primary_released() -> void:
-	if mode != RangeView.ShotMode.HOLD:
-		return
-	if shot.phase == ShotModel.Phase.HOLD_DRAW:
+	if shot.phase == ShotModel.Phase.DRAW:
 		shot.cancel()
-	elif shot.phase == ShotModel.Phase.HOLD_READY:
+	elif shot.phase == ShotModel.Phase.READY:
 		if range_view.visible_reticle_valid:
 			_accept_shot(range_view.visible_reticle)
 		else:
@@ -71,7 +57,7 @@ func _on_primary_released() -> void:
 
 
 func _accept_shot(visible_impact: Vector2) -> void:
-	var result: Dictionary = TargetLayout.score_at(visible_impact)
+	var result: Dictionary = TargetLayout.score_at(visible_impact, range_view.visible_target_centers)
 	last_score = result.score
 	last_target = result.target
 	total_score += last_score
@@ -79,15 +65,7 @@ func _accept_shot(visible_impact: Vector2) -> void:
 	shot.cancel()
 	if impacts.size() == ARROWS_PER_ROUND:
 		gear_unlocked = true
-		if mode == RangeView.ShotMode.HOLD:
-			best_hold = maxi(best_hold, total_score)
-		else:
-			best_timing = maxi(best_timing, total_score)
-
-
-func _on_mode_requested(requested_mode: RangeView.ShotMode) -> void:
-	mode = requested_mode
-	_reset_round()
+		best_score = maxi(best_score, total_score)
 
 
 func _on_retry_requested() -> void:
@@ -119,11 +97,12 @@ func _reset_round() -> void:
 	total_score = 0
 	last_score = -1
 	last_target = ""
+	range_time = 0.0
 	_refresh_view()
 
 
 func _refresh_view() -> void:
 	range_view.present(
-		mode, shot, impacts, total_score, last_score, best_hold, best_timing,
-		ARROWS_PER_ROUND, GOAL_SCORE, gear_unlocked, equipped, last_target
+		shot, impacts, total_score, last_score, best_score,
+		ARROWS_PER_ROUND, GOAL_SCORE, gear_unlocked, equipped, last_target, range_time
 	)
