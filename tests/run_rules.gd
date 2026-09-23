@@ -8,11 +8,11 @@ func _initialize() -> void:
 
 
 func run() -> void:
-	_check(not TrialRules.is_trial_over(54, 4), "below the window leaves a shot available")
-	_check(TrialRules.is_cleared(55) and TrialRules.is_trial_over(55, 4), "lower window edge clears early")
+	_check(not TrialRules.is_trial_over(57, 4), "below the window leaves a shot available")
+	_check(TrialRules.is_cleared(58) and TrialRules.is_trial_over(58, 4), "lower window edge clears early")
 	_check(TrialRules.is_cleared(60) and TrialRules.is_trial_over(60, 4), "upper window edge clears early")
 	_check(TrialRules.is_bust(61) and TrialRules.is_trial_over(61, 4), "one point over the cap busts immediately")
-	_check(TrialRules.is_trial_over(54, 5) and not TrialRules.is_cleared(54), "fifth shot below the window fails")
+	_check(TrialRules.is_trial_over(57, 5) and not TrialRules.is_cleared(57), "fifth shot below the window fails")
 	_check(Scoring.ring_score(Vector2.ZERO) == 10, "center scores ten")
 	_check(Scoring.ring_score(Vector2(0.1, 0.0)) == 10, "inner boundary scores ten")
 	_check(Scoring.ring_score(Vector2(1.0, 0.0)) == 1, "outer edge scores one")
@@ -196,9 +196,15 @@ func run() -> void:
 	for index: int in range(3):
 		_shoot_at(main, view, centers[2], centers)
 	_check(main.total_score == 45 and not TrialRules.is_trial_over(main.total_score, main.impacts.size()), "three Bold centers leave the trial active")
-	_shoot_at(main, view, centers[1], centers)
-	_check(main.total_score == 55 and main.impacts.size() == 4, "fourth shot can clear at the lower edge")
-	_check(main.best_score == 55 and view.get_node("UI/Status").text == "TRIAL CLEARED", "early clear records a valid best score")
+	_shoot_at(main, view, centers[0], centers)
+	_shoot_at(main, view, centers[0], centers)
+	_check(main.total_score == 57 and view.get_node("UI/Status").text == "TRIAL FAILED", "two Safe centers no longer clear from forty-five")
+	view.retry_requested.emit()
+	for index: int in range(3):
+		_shoot_at(main, view, centers[2], centers)
+	_shoot_at(main, view, centers[1], centers, 0.52)
+	_check(main.total_score == 58 and main.impacts.size() == 4, "fourth shot can clear at the lower edge")
+	_check(main.best_score == 58 and view.get_node("UI/Status").text == "TRIAL CLEARED", "early clear records a valid best score")
 	_check(not view.get_node("ResultDelay").is_stopped(), "clear queues a result sound")
 	view.primary_pressed.emit(centers[2])
 	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.size() == 4, "early clear rejects another shot")

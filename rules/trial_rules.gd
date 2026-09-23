@@ -2,7 +2,7 @@ class_name TrialRules
 extends RefCounted
 
 const SHOTS_PER_TRIAL: int = 5
-const GOAL_SCORE: int = 55
+const GOAL_SCORE: int = 58
 const BUST_SCORE: int = 60
 const START_FOCUS: int = 1
 const MAX_FOCUS: int = 2

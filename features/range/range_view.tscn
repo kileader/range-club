@@ -95,7 +95,7 @@ offset_right = 360.0
 offset_bottom = 355.0
 theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
 theme_override_font_sizes/font_size = 16
-text = "SHOT 1 / 5     SCORE 0 / 55–60"
+text = "SHOT 1 / 5     SCORE 0 / 58–60"
 
 [node name="Description" type="Label" parent="UI"]
 offset_left = 64.0
@@ -104,7 +104,7 @@ offset_right = 343.0
 offset_bottom = 430.0
 theme_override_colors/font_color = Color(0.67, 0.73, 0.67, 1)
 theme_override_font_sizes/font_size = 18
-text = "Reach 55–60 in up to five shots.\nAbove 60 busts."
+text = "Reach 58–60 in up to five shots.\nAbove 60 busts."
 
 [node name="BuildButton" type="Button" parent="UI"]
 offset_left = 64.0
@@ -230,7 +230,7 @@ offset_right = 1060.0
 offset_bottom = 277.0
 theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
 theme_override_font_sizes/font_size = 22
-text = "Up to 5 shots · Reach 55–60. Above 60 busts.\nRings count 1 (edge) to 10 (center); Safe caps at 6, Bold adds 5."
+text = "Up to 5 shots · Reach 58–60. Above 60 busts.\nRings count 1 (edge) to 10 (center); Safe caps at 6, Bold adds 5."
 
 [node name="SafeRules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 240.0
