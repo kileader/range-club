@@ -91,10 +91,10 @@ func _ready() -> void:
 	natural_card.text = _card_text(BARE_RIG)
 	maera_card.text = _card_text(GYRO_BRACE)
 	vey_card.text = _card_text(PULSE_SIGHT)
-	rules_label.text = "5 shots · %d points to clear. Five Standard bullseyes score 50." % TrialRules.GOAL_SCORE
-	safe_rules_label.text = "SAFE · 6\nLarge target\nInner-half hit: +1 Focus"
-	standard_rules_label.text = "STANDARD · 10\nMedium target"
-	bold_rules_label.text = "BOLD · 15\nSmall target"
+	rules_label.text = "5 shots · %d to clear. Rings count 1 (edge) to 10 (center).\nSafe caps at 6; Standard uses ring value; Bold adds 5." % TrialRules.GOAL_SCORE
+	safe_rules_label.text = "SAFE · 1–6\nLarge target\nInner half: 6 +1 Focus"
+	standard_rules_label.text = "STANDARD · 1–10\nMedium target"
+	bold_rules_label.text = "BOLD · 6–15\nSmall target"
 	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to tighten the landing circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
 	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hold until they meet.\nRelease after READY. Waiting longer widens gold; hits land randomly inside."
 

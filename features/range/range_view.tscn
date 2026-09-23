@@ -148,7 +148,7 @@ offset_right = 600.0
 offset_bottom = 554.0
 theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
 theme_override_font_sizes/font_size = 17
-text = "SAFE · 6"
+text = "SAFE · 1–6"
 horizontal_alignment = 1
 
 [node name="StandardLabel" type="Label" parent="UI"]
@@ -158,7 +158,7 @@ offset_right = 910.0
 offset_bottom = 520.0
 theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
 theme_override_font_sizes/font_size = 17
-text = "STANDARD · 10"
+text = "STANDARD · 1–10"
 horizontal_alignment = 1
 
 [node name="BoldLabel" type="Label" parent="UI"]
@@ -168,7 +168,7 @@ offset_right = 1145.0
 offset_bottom = 480.0
 theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
 theme_override_font_sizes/font_size = 17
-text = "BOLD · 15"
+text = "BOLD · 6–15"
 horizontal_alignment = 1
 
 [node name="BuildOverlay" type="Control" parent="UI"]
@@ -210,10 +210,10 @@ text = "How the trial works"
 offset_left = 220.0
 offset_top = 218.0
 offset_right = 1060.0
-offset_bottom = 250.0
+offset_bottom = 277.0
 theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
 theme_override_font_sizes/font_size = 22
-text = "5 shots · 55 points to clear. Five Standard bullseyes score 50."
+text = "5 shots · 55 to clear. Rings count 1 (edge) to 10 (center).\nSafe caps at 6; Standard uses ring value; Bold adds 5."
 
 [node name="SafeRules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 240.0
@@ -222,7 +222,7 @@ offset_right = 485.0
 offset_bottom = 390.0
 theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
 theme_override_font_sizes/font_size = 20
-text = "SAFE · 6\nLarge target\nInner-half hit: +1 Focus"
+text = "SAFE · 1–6\nLarge target\nInner half: 6 +1 Focus"
 
 [node name="StandardRules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 527.0
@@ -231,7 +231,7 @@ offset_right = 774.0
 offset_bottom = 390.0
 theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
 theme_override_font_sizes/font_size = 20
-text = "STANDARD · 10\nMedium target"
+text = "STANDARD · 1–10\nMedium target"
 
 [node name="BoldRules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 815.0
@@ -240,7 +240,7 @@ offset_right = 1060.0
 offset_bottom = 390.0
 theme_override_colors/font_color = Color(0.95, 0.81, 0.48, 1)
 theme_override_font_sizes/font_size = 20
-text = "BOLD · 15\nSmall target"
+text = "BOLD · 6–15\nSmall target"
 
 [node name="FocusRules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 220.0

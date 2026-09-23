@@ -30,6 +30,10 @@ It then widens and pulses as a penalty for holding longer. Release after
 shown. A miss still spends a shot. Releasing early or pressing **Esc** cancels
 without spending one. There is no passive aim sway.
 
+Each target has ten rings. The outer ring is 1 and each ring inward adds 1.
+Safe caps the ring score at 6 (range 1–6), Standard scores the ring value
+(1–10), and Bold adds 5 (6–15). Hits outside a target score 0.
+
 You start with one **Focus** and can hold at most two. Press **F** or the Focus
 button before a shot to arm it. Focus makes the landing circle smaller.
 It also halves target speed for The Natural and Vey; Maera's targets keep
