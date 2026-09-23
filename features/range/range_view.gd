@@ -14,6 +14,8 @@ const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
 const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
 const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres")
 
+enum SelectionPage { RULES, CHARACTERS }
+
 const AIM_AREA: Rect2 = Rect2(390.0, 122.0, 824.0, 598.0)
 const RING_COLORS: Array[Color] = [
 	Color("f2ede0"), Color("e5dfd1"),
@@ -34,10 +36,19 @@ const RING_COLORS: Array[Color] = [
 @onready var retry_button: Button = $UI/RetryButton
 @onready var target_labels: Array[Label] = [$UI/SafeLabel, $UI/StandardLabel, $UI/BoldLabel]
 @onready var build_overlay: Control = $UI/BuildOverlay
+@onready var heading_label: Label = $UI/BuildOverlay/Heading
 @onready var rules_label: Label = $UI/BuildOverlay/Rules
+@onready var safe_rules_label: Label = $UI/BuildOverlay/SafeRules
+@onready var standard_rules_label: Label = $UI/BuildOverlay/StandardRules
+@onready var bold_rules_label: Label = $UI/BuildOverlay/BoldRules
+@onready var focus_rules_label: Label = $UI/BuildOverlay/FocusRules
+@onready var control_rules_label: Label = $UI/BuildOverlay/ControlRules
+@onready var rules_next_button: Button = $UI/BuildOverlay/RulesNextButton
+@onready var how_to_play_button: Button = $UI/BuildOverlay/HowToPlayButton
 @onready var natural_card: Button = $UI/BuildOverlay/NaturalCard
 @onready var maera_card: Button = $UI/BuildOverlay/MaeraCard
 @onready var vey_card: Button = $UI/BuildOverlay/VeyCard
+@onready var choose_hint: Label = $UI/BuildOverlay/ChooseHint
 @onready var back_button: Button = $UI/BuildOverlay/BackButton
 
 var visible_reticle: Vector2 = Vector2.ZERO
@@ -61,6 +72,7 @@ var _focus_armed: bool = false
 var _shot_focused: bool = false
 var _selection_open: bool = true
 var _build_selected: bool = false
+var _selection_page: SelectionPage = SelectionPage.RULES
 var _target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
 var _drawn_phase: ShotModel.Phase = ShotModel.Phase.IDLE
 
@@ -72,11 +84,18 @@ func _ready() -> void:
 	maera_card.pressed.connect(func() -> void: gear_requested.emit(&"gyro_brace"))
 	vey_card.pressed.connect(func() -> void: gear_requested.emit(&"pulse_sight"))
 	back_button.pressed.connect(func() -> void: build_screen_closed.emit())
+	rules_next_button.pressed.connect(func() -> void: _set_selection_page(SelectionPage.CHARACTERS))
+	how_to_play_button.pressed.connect(func() -> void: _set_selection_page(SelectionPage.RULES))
 	retry_button.pressed.connect(func() -> void: retry_requested.emit())
 	natural_card.text = _card_text(BARE_RIG)
 	maera_card.text = _card_text(GYRO_BRACE)
 	vey_card.text = _card_text(PULSE_SIGHT)
-	rules_label.text = "5 shots · %d to clear. Five Standard centers only score 50.\nSafe ≤6 / Standard ≤10 / Bold ≤15. Safe inner hit earns 1 Focus.\nStart with %d Focus (max %d). Arm before a shot to halve target speed.\nA miss spends the shot; only a ready release spends Focus." % [TrialRules.GOAL_SCORE, TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
+	rules_label.text = "5 shots · %d points to clear. Five Standard bullseyes score 50." % TrialRules.GOAL_SCORE
+	safe_rules_label.text = "SAFE · 6\nLarge target\nInner-half hit: +1 Focus"
+	standard_rules_label.text = "STANDARD · 10\nMedium target"
+	bold_rules_label.text = "BOLD · 15\nSmall target"
+	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to slow targets for one shot.\nRelease after READY spends 1 Focus; an early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
+	control_rules_label.text = "HOLD LEFT MOUSE to aim and charge. Release after READY to shoot. Misses count."
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -139,6 +158,8 @@ func present(
 	_focus = focus
 	_focus_armed = focus_armed
 	_shot_focused = shot_focused
+	if selection_open and not _selection_open:
+		_selection_page = SelectionPage.RULES
 	_selection_open = selection_open
 	_build_selected = build_selected
 	_target_centers = TargetLayout.centers_at(_range_time)
@@ -159,14 +180,15 @@ func _update_labels() -> void:
 	score_label.text = "SHOT %d / %d     SCORE %d / %d" % [shot_number, _round_size, _total_score, _goal_score]
 	build_overlay.visible = _selection_open
 	back_button.visible = _build_selected
+	_update_selection_page()
 	build_button.disabled = not _build_selected or _shot.phase != ShotModel.Phase.IDLE or (not _impacts.is_empty() and not completed)
 	focus_button.disabled = _selection_open or _focus <= 0 or _shot.phase != ShotModel.Phase.IDLE or completed
 	if _shot_focused:
 		focus_button.text = "FOCUS ACTIVE · TARGETS SLOWED"
 	elif _focus_armed:
-		focus_button.text = "● FOCUS ARMED · %d / %d" % [_focus, TrialRules.MAX_FOCUS]
+		focus_button.text = "NEXT SHOT SLOWED · %d / %d FOCUS" % [_focus, TrialRules.MAX_FOCUS]
 	else:
-		focus_button.text = "FOCUS %d / %d · ARM (F)" % [_focus, TrialRules.MAX_FOCUS]
+		focus_button.text = "FOCUS %d / %d · SLOW NEXT (F)" % [_focus, TrialRules.MAX_FOCUS]
 	retry_button.visible = completed
 	var best_text: String = "—" if _best_score < 0 else str(_best_score)
 	footer_label.text = "%s / %s     BEST %s     FOCUS %d / %d" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text, _focus, TrialRules.MAX_FOCUS]
@@ -174,17 +196,17 @@ func _update_labels() -> void:
 		status_label.text = "TRIAL CLEARED" if _total_score >= _goal_score else "TRIAL FAILED"
 		instruction_label.text = "Retry this character or open\nCharacter Strategy to switch."
 	elif _shot.phase == ShotModel.Phase.DRAW:
-		status_label.text = "FOCUSED DRAW — TARGETS SLOWED" if _shot_focused else "DRAWING — WAIT FOR READY"
-		instruction_label.text = "Hold left mouse to track.\nEarly release keeps Focus."
+		status_label.text = "FOCUS ACTIVE — TARGETS SLOWED" if _shot_focused else "CHARGING — WAIT FOR READY"
+		instruction_label.text = "Hold left mouse to track.\nEarly release cancels."
 	elif _shot.phase == ShotModel.Phase.READY:
 		if _shot.target_locked:
-			status_label.text = "TETHER LOCKED — RELEASE"
+			status_label.text = "AIM SNAPPED TO TARGET"
 		elif _equipped.id == &"pulse_sight":
 			var quick_remaining: float = maxf(TrialRules.VEY_TEMPO_SECONDS - _shot.elapsed, 0.0)
-			status_label.text = "QUICK +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else "QUICK WINDOW CLOSED"
+			status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else "QUICK BONUS EXPIRED"
 		else:
 			status_label.text = "READY — RELEASE ON THE MARK"
-		instruction_label.text = "Inner 8–10 +3 for quick Vey.\nGold reticle is the hit." if _equipped.id == &"pulse_sight" else "Track the moving target.\nGold reticle is the hit."
+		instruction_label.text = "Near center before timer: +3.\nGold reticle shows impact." if _equipped.id == &"pulse_sight" else "Track the moving target.\nGold reticle shows impact."
 	else:
 		status_label.text = "%s / %s" % [_equipped.operator_name.to_upper(), _equipped.operator_role]
 		if _last_score == 0:
@@ -196,13 +218,35 @@ func _update_labels() -> void:
 			elif not _last_bonus.is_empty():
 				status_label.text += " · " + _last_bonus
 		if _focus > 0:
-			instruction_label.text = "Press F to arm Focus.\nHold to aim; release at gold."
+			instruction_label.text = "Press F to slow next shot.\nHold to aim; release at gold."
 		else:
-			instruction_label.text = "Safe inner hit refills Focus.\nHold to aim; release at gold."
+			instruction_label.text = "Hit near Safe's center for Focus.\nHold to aim; release at gold."
 
 
 func _card_text(build: BuildDef) -> String:
-	return "%s / %s\n\n%s\n\n%s\n\nSELECT CHARACTER" % [build.operator_name.to_upper(), build.display_name.to_upper(), build.strategy, build.tradeoff]
+	return "%s / %s\n\n%s\n\n%s\n\nSELECT" % [build.operator_name.to_upper(), build.display_name.to_upper(), build.strategy, build.tradeoff]
+
+
+func _set_selection_page(page: SelectionPage) -> void:
+	_selection_page = page
+	_update_selection_page()
+
+
+func _update_selection_page() -> void:
+	var showing_rules: bool = _selection_page == SelectionPage.RULES
+	heading_label.text = "How the trial works" if showing_rules else "Choose your marksman"
+	rules_label.visible = showing_rules
+	safe_rules_label.visible = showing_rules
+	standard_rules_label.visible = showing_rules
+	bold_rules_label.visible = showing_rules
+	focus_rules_label.visible = showing_rules
+	control_rules_label.visible = showing_rules
+	rules_next_button.visible = showing_rules
+	natural_card.visible = not showing_rules
+	maera_card.visible = not showing_rules
+	vey_card.visible = not showing_rules
+	choose_hint.visible = not showing_rules
+	how_to_play_button.visible = not showing_rules
 
 
 func _draw() -> void:

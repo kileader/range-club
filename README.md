@@ -1,9 +1,9 @@
 # Range Club
 
 A small fantasy-tech target-range prototype about choosing risk and handling
-for each five-shot trial. Choose a character/build on the full-screen strategy
-page, then score 55 points in five shots. Safe scores up to 6, Standard up to
-10, and Bold up to 15. Five Standard centers yield only 50 without a bonus,
+for each five-shot trial. Read the brief rules screen, choose a character on
+the next screen, then score 55 points in five shots. Safe scores up to 6,
+Standard up to 10, and Bold up to 15. Five Standard centers yield only 50 without a bonus,
 so clearing the trial requires stronger targets or a build-specific advantage.
 
 ## Stack
@@ -18,13 +18,13 @@ so clearing the trial requires stronger targets or a build-specific advantage.
 1. Download and extract [Godot 4.7.2 Standard for Windows x86_64](https://godotengine.org/download/archive/4.7.2-stable/).
 2. Import this repository's `project.godot` in the Godot Project Manager.
 3. Open the project and press **F6** to run the selected scene, or **F5** to run the project.
-4. Choose a build and play a five-shot trial; close the window to exit.
+4. Choose a character and play a five-shot trial; close the window to exit.
 
 The targets move on predictable paths. Aim at one with the mouse, hold left
-mouse to draw and steer from the fixed rest point, then release when the gold
+mouse to charge and steer from the fixed rest point, then release when the gold
 impact reticle is on the moving mark. Releasing before **READY** cancels
 without spending a shot. There is no random sway. Press **Esc** to cancel a
-draw.
+shot.
 
 You start with one **Focus** and can hold at most two. Press **F** or the Focus
 button before a shot to arm it. That shot's targets move at half speed; Focus
@@ -33,16 +33,17 @@ one Focus. An early release or **Esc** cancels without spending a shot or Focus.
 
 Each build turns the same rules into a different plan:
 
-- **The Natural / Bare Rig:** balanced steering and no lock. An unfocused
-  center hit on Standard or Bold adds 2 points.
-- **Maera / Gyro Brace:** slower steering. Spending Focus tethers the reticle
-  near a target for that shot; a cyan ring shows the tether.
-- **Vey / Pulse Sight:** faster steering and no tether. Hit ring 8–10 on Standard
-  or Bold within 1.2 seconds of starting the draw to add 3 points.
+- **The Natural / Bare Rig:** balanced aim speed and no assist. A Standard or
+  Bold bullseye without Focus adds 2 points.
+- **Maera / Gyro Brace:** slower aim. Spending Focus snaps the reticle to a
+  nearby target for that shot; a cyan ring shows when it happens.
+- **Vey / Pulse Sight:** faster aim and no snap assist. Hit near the center of
+  Standard or Bold within 1.2 seconds of starting the shot to add 3 points.
 
-The strategy page explains these conditions before play and can be reopened
-between trials. Builds are locked during an active trial. **Retry** keeps the
-current build and resets Focus to one.
+The character screen shows each bonus and drawback before play; the rules
+screen can be revisited from there. Both reopen between trials. Character
+choices are locked during an active trial. **Retry** keeps the current choice
+and resets Focus to one.
 
 The gold reticle is the exact impact point. The footer records your best score.
 Hit marks stay on the moving target; misses stay on the backstop.

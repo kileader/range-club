@@ -49,8 +49,8 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Three character/build presets; bare rig remains selectable and choices
       are locked during each trial.
 - [x] Hit marks remain attached to their moving targets.
-- [x] Full-screen build choice explains the target economy and each build's
-      scoring opportunity and tradeoff.
+- [x] Full-screen rules and character-choice screens separate target economy
+      from each character's bonus and drawback.
 - [x] Five-shot Focus economy: earn on Safe, spend for slower targets, and
       pursue Natural precision, Maera tether, or Vey quick-hit bonuses.
 - [x] Rule assertions for motion, scoring, Focus, selection, and retry.
