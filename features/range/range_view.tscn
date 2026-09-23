@@ -249,16 +249,16 @@ offset_right = 1060.0
 offset_bottom = 510.0
 theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
 theme_override_font_sizes/font_size = 19
-text = "FOCUS · Start with 1 (max 2). Press F to slow targets for one shot.\nRelease after READY spends 1 Focus; an early release cancels."
+text = "FOCUS · Start with 1 (max 2). Press F to slow targets and tighten the circle.\nRelease after READY spends 1 Focus; an early release cancels."
 
 [node name="ControlRules" type="Label" parent="UI/BuildOverlay"]
 offset_left = 220.0
 offset_top = 555.0
 offset_right = 1060.0
-offset_bottom = 590.0
+offset_bottom = 610.0
 theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
 theme_override_font_sizes/font_size = 18
-text = "HOLD LEFT MOUSE to aim and charge. Release after READY to shoot. Misses count."
+text = "Hold mouse: the landing circle shrinks, then widens and pulses.\nRelease after READY; the hit lands randomly inside it. Misses count."
 
 [node name="RulesNextButton" type="Button" parent="UI/BuildOverlay"]
 offset_left = 610.0
@@ -275,7 +275,7 @@ offset_top = 250.0
 offset_right = 485.0
 offset_bottom = 625.0
 theme_override_font_sizes/font_size = 18
-text = "THE NATURAL / BARE RIG\n\nUnfocused center: +2.\nReward precise manual aim.\n\nBalanced steering.\nNo automatic correction.\n\nSELECT"
+text = "THE NATURAL / BARE RIG\n\n+2: bullseye on Standard\nor Bold, without Focus.\n\nBalanced aim speed.\n\nSELECT"
 
 [node name="MaeraCard" type="Button" parent="UI/BuildOverlay"]
 visible = false
@@ -284,7 +284,7 @@ offset_top = 250.0
 offset_right = 773.0
 offset_bottom = 625.0
 theme_override_font_sizes/font_size = 18
-text = "MAERA / GYRO BRACE\n\nSpend Focus to tether.\nPlan your high-value shot.\n\nSlow steering.\nTether is never free.\n\nSELECT"
+text = "MAERA / GYRO BRACE\n\nFocus: much smaller\nlanding circle.\n\nSlow aim speed.\n\nSELECT"
 
 [node name="VeyCard" type="Button" parent="UI/BuildOverlay"]
 visible = false
@@ -293,7 +293,7 @@ offset_top = 250.0
 offset_right = 1061.0
 offset_bottom = 625.0
 theme_override_font_sizes/font_size = 18
-text = "VEY / PULSE SIGHT\n\nQuick inner hit: +3.\nStandard or Bold only.\n\nFast steering, no tether.\nRushing risks a miss.\n\nSELECT"
+text = "VEY / PULSE SIGHT\n\n+3: near-center hit on\nStandard or Bold in 1.2s.\n\nFast aim speed.\n\nSELECT"
 
 [node name="ChooseHint" type="Label" parent="UI/BuildOverlay"]
 visible = false

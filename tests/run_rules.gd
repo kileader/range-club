@@ -44,27 +44,39 @@ func run() -> void:
 
 	var shot: ShotModel = ShotModel.new()
 	shot.start_hold(centers[1])
-	shot.tick(0.2, centers[1], centers)
+	shot.tick(0.2, centers[1])
 	_check(shot.phase == ShotModel.Phase.DRAW, "early draw is not ready")
+	_check(shot.spread_radius < ShotModel.START_SPREAD_RADIUS, "holding shrinks the landing circle")
 	shot.cancel()
 	_check(shot.phase == ShotModel.Phase.IDLE, "cancel clears draw")
-	shot.configure(1.0, 0.0)
+	shot.configure(1.0, 1.0)
 	shot.start_hold(centers[1])
-	shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1], centers)
+	shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
 	_check(shot.phase == ShotModel.Phase.READY, "draw becomes ready")
-	shot.tick(3.0, centers[1], centers)
-	_check(shot.impact_point == centers[1] and not shot.target_locked, "unassisted aim does not sway")
-	shot.configure(0.7, 32.0)
+	shot.tick(ShotModel.PRECISION_PEAK_SECONDS - ShotModel.DRAW_READY_SECONDS, centers[1])
+	_check(is_equal_approx(shot.spread_radius, ShotModel.MIN_SPREAD_RADIUS), "circle reaches its smallest size")
+	shot.tick(1.5, centers[1])
+	_check(shot.spread_radius > ShotModel.MIN_SPREAD_RADIUS, "holding too long widens the circle")
+	_check(ShotModel.spread_at(1.9) > ShotModel.spread_at(2.1), "late circle visibly pulses")
+	shot.configure(0.7, 0.6)
 	shot.start_hold(centers[1] + Vector2(20, 0))
-	shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1], centers)
-	_check(shot.target_locked and shot.impact_point == centers[1], "gyro locks near a target")
-	shot.tick(0.1, later[1], later)
-	_check(shot.target_locked and shot.impact_point == later[1], "gyro tracks a moving target")
-	shot.configure(1.6, 0.0)
+	shot.tick(ShotModel.PRECISION_PEAK_SECONDS, centers[1])
+	_check(is_equal_approx(shot.spread_radius, ShotModel.MIN_SPREAD_RADIUS * 0.6), "Maera Focus tightens spread")
+	_check(shot.impact_point == centers[1], "Maera still steers rather than snapping")
+	shot.configure(1.6, 1.0)
 	shot.start_hold(Vector2(820, 645))
-	shot.tick(0.5, centers[2], centers)
+	shot.tick(0.5, centers[2])
 	_check(shot.aim_point.distance_to(centers[2]) > 0.0, "fast steering still has travel time")
-	_check(not shot.target_locked, "pulse sight has no target lock")
+	var impact_rng := RandomNumberGenerator.new()
+	impact_rng.seed = 1309
+	var sampled_off_center: bool = false
+	for sample_index: int in range(128):
+		var sampled: Vector2 = ShotModel.sample_impact(centers[1], 20.0, impact_rng)
+		_check(sampled.distance_to(centers[1]) <= 20.001, "random impact stays inside visible circle")
+		if sampled.distance_to(centers[1]) > 10.0:
+			sampled_off_center = true
+	_check(sampled_off_center, "impact sampling covers more than the circle center")
+	_check(ShotModel.sample_impact(centers[1], 0.0, impact_rng) == centers[1], "zero-radius test shot is exact")
 
 	var main: Node = load("res://app/main.tscn").instantiate()
 	root.add_child(main)
@@ -85,19 +97,20 @@ func run() -> void:
 	view.focus_requested.emit()
 	_check(main.focus_armed, "Focus can be armed before a shot")
 	view.primary_pressed.emit()
-	_check(main.shot_focused and is_equal_approx(main.shot.lock_radius, 32.0), "Maera's tether requires spent Focus")
+	_check(main.shot_focused and is_equal_approx(main.shot.spread_scale, 0.6), "Maera's tighter circle requires Focus")
 	view.primary_released.emit()
 	_check(main.focus == 1 and main.focus_armed, "early focused release refunds armed Focus")
 	view.primary_pressed.emit()
-	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0], centers)
+	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0])
 	view.visible_reticle = centers[0]
+	view.visible_spread_radius = 0.0
 	view.visible_reticle_valid = true
 	view.visible_target_centers = centers
 	view.primary_released.emit()
 	_check(main.impacts.size() == 1 and main.focus == 1, "focused Safe center spends then restores Focus")
 	_check(main.last_focus_gain == 1 and main.total_score == 6, "Safe refill and score are shown")
 	view.primary_pressed.emit()
-	_check(is_zero_approx(main.shot.lock_radius), "Maera has no free tether after Focus is used")
+	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Maera has no free accuracy boost without Focus")
 	view.cancel_requested.emit()
 	view.build_screen_requested.emit()
 	_check(not main.selection_open, "build cannot change after trial starts")
@@ -105,8 +118,9 @@ func run() -> void:
 	_check(main.equipped.id == &"gyro_brace", "build selection requires strategy screen")
 	for index: int in range(4):
 		view.primary_pressed.emit()
-		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1], centers)
+		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
 		view.visible_reticle = centers[1]
+		view.visible_spread_radius = 0.0
 		view.visible_reticle_valid = true
 		view.visible_target_centers = centers
 		view.primary_released.emit()
@@ -123,8 +137,9 @@ func run() -> void:
 	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.is_empty(), "cancel spends no shot")
 	for index: int in range(5):
 		view.primary_pressed.emit()
-		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0], centers)
+		main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[0])
 		view.visible_reticle = centers[0]
+		view.visible_spread_radius = 0.0
 		view.visible_reticle_valid = true
 		view.visible_target_centers = centers
 		view.primary_released.emit()
@@ -137,19 +152,29 @@ func run() -> void:
 	view.gear_requested.emit(&"pulse_sight")
 	_check(main.equipped.id == &"pulse_sight" and main.impacts.is_empty() and main.focus == 1, "Vey starts a new trial")
 	view.primary_pressed.emit()
-	_check(is_zero_approx(main.shot.lock_radius), "Vey has no tether")
-	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[2], centers)
+	_check(is_equal_approx(main.shot.spread_scale, 1.0), "Vey has ordinary spread without Focus")
+	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[2])
 	view.visible_reticle = centers[2]
+	view.visible_spread_radius = 0.0
 	view.visible_reticle_valid = true
 	view.visible_target_centers = centers
 	view.primary_released.emit()
 	_check(main.total_score == 18 and main.last_bonus == "QUICK HIT +3", "Vey's quick shot earns tempo bonus")
+	main.impact_rng.seed = 1309
+	view.primary_pressed.emit()
+	main.shot.tick(ShotModel.DRAW_READY_SECONDS, centers[1])
+	view.visible_reticle = centers[1]
+	view.visible_spread_radius = 20.0
+	view.visible_reticle_valid = true
+	view.visible_target_centers = centers
+	view.primary_released.emit()
+	_check(main.impacts[1].position_at(centers).distance_to(centers[1]) <= 20.001, "accepted hit stays inside the displayed circle")
 	view.cancel_requested.emit()
 	view.build_screen_requested.emit()
 	_check(not main.selection_open, "strategy screen cannot interrupt an active trial")
 
 	if failures == 0:
-		print("All target, Focus, build, and trial assertions passed.")
+		print("All target, dispersion, Focus, build, and trial assertions passed.")
 	quit(1 if failures > 0 else 0)
 
 

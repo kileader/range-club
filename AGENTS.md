@@ -5,7 +5,7 @@
 - Use Godot 4.7.2 Standard, typed GDScript, and the Compatibility renderer.
 - Keep scenes beside their view scripts, use snake_case paths, and give named classes PascalCase names.
 - Keep input and drawing in views. Add controller-owned state and scene-independent rules when gameplay requires them.
-- Score in target-local coordinates with radius normalized to 1. Release hits the reticle presented to the player; no hidden random error or physics-authoritative scoring.
+- Score in target-local coordinates with radius normalized to 1. The released shot lands randomly inside the dispersion circle last presented to the player, never outside it; score against the target positions shown in that same frame. Do not use physics-authoritative scoring.
 - Keep authored Resources read-only and runtime values separate when content is introduced.
 - Track script `.uid` files. Ignore `.godot/`, `.tools/`, `builds/`, and credentials.
 - Before committing, import the project headlessly, check startup output for errors, and visually inspect changed presentation. Run meaningful rule tests once rules exist.

@@ -3,8 +3,9 @@
 A small fantasy-tech target-range prototype about choosing risk and handling
 for each five-shot trial. Read the brief rules screen, choose a character on
 the next screen, then score 55 points in five shots. Safe scores up to 6,
-Standard up to 10, and Bold up to 15. Five Standard centers yield only 50 without a bonus,
-so clearing the trial requires stronger targets or a build-specific advantage.
+Standard up to 10, and Bold up to 15. Five Standard centers yield only 50
+without a bonus, so clearing the trial requires stronger targets or a
+character-specific advantage.
 
 ## Stack
 
@@ -20,24 +21,26 @@ so clearing the trial requires stronger targets or a build-specific advantage.
 3. Open the project and press **F6** to run the selected scene, or **F5** to run the project.
 4. Choose a character and play a five-shot trial; close the window to exit.
 
-The targets move on predictable paths. Aim at one with the mouse, hold left
-mouse to charge and steer from the fixed rest point, then release when the gold
-impact reticle is on the moving mark. Releasing before **READY** cancels
-without spending a shot. There is no random sway. Press **Esc** to cancel a
-shot.
+The targets move on predictable paths. Hold left mouse to charge and steer
+from the fixed rest point. The visible landing circle shrinks until 1.5
+seconds, then widens and pulses as a penalty for holding longer. Release after
+**READY**; the shot lands at a random point inside the last circle actually
+shown. A miss still spends a shot. Releasing early or pressing **Esc** cancels
+without spending one. There is no passive aim sway.
 
 You start with one **Focus** and can hold at most two. Press **F** or the Focus
-button before a shot to arm it. That shot's targets move at half speed; Focus
-is spent when you release a ready shot. A Safe inner hit (ring 6–10) restores
+button before a shot to arm it. That shot's targets move at half speed and
+its landing circle is smaller; Focus is spent when you release a ready shot.
+A Safe inner hit (ring 6–10) restores
 one Focus. An early release or **Esc** cancels without spending a shot or Focus.
 
 Each build turns the same rules into a different plan:
 
-- **The Natural / Bare Rig:** balanced aim speed and no assist. A Standard or
+- **The Natural / Bare Rig:** balanced aim speed. A Standard or
   Bold bullseye without Focus adds 2 points.
-- **Maera / Gyro Brace:** slower aim. Spending Focus snaps the reticle to a
-  nearby target for that shot; a cyan ring shows when it happens.
-- **Vey / Pulse Sight:** faster aim and no snap assist. Hit near the center of
+- **Maera / Gyro Brace:** slower aim. Spending Focus makes the landing circle
+  40% smaller, improving her odds without guaranteeing a hit.
+- **Vey / Pulse Sight:** faster aim. Hit near the center of
   Standard or Bold within 1.2 seconds of starting the shot to add 3 points.
 
 The character screen shows each bonus and drawback before play; the rules
@@ -45,8 +48,8 @@ screen can be revisited from there. Both reopen between trials. Character
 choices are locked during an active trial. **Retry** keeps the current choice
 and resets Focus to one.
 
-The gold reticle is the exact impact point. The footer records your best score.
-Hit marks stay on the moving target; misses stay on the backstop.
+The gold circle is the full possible landing area. The footer records your
+best score. Hit marks stay on the moving target; misses stay on the backstop.
 The earlier sway and three-press timing experiments remain in Git history.
 
 For this local checkout, the portable editor is already in `.tools/godot/`:
@@ -71,7 +74,8 @@ by Git; put a `.gdignore` file inside it if you keep tools there yourself.
 
 The version must start with `4.7.2.stable`. Check the output for errors as well as
 the exit code. The assertions cover ring boundaries, moving target positions,
-shot phases, Focus costs and bonuses, five accepted shots, and retry. They
+shot phases, dispersion bounds, Focus costs and bonuses, five accepted shots,
+and retry. They
 cannot judge feel.
 Current visual and export checks are recorded in
 [the prototype checklist](docs/prototype_checklist.md).
@@ -109,17 +113,19 @@ Git. The `.gdignore` prevents Godot from importing local build output.
 The presentation uses a 1280 × 800 design canvas, scaled proportionally with
 letterboxing at other aspect ratios. Scoring uses target-local coordinates with
 the target radius normalized to 1, so window size cannot change the ring score.
-No hidden random error is added after release. The controller records the last
-reticle sample that was actually drawn, avoiding a one-frame input/render mismatch.
+The controller samples inside the last landing circle that was actually drawn
+and scores against those displayed target positions, avoiding a one-frame
+input/render mismatch.
 
 ## Next decision
 
-Play a few trials with each build. Note whether deciding when to earn or spend
-Focus feels strategic, whether misses feel fair, and whether one build
-dominates. Tune the motion and scoring before adding longer-run progression.
+Play a few trials with each character. Note whether the visible landing circle
+makes misses understandable, whether the late-hold penalty changes release
+decisions, and whether Maera still feels automatic. Tune the spread curve and
+score goal before adding longer-run progression.
 
 The current opening screen selects a character with a fixed signature rig.
-The later roguelite slice can retain that opening character choice and add
-between-round rig upgrades, once the five-shot trial has a satisfying baseline.
+A future run can retain that opening choice and add rig building, distinct
+encounters, and run-ending failure once the five-shot trial is satisfying.
 
 No remote repository or source license has been selected yet.

@@ -31,10 +31,10 @@ The rival encounter and fuller character presentation belong to later slices.
 ## Yusuf Dikeç — character and build philosophy
 
 - **In the range now:** the original veteran marksman **The Natural** uses the
-  Bare Rig in the first trial and remains selectable afterward. It has no hidden
-  bonus. Maera the rune smith uses a target-tethering brace; Vey the arc scout
-  uses a faster sight without focus lock. These presets make the handling
-  tradeoff part of each marksman's identity.
+  Bare Rig and rewards an unfocused bullseye. Maera the rune smith uses Focus
+  to tighten the landing circle; Vey the arc scout moves aim quickly and earns
+  a bonus for fast, accurate shots. All three are selectable from the start.
+  These presets make the handling tradeoff part of each marksman's identity.
 - **Later character presentation:** give The Natural an original portrait and
   dialogue about a clear release and sparse kit. A credits or inspiration note
   can name Dikeç directly. Air-pistol shooting is the real-world inspiration;

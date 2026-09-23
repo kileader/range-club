@@ -52,6 +52,7 @@ const RING_COLORS: Array[Color] = [
 @onready var back_button: Button = $UI/BuildOverlay/BackButton
 
 var visible_reticle: Vector2 = Vector2.ZERO
+var visible_spread_radius: float = 0.0
 var visible_reticle_valid: bool = false
 var visible_target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
 
@@ -94,8 +95,8 @@ func _ready() -> void:
 	safe_rules_label.text = "SAFE · 6\nLarge target\nInner-half hit: +1 Focus"
 	standard_rules_label.text = "STANDARD · 10\nMedium target"
 	bold_rules_label.text = "BOLD · 15\nSmall target"
-	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to slow targets for one shot.\nRelease after READY spends 1 Focus; an early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
-	control_rules_label.text = "HOLD LEFT MOUSE to aim and charge. Release after READY to shoot. Misses count."
+	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to slow targets and tighten the circle.\nRelease after READY spends 1 Focus; an early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
+	control_rules_label.text = "Hold mouse: the landing circle shrinks, then widens and pulses.\nRelease after READY; the hit lands randomly inside it. Misses count."
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -197,16 +198,14 @@ func _update_labels() -> void:
 		instruction_label.text = "Retry this character or open\nCharacter Strategy to switch."
 	elif _shot.phase == ShotModel.Phase.DRAW:
 		status_label.text = "FOCUS ACTIVE — TARGETS SLOWED" if _shot_focused else "CHARGING — WAIT FOR READY"
-		instruction_label.text = "Hold left mouse to track.\nEarly release cancels."
+		instruction_label.text = "Hold to shrink the circle.\nEarly release cancels."
 	elif _shot.phase == ShotModel.Phase.READY:
-		if _shot.target_locked:
-			status_label.text = "AIM SNAPPED TO TARGET"
-		elif _equipped.id == &"pulse_sight":
+		if _equipped.id == &"pulse_sight":
 			var quick_remaining: float = maxf(TrialRules.VEY_TEMPO_SECONDS - _shot.elapsed, 0.0)
 			status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else "QUICK BONUS EXPIRED"
 		else:
-			status_label.text = "READY — RELEASE ON THE MARK"
-		instruction_label.text = "Near center before timer: +3.\nGold reticle shows impact." if _equipped.id == &"pulse_sight" else "Track the moving target.\nGold reticle shows impact."
+			status_label.text = "READY — RELEASE WHILE TIGHT"
+		instruction_label.text = "Near center before timer: +3.\nHit lands inside gold circle." if _equipped.id == &"pulse_sight" else "Track the moving target.\nHit lands inside gold circle."
 	else:
 		status_label.text = "%s / %s" % [_equipped.operator_name.to_upper(), _equipped.operator_role]
 		if _last_score == 0:
@@ -218,9 +217,9 @@ func _update_labels() -> void:
 			elif not _last_bonus.is_empty():
 				status_label.text += " · " + _last_bonus
 		if _focus > 0:
-			instruction_label.text = "Press F to slow next shot.\nHold to aim; release at gold."
+			instruction_label.text = "Press F to tighten next shot.\nHold to shrink the circle."
 		else:
-			instruction_label.text = "Hit near Safe's center for Focus.\nHold to aim; release at gold."
+			instruction_label.text = "Hit near Safe's center for Focus.\nHold to shrink the circle."
 
 
 func _card_text(build: BuildDef) -> String:
@@ -265,13 +264,12 @@ func _draw() -> void:
 	if _shot.phase == ShotModel.Phase.IDLE:
 		_draw_crosshair(Vector2(820.0, 645.0), Color("b6c7b6"), 12.0)
 	elif _shot.phase == ShotModel.Phase.DRAW:
-		_draw_crosshair(_shot.aim_point, Color("b6c7b6"), 11.0)
+		_draw_spread_circle(_shot.aim_point, _shot.spread_radius, false)
 	elif _shot.phase == ShotModel.Phase.READY:
 		visible_reticle = _shot.impact_point
+		visible_spread_radius = _shot.spread_radius
 		visible_reticle_valid = true
-		_draw_crosshair(visible_reticle, Color("ffd269"), 18.0)
-		if _shot.target_locked:
-			draw_arc(visible_reticle, 29.0, 0, TAU, 48, Color("8bd7c7"), 2.0, true)
+		_draw_spread_circle(visible_reticle, visible_spread_radius, true)
 	_draw_gauge()
 
 
@@ -314,8 +312,15 @@ func _draw_crosshair(point: Vector2, color: Color, size: float) -> void:
 	draw_line(point + Vector2(0, size - 1), point + Vector2(0, size + 6), color, 2.0, true)
 
 
+func _draw_spread_circle(center: Vector2, radius: float, ready: bool) -> void:
+	var color: Color = Color("ffd269") if ready else Color("b6c7b6")
+	draw_circle(center, radius, Color(color.r, color.g, color.b, 0.12), true, -1.0, true)
+	draw_arc(center, radius, 0.0, TAU, 64, color, 2.0, true)
+	draw_circle(center, 2.5, color, true, -1.0, true)
+
+
 func _draw_gauge() -> void:
-	if _shot.phase != ShotModel.Phase.DRAW and _shot.phase != ShotModel.Phase.READY:
+	if _shot.phase != ShotModel.Phase.DRAW:
 		return
 	var gauge: Rect2 = Rect2(650.0, 682.0, 340.0, 18.0)
 	draw_rect(gauge, Color("2d3e32"))

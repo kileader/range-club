@@ -22,9 +22,11 @@ var focus_armed: bool = false
 var shot_focused: bool = false
 var selection_open: bool = true
 var build_selected: bool = false
+var impact_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
 func _ready() -> void:
+	impact_rng.randomize()
 	range_view.primary_pressed.connect(_on_primary_pressed)
 	range_view.primary_released.connect(_on_primary_released)
 	range_view.gear_requested.connect(_on_gear_requested)
@@ -40,7 +42,7 @@ func _physics_process(delta: float) -> void:
 	if not selection_open and impacts.size() < TrialRules.SHOTS_PER_TRIAL:
 		var time_scale: float = TrialRules.FOCUS_TIME_SCALE if shot_focused else 1.0
 		range_time += delta * time_scale
-		shot.tick(delta, range_view.mouse_aim(), TargetLayout.centers_at(range_time))
+		shot.tick(delta, range_view.mouse_aim())
 	_refresh_view()
 
 
@@ -49,7 +51,7 @@ func _on_primary_pressed() -> void:
 		return
 	if shot.phase == ShotModel.Phase.IDLE:
 		shot_focused = focus_armed and focus > 0
-		shot.configure(equipped.steering_scale, equipped.lock_radius if shot_focused else 0.0)
+		shot.configure(equipped.steering_scale, equipped.focus_spread_scale if shot_focused else 1.0)
 		shot.start_hold(REST_POINT)
 	_refresh_view()
 
@@ -62,15 +64,16 @@ func _on_primary_released() -> void:
 		shot_focused = false
 	elif shot.phase == ShotModel.Phase.READY:
 		if range_view.visible_reticle_valid:
-			_accept_shot(range_view.visible_reticle)
+			var impact: Vector2 = ShotModel.sample_impact(range_view.visible_reticle, range_view.visible_spread_radius, impact_rng)
+			_accept_shot(impact)
 		else:
 			shot.cancel()
 			shot_focused = false
 	_refresh_view()
 
 
-func _accept_shot(visible_impact: Vector2) -> void:
-	var result: Dictionary = TargetLayout.score_at(visible_impact, range_view.visible_target_centers)
+func _accept_shot(impact: Vector2) -> void:
+	var result: Dictionary = TargetLayout.score_at(impact, range_view.visible_target_centers)
 	var resolved: Dictionary = TrialRules.resolve_hit(result, equipped.id, shot_focused, shot.elapsed)
 	last_score = resolved.points
 	last_target = result.target
@@ -78,7 +81,7 @@ func _accept_shot(visible_impact: Vector2) -> void:
 	last_focus_gain = resolved.focus_gain
 	total_score += last_score
 	var hit_target: int = result.target_index
-	var stored_point: Vector2 = visible_impact
+	var stored_point: Vector2 = impact
 	if hit_target >= 0:
 		stored_point -= range_view.visible_target_centers[hit_target]
 	impacts.append(ImpactRecord.new(hit_target, stored_point))

@@ -52,23 +52,20 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Full-screen rules and character-choice screens separate target economy
       from each character's bonus and drawback.
 - [x] Five-shot Focus economy: earn on Safe, spend for slower targets, and
-      pursue Natural precision, Maera tether, or Vey quick-hit bonuses.
+      pursue Natural precision, Maera's tighter landing circle, or Vey quick-hit bonuses.
+- [x] Replace perfect lock-on with visible random spread. Holding shrinks the
+      landing circle to a peak, then it blooms and pulses; impact is sampled
+      only inside the last displayed circle.
 - [x] Rule assertions for motion, scoring, Focus, selection, and retry.
 - [x] Inspect the strategy and in-round UI at 1280 × 800 and 960 × 720;
       verify character selection, Focus, and board mouse input.
 - [x] Export and launch the current Windows build (60 frames, exit code 0).
-- [ ] Kevin plays the range and reports whether Focus choices feel strategic.
+- [ ] Kevin plays the new dispersion version and reports whether misses feel
+      fair, late holding creates tension, and Maera no longer feels automatic.
 
 ## Later
 
-Tune from playtest feedback, then consider a tiny three-round run. Keep the
-opening character choice and the same three targets. Raise the score goal each
-round (45 → 55 → 65 is a starting point) and let the player build the rig
-between rounds. Offer three visible rig modules after each cleared round and
-pick one permanent module: handling, Focus economy, or demanding-hit scoring.
-Two picks across three rounds are enough for the first run. Tune the thresholds
-against the actual upgrade effects. Do not add progression just to disguise a
-weak shooting loop. A deck and draw order are outside this version.
-
-Target scenarios can be considered later if score goals and rig upgrades alone
-stop creating meaningful decisions. Keep one scenario for this slice.
+Tune the shot mechanic from playtest feedback before building a run. If the
+roguelike layer is pursued, it needs distinct encounters, meaningful route and
+rig choices, temporary builds, and run-ending failure. Merely repeating this
+trial at higher score goals would not establish that loop.
