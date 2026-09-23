@@ -142,14 +142,16 @@ func run() -> void:
 	_check(main.phase == RunController.RunPhase.REWARD and run_ui.visible, "clear opens the reward screen")
 	_check(run_ui.get_node("Panel/NextTrial").text.contains("STANDARD RELAY"), "reward previews the next scenario")
 	_check(main.offers.size() == 3 and main.offers[0] != main.offers[1] and main.offers[1] != main.offers[2], "reward contains three distinct choices")
+	_check(run_ui.get_node("Panel/Installed").text.contains("FOCUS RESETS TO 1"), "reward explains the next trial's Focus reset")
 	run_ui.upgrade_selected.emit(&"not_an_offer")
 	_check(main.phase == RunController.RunPhase.REWARD and main.upgrades.is_empty(), "unoffered module cannot be installed")
 	view.primary_pressed.emit(centers[2])
 	_check(main.impacts.size() == 5, "reward phase rejects range input")
 	var first_upgrade: StringName = main.offers[0]
+	main.focus = 0
 	run_ui.get_node("Panel/OfferOne").emit_signal("pressed")
 	_check(main.stage == 1 and main.phase == RunController.RunPhase.SHOOT and not run_ui.visible, "choosing a module starts trial two")
-	_check(main.upgrades == [first_upgrade] and main.focus == 1 and main.total_score == 0 and main.impacts.is_empty(), "module and Focus carry while trial score resets")
+	_check(main.upgrades == [first_upgrade] and main.focus == 1 and main.total_score == 0 and main.impacts.is_empty(), "empty Focus resets to one while the module carries")
 	_check(view.get_node("UI/StageLabel").text.contains("STANDARD RELAY"), "range displays the active scenario")
 	_check(not view.get_node("UI/BuildButton").visible, "character is fixed after trial one")
 	var time_before_menu: float = main.range_time
@@ -166,11 +168,11 @@ func run() -> void:
 	for index: int in range(4):
 		_shoot_at(main, view, centers[1], centers)
 	_check(main.total_score >= 52 and main.total_score <= 56 and main.phase == RunController.RunPhase.REWARD, "Safe then four Standard hits clear the relay")
-	_check(main.focus == 2, "Safe restores Focus for later trials")
+	_check(main.focus == 2, "Safe can raise Focus to two within a trial")
 	_check(main.offers.size() == 3 and not main.offers.has(first_upgrade), "later offers exclude installed modules")
 	var second_upgrade: StringName = main.offers[0]
 	run_ui.get_node("Panel/OfferOne").emit_signal("pressed")
-	_check(main.stage == 2 and main.upgrades == [first_upgrade, second_upgrade] and main.focus == 2, "second module and Focus reach the final trial")
+	_check(main.stage == 2 and main.upgrades == [first_upgrade, second_upgrade] and main.focus == 1, "full Focus resets to one while both modules reach the final trial")
 	for index: int in range(3):
 		_shoot_at(main, view, centers[2], centers)
 	_shoot_at(main, view, centers[1] + Vector2(77, 0), centers)

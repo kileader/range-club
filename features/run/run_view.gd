@@ -31,7 +31,7 @@ func show_reward(completed_stage: int, score: int, next_id: StringName, offers: 
 	heading.text = "TRIAL %d CLEARED" % (completed_stage + 1)
 	summary.text = "%s scored %d. Choose one rig module for the next trial." % [character, score]
 	next_trial.text = "NEXT · %s · %d–%d\n%s" % [RunRules.scenario_title(next_id), RunRules.goal_for_stage(completed_stage + 1), RunRules.cap_for_stage(completed_stage + 1), RunRules.scenario_rule(next_id)]
-	installed.text = "INSTALLED · %s" % _upgrade_list(upgrades)
+	installed.text = "INSTALLED · %s     FOCUS RESETS TO %d" % [_upgrade_list(upgrades), TrialRules.START_FOCUS]
 	for index: int in range(offer_buttons.size()):
 		var button: Button = offer_buttons[index]
 		button.visible = index < _offers.size()

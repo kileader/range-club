@@ -140,7 +140,7 @@ func _on_upgrade_selected(upgrade_id: StringName) -> void:
 	stage += 1
 	phase = RunPhase.SHOOT
 	run_view.hide_screen()
-	_reset_trial(false)
+	_reset_trial()
 
 
 func _on_build_screen_requested() -> void:
@@ -193,7 +193,7 @@ func _on_gear_requested(gear_id: StringName) -> void:
 	build_selected = true
 	selection_open = false
 	phase = RunPhase.SHOOT
-	_reset_trial(true)
+	_reset_trial()
 
 
 func _on_cancel_requested() -> void:
@@ -221,10 +221,10 @@ func _start_new_run() -> void:
 	selection_open = true
 	best_score = -1
 	run_view.hide_screen()
-	_reset_trial(true)
+	_reset_trial()
 
 
-func _reset_trial(reset_focus: bool) -> void:
+func _reset_trial() -> void:
 	range_view.stop_sound_feedback()
 	shot.cancel()
 	impacts.clear()
@@ -234,8 +234,7 @@ func _reset_trial(reset_focus: bool) -> void:
 	last_bonus = ""
 	last_focus_gain = 0
 	range_time = 0.0
-	if reset_focus:
-		focus = TrialRules.START_FOCUS
+	focus = TrialRules.START_FOCUS
 	focus_armed = false
 	shot_focused = false
 	_refresh_view()

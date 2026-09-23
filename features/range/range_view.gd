@@ -121,7 +121,7 @@ func _ready() -> void:
 	safe_rules_label.text = "SAFE · 1–6\nLarge target\nInner half: 6 +1 Focus"
 	standard_rules_label.text = "STANDARD · 1–10\nMedium target"
 	bold_rules_label.text = "BOLD · 6–15\nSmall target"
-	focus_rules_label.text = "FOCUS · Start with %d (max %d). Press F to tighten the landing circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
+	focus_rules_label.text = "FOCUS · Each trial starts with %d (max %d). Press F to tighten the circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
 	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hold until they meet.\nRelease after READY. Waiting longer widens gold; hits land randomly inside."
 
 

@@ -5,8 +5,8 @@ Choose a character, then clear three five-shot trials with score windows of
 **48–52**, **52–56**, and **56–60**. Enter the window to clear; going above its
 cap busts immediately. Finishing five shots below the window ends the run.
 After each of the first two clears, choose one of three random rig modules.
-The next trial's special rule is shown before that choice. Character, modules,
-and remaining Focus carry forward; score and shots reset.
+The next trial's special rule is shown before that choice. Character and modules
+carry forward; Focus resets to one, and score and shots reset.
 Use **View Rig** during a trial to review installed modules and their effects.
 
 ## Stack
@@ -38,7 +38,8 @@ Each target has ten rings. The outer ring is 1 and each ring inward adds 1.
 Safe caps the ring score at 6 (range 1–6), Standard scores the ring value
 (1–10), and Bold adds 5 (6–15). Hits outside a target score 0.
 
-You start with one **Focus** and can hold at most two. Press **F** or the Focus
+Each trial starts with one **Focus** and you can hold at most two within that
+trial. Press **F** or the Focus
 button before a shot to arm it. Focus makes the landing circle smaller.
 It also halves target speed for The Natural and Vey; Maera's targets keep
 moving at full speed. Focus is spent when you release a ready shot.
@@ -163,7 +164,7 @@ input/render mismatch.
 
 Play several complete runs with different characters. Check whether the three
 offered modules lead to different plans for the revealed next trial, whether
-Focus carry matters, and whether the 52–56 and 56–60 windows remain reachable
+whether starting each trial with one Focus matters, and whether the 52–56 and 56–60 windows remain reachable
 without forcing Bold on every shot. Tune the run before adding more content.
 
 No source license has been selected yet.

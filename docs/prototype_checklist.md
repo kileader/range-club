@@ -85,8 +85,8 @@ challenging, and the player can compare two upgrades against a bare rig.
       choosing a rig module.
 - [x] Three random nonduplicate module offers after each nonfinal clear;
       choices alter scoring or Focus rules and remain for the run.
-- [x] Character and Focus carry; score and shots reset between trials. A new
-      run clears temporary modules and reshuffles scenarios.
+- [x] Character and modules carry; Focus starts each trial at one, while score
+      and shots reset. A new run clears temporary modules and reshuffles scenarios.
 - [x] Assertions cover offers, stacking, a full win, failure, bust, and reset.
 - [x] Replace one score-only module with a Stabilizing Sight that extends the
       smallest-circle release window without changing its best precision.
