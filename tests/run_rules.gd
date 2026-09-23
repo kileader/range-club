@@ -28,7 +28,7 @@ func run() -> void:
 	_check(shot.phase == ShotModel.Phase.TIMING_RELEASE, "timing draw locks")
 	_check(is_equal_approx(shot.impact_point.y, 416.0), "ideal draw has no vertical offset")
 	shot.tick(ShotModel.TIMING_SWEEP_SECONDS / 4.0, Vector2.ZERO)
-	_check(shot.impact_point.x > 900.0, "timed sweep moves impact horizontally")
+	_check(shot.impact_point.x > 880.0, "timed sweep moves impact horizontally")
 
 	var main: Node = load("res://app/main.tscn").instantiate()
 	root.add_child(main)

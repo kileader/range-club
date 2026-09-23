@@ -35,8 +35,11 @@ or retry without carrying over arrows or score.
       launched a Windows build outside the editor.
 - [ ] Kevin plays several rounds of each and chooses what to keep or change.
 
-The current values for draw speed, sweep speed, sway, and fatigue are starting
-points, not balance claims.
+First feedback: hold and sway felt much easier, and the timing steps were not
+clear. The timing gauge now sits below the target with numbered instructions.
+Its draw is slower, release sweep is slower and narrower, and draw error moves
+the impact less vertically. Compare again before changing the hold mode. These
+values are playtest starting points, not balance claims.
 
 ## Later
 

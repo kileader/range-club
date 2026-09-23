@@ -26,7 +26,8 @@ it. Releasing before **READY** cancels without spending an arrow. Waiting lets
 the sway settle at first, then fatigue increases it.
 
 **3-Press Timing:** Point at a spot on the target and click once to lock your
-aim and start the draw gauge. Click near the gold gauge mark to set the draw;
+aim and start the draw gauge below the target. Click when the bar reaches the
+gold box to set the draw;
 this determines vertical placement. Click a third time when the gold reticle
 sweeps over your chosen spot; this determines horizontal placement. The second
 click also works on the gauge itself. Press **Esc** to cancel either shot.

@@ -131,18 +131,22 @@ func _update_labels() -> void:
 		status_label.text = "READY — RELEASE ON THE MARK"
 		instruction_label.text = "The gold reticle is the hit.\nIt settles, then fatigue grows."
 	elif _shot.phase == ShotModel.Phase.TIMING_DRAW:
-		status_label.text = "SET DRAW — CLICK NEAR GOLD"
-		instruction_label.text = "Aimed point is locked.\nClick near the gold gauge mark."
+		status_label.text = "2 / 3  SET THE DRAW"
+		instruction_label.text = "Watch the bar below the target.\nClick when it enters the gold box."
 	elif _shot.phase == ShotModel.Phase.TIMING_RELEASE:
-		status_label.text = "TIME RELEASE — CLICK TO HIT"
-		instruction_label.text = "Click when the gold reticle\nreaches your chosen spot."
+		status_label.text = "3 / 3  RELEASE THE SHOT"
+		instruction_label.text = "Watch the gold circle. Click\nwhen it meets your pale aim mark."
 	else:
 		status_label.text = "SIMPLE KIT. STEADY HAND."
 		if _last_score == 0:
 			status_label.text = "MISS — TRY THE NEXT ARROW"
 		elif _last_score > 0:
 			status_label.text = "RING %d — TRY THE NEXT ARROW" % _last_score
-		instruction_label.text = "Hold left mouse to draw.\nRelease at the gold reticle." if _mode == ShotMode.HOLD else "Click to draw, click to set,\nclick to release."
+		if _mode == ShotMode.HOLD:
+			instruction_label.text = "Hold left mouse to draw.\nRelease at the gold reticle."
+		else:
+			status_label.text = "1 / 3  AIM AND CLICK"
+			instruction_label.text = "Point at the target and click.\nThen watch the bar below it."
 
 
 func _draw() -> void:
@@ -201,12 +205,15 @@ func _draw_crosshair(point: Vector2, color: Color, size: float) -> void:
 func _draw_gauge() -> void:
 	if _shot.phase != ShotModel.Phase.HOLD_DRAW and _shot.phase != ShotModel.Phase.HOLD_READY and _shot.phase != ShotModel.Phase.TIMING_DRAW:
 		return
-	var gauge: Rect2 = Rect2(64.0, 697.0, 286.0, 14.0)
+	var gauge: Rect2 = Rect2(650.0, 682.0, 340.0, 18.0)
 	draw_rect(gauge, Color("2d3e32"))
 	draw_rect(Rect2(gauge.position, Vector2(gauge.size.x * _shot.draw_level, gauge.size.y)), Color("83a998"))
 	if _shot.phase == ShotModel.Phase.TIMING_DRAW:
 		var ideal_x: float = gauge.position.x + gauge.size.x * ShotModel.IDEAL_DRAW
-		draw_rect(Rect2(ideal_x - 6.0, gauge.position.y - 3.0, 12.0, gauge.size.y + 6.0), Color("ffd269"), false, 2.0)
+		var sweet_zone: Rect2 = Rect2(ideal_x - 43.0, gauge.position.y - 3.0, 86.0, gauge.size.y + 6.0)
+		draw_rect(sweet_zone, Color(1.0, 0.82, 0.41, 0.2))
+		draw_rect(sweet_zone, Color("ffd269"), false, 2.0)
+		draw_line(Vector2(ideal_x, sweet_zone.position.y), Vector2(ideal_x, sweet_zone.end.y), Color("ffd269"), 2.0)
 		visible_draw_level = _shot.draw_level
 		visible_draw_valid = true
 

@@ -5,9 +5,11 @@ enum Phase { IDLE, HOLD_DRAW, HOLD_READY, TIMING_DRAW, TIMING_RELEASE }
 
 const DRAW_READY_SECONDS: float = 0.52
 const HOLD_STEER_SPEED: float = 520.0
-const TIMING_DRAW_SECONDS: float = 0.85
-const TIMING_SWEEP_SECONDS: float = 0.72
+const TIMING_DRAW_SECONDS: float = 0.95
+const TIMING_SWEEP_SECONDS: float = 1.2
 const IDEAL_DRAW: float = 0.72
+const DRAW_VERTICAL_SCALE: float = 130.0
+const TIMING_SWEEP_WIDTH: float = 65.0
 
 var phase: Phase = Phase.IDLE
 var aim_point: Vector2 = Vector2.ZERO
@@ -39,7 +41,7 @@ func lock_draw(visible_level: float) -> void:
 	locked_draw = clampf(visible_level, 0.0, 1.0)
 	phase = Phase.TIMING_RELEASE
 	elapsed = 0.0
-	impact_point = aim_point + Vector2(0.0, (IDEAL_DRAW - locked_draw) * 190.0)
+	impact_point = aim_point + Vector2(0.0, (IDEAL_DRAW - locked_draw) * DRAW_VERTICAL_SCALE)
 
 
 func cancel() -> void:
@@ -73,5 +75,5 @@ func tick(delta: float, mouse_aim: Vector2) -> void:
 			draw_level = cycle if cycle <= 1.0 else 2.0 - cycle
 		Phase.TIMING_RELEASE:
 			elapsed += delta
-			var horizontal: float = sin(elapsed * TAU / TIMING_SWEEP_SECONDS) * 92.0
-			impact_point = aim_point + Vector2(horizontal, (IDEAL_DRAW - locked_draw) * 190.0)
+			var horizontal: float = sin(elapsed * TAU / TIMING_SWEEP_SECONDS) * TIMING_SWEEP_WIDTH
+			impact_point = aim_point + Vector2(horizontal, (IDEAL_DRAW - locked_draw) * DRAW_VERTICAL_SCALE)
