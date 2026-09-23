@@ -65,16 +65,18 @@ challenging, and the player can compare two upgrades against a bare rig.
       window in the in-round status.
 - [x] Move Vey's precision peak inside his bonus window and remove the
       redundant ready gauge.
-- [x] Add a darts-style score window: clear on entering it, bust above 60,
-      or fail below it after five shots. The first test used 55–60.
+- [x] Add a darts-style score window: clear on entering it, bust above the
+      cap, or fail below it after five shots. The first test used 55–60.
 - [x] Rule assertions for motion, scoring, Focus, selection, and retry.
 - [x] Inspect the strategy and in-round UI at 1280 × 800 and 960 × 720;
       verify character selection, Focus, and board mouse input.
 - [x] Export and launch the current Windows build (60 frames, exit code 0).
 - [x] Export the current trial for web and verify its opening flow in a browser.
-- [ ] Playtest the narrower 58–60 window against 55–60: does removing the
-      automatic two-Safe finish at 45 create deliberate Standard, Safe, and
-      outer-ring choices? Focus and character identities need separate work.
+- [x] Playtest the narrower 58–60 window. Kevin found four Bold shots followed
+      by a focused Standard or Safe finish was still the easiest route.
+- [ ] Playtest 48–52 with Bold radius 24 (formerly 45). Do mixed target routes
+      compete with Bold-first play, or is the new Bold target simply frustrating?
+      Focus and character identities need separate work.
 
 ## Later
 

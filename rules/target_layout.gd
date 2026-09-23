@@ -2,7 +2,7 @@ class_name TargetLayout
 extends RefCounted
 
 const CENTERS: Array[Vector2] = [Vector2(530.0, 390.0), Vector2(820.0, 390.0), Vector2(1080.0, 390.0)]
-const RADII: Array[float] = [118.0, 78.0, 45.0]
+const RADII: Array[float] = [118.0, 78.0, 24.0]
 const NAMES: Array[String] = ["SAFE", "STANDARD", "BOLD"]
 const MAX_SCORES: Array[int] = [6, 10, 15]
 const MOTION_X: Array[float] = [0.0, 55.0, 55.0]

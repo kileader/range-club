@@ -2,9 +2,9 @@
 
 A small fantasy-tech target-range prototype about choosing risk and handling
 for each trial. Read the brief rules screen, choose a character on the next
-screen, then reach **58–60 points in up to five shots**. You clear as soon as
-you enter that window; going above 60 busts immediately. If all five shots
-end below 58, you fail. Safe scores up to 6, Standard up to 10, and Bold up
+screen, then reach **48–52 points in up to five shots**. You clear as soon as
+you enter that window; going above 52 busts immediately. If all five shots
+end below 48, you fail. Safe scores up to 6, Standard up to 10, and Bold up
 to 15. Choosing a lower-value target or outer ring can keep you under the cap.
 
 ## Stack
