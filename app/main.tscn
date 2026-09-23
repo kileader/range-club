@@ -1,7 +1,9 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
-[ext_resource type="PackedScene" path="res://features/range/range_view.tscn" id="1_range"]
+[ext_resource type="Script" path="res://app/run_controller.gd" id="1_controller"]
+[ext_resource type="PackedScene" path="res://features/range/range_view.tscn" id="2_range"]
 
 [node name="Main" type="Node"]
+script = ExtResource("1_controller")
 
-[node name="RangeView" parent="." instance=ExtResource("1_range")]
+[node name="RangeView" parent="." instance=ExtResource("2_range")]
