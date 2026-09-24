@@ -16,6 +16,7 @@ const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
 const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres")
 const NATURAL_PORTRAIT: Texture2D = preload("res://assets/art/concepts/natural_portrait_concept_v1.png")
 const MAERA_PORTRAIT: Texture2D = preload("res://assets/art/concepts/maera_portrait_concept_v1.png")
+const MAERA_RANGE_SPRITE: Texture2D = preload("res://assets/art/concepts/maera_range_sprite_concept_v1.png")
 const VEY_PORTRAIT: Texture2D = preload("res://assets/art/concepts/vey_portrait_concept_v1.png")
 
 enum SelectionPage { RULES, CHARACTERS }
@@ -430,6 +431,10 @@ func _draw_range() -> void:
 		var x: float = 426.0 + plank * 124.0
 		draw_line(Vector2(x, 142), Vector2(x, 700), Color("203127"), 1.0)
 	draw_line(Vector2(420, 585), Vector2(1185, 585), Color("3b7168"), 2.0, true)
+	if _equipped != null and _equipped.id == &"gyro_brace":
+		draw_set_transform(Vector2(700.0, 535.0), 0.0, Vector2(-1.0, 1.0))
+		draw_texture_rect(MAERA_RANGE_SPRITE, Rect2(0.0, 0.0, 200.0, 200.0), false)
+		draw_set_transform(Vector2.ZERO)
 	for target: int in range(visible_target_centers.size()):
 		var center: Vector2 = visible_target_centers[target]
 		var target_radius: float = TargetLayout.RADII[target]

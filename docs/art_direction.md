@@ -27,10 +27,10 @@ style as final. The Natural's plain clothes, glasses, and unshowy confidence
 preserve the Yusuf Dikeç reference; his eventual bow should remain simple.
 
 Use these concepts to settle the shared palette and redraw the portraits at
-game resolution. The next presentation slice should be one rear three-quarter
-shooter sprite on the range, low enough not to cover targets. Give it an angled,
-anatomically clear bow with the string outside the riser. Test the still pose
-before animating the draw or
+game resolution. Maera's range sprite is a static concept placed below the
+Safe target. She is **left-handed**: her right arm holds the bow and wears the
+gyro shoulder brace, while her left hand draws the string. Keep that handedness
+in any redraw or animation. Test the still pose before animating the draw or
 adding rig variants. Then draw one **32 × 32 module icon** and one
 **48 × 48 trial emblem** to test how the style reads at smaller sizes. Complete
 those sets before replacing the range backdrop and the case-file/result art.
