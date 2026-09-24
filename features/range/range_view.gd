@@ -443,7 +443,10 @@ func _draw_range() -> void:
 			&"pulse_sight":
 				range_sprite = VEY_RANGE_SPRITE
 	if range_sprite != null:
-		draw_set_transform(Vector2(700.0, 535.0), 0.0, Vector2(-1.0, 1.0))
+		if _equipped.id == &"gyro_brace":
+			draw_set_transform(Vector2(700.0, 535.0), 0.0, Vector2(-1.0, 1.0))
+		else:
+			draw_set_transform(Vector2(990.0, 535.0))
 		draw_texture_rect(range_sprite, Rect2(0.0, 0.0, 200.0, 200.0), false)
 		draw_set_transform(Vector2.ZERO)
 	for target: int in range(visible_target_centers.size()):
