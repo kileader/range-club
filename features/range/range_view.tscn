@@ -303,6 +303,24 @@ offset_bottom = 625.0
 theme_override_font_sizes/font_size = 18
 text = "THE NATURAL / BARE RIG\n\n+2: bullseye on Standard\nor Bold, without Focus.\n\nBalanced aim speed.\n\nSELECT"
 
+[node name="Portrait" type="TextureRect" parent="UI/BuildOverlay/NaturalCard"]
+mouse_filter = 2
+offset_left = 30.0
+offset_top = 8.0
+offset_right = 235.0
+offset_bottom = 203.0
+
+[node name="CardText" type="Label" parent="UI/BuildOverlay/NaturalCard"]
+mouse_filter = 2
+offset_left = 8.0
+offset_top = 207.0
+offset_right = 257.0
+offset_bottom = 367.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="MaeraCard" type="Button" parent="UI/BuildOverlay"]
 visible = false
 offset_left = 508.0
@@ -312,6 +330,24 @@ offset_bottom = 625.0
 theme_override_font_sizes/font_size = 18
 text = "MAERA / GYRO BRACE\n\nFocus: much smaller\nlanding circle.\n\nTargets keep full speed.\n\nSELECT"
 
+[node name="Portrait" type="TextureRect" parent="UI/BuildOverlay/MaeraCard"]
+mouse_filter = 2
+offset_left = 30.0
+offset_top = 8.0
+offset_right = 235.0
+offset_bottom = 203.0
+
+[node name="CardText" type="Label" parent="UI/BuildOverlay/MaeraCard"]
+mouse_filter = 2
+offset_left = 8.0
+offset_top = 207.0
+offset_right = 257.0
+offset_bottom = 367.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="VeyCard" type="Button" parent="UI/BuildOverlay"]
 visible = false
 offset_left = 796.0
@@ -320,6 +356,24 @@ offset_right = 1061.0
 offset_bottom = 625.0
 theme_override_font_sizes/font_size = 18
 text = "VEY / PULSE SIGHT\n\n+3: near-center hit on\nStandard or Bold in 1.2s.\n\nFast aim; smallest circle\nat 1.0s.\n\nSELECT"
+
+[node name="Portrait" type="TextureRect" parent="UI/BuildOverlay/VeyCard"]
+mouse_filter = 2
+offset_left = 30.0
+offset_top = 8.0
+offset_right = 235.0
+offset_bottom = 203.0
+
+[node name="CardText" type="Label" parent="UI/BuildOverlay/VeyCard"]
+mouse_filter = 2
+offset_left = 8.0
+offset_top = 207.0
+offset_right = 257.0
+offset_bottom = 367.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ChooseHint" type="Label" parent="UI/BuildOverlay"]
 visible = false

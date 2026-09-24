@@ -14,8 +14,19 @@ original rather than recreating a character from a reference game. Export a
 transparent PNG; keep the editable source beside it. Display at an integer
 multiple with nearest-neighbor filtering.
 
-Once that portrait works in the card, use it to settle the shared palette and
-make the other two portraits. Then draw one **32 × 32 module icon** and one
+The current character cards use generated **concept portraits** in
+`assets/art/concepts/`. They establish a shared bust crop, visible bows, and
+palette direction for all three marksmen. Maera's bow and brace carry the
+fantasy-tech detail; The Natural carries a plain wooden bow; Vey has a dark,
+angular speed bow and a smaller pulse sight. Each bow has one visible string.
+These are high-resolution pixel-art styled drafts, not finished 96 × 96 sprites.
+Redraw or refine them as original game assets before treating the portrait
+style as final. The Natural's plain
+clothes, glasses, and unshowy confidence preserve the Yusuf Dikeç reference;
+his bow keeps the game-world equipment clear.
+
+Use these concepts to settle the shared palette and redraw the portraits at
+game resolution. Then draw one **32 × 32 module icon** and one
 **48 × 48 trial emblem** to test how the style reads at smaller sizes. Complete
 those sets before replacing the range backdrop and the case-file/result art.
 

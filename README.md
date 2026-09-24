@@ -60,7 +60,8 @@ Each build turns the same rules into a different plan:
   the center of Standard or Bold within 1.2 seconds of starting the shot to
   add 3 points.
 
-The character screen shows each bonus and drawback before play; the rules
+The character screen shows each bonus and drawback before play, with concept
+portraits for all three marksmen; the rules
 screen can be revisited from there. Character choice is fixed after the first
 shot. A new run resets the character, modules, Focus, and encounter order.
 The optional **Case File 3909** on character select gives a glimpse of the

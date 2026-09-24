@@ -154,7 +154,8 @@ func run() -> void:
 	main.scenarios[1] = &"standard_relay"
 	main.scenarios[2] = &"safe_circuit"
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
-	view.gear_requested.emit(&"gyro_brace")
+	_check(view.natural_portrait.texture != null and view.maera_portrait.texture != null and view.vey_portrait.texture != null, "all character cards show portraits")
+	view.maera_card.emit_signal("pressed")
 	_check(main.phase == RunController.RunPhase.SHOOT and main.equipped.id == &"gyro_brace" and main.focus == 1, "choosing Maera starts the first trial")
 	_check(view.get_node("UI/BuildButton").visible, "character can change before the first shot")
 	_check(view.get_node("UI/RigDetailsButton").visible, "rig details are available before the first shot")

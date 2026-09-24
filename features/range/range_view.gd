@@ -14,6 +14,9 @@ signal back_requested
 const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
 const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
 const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres")
+const NATURAL_PORTRAIT: Texture2D = preload("res://assets/art/concepts/natural_portrait_concept_v1.png")
+const MAERA_PORTRAIT: Texture2D = preload("res://assets/art/concepts/maera_portrait_concept_v1.png")
+const VEY_PORTRAIT: Texture2D = preload("res://assets/art/concepts/vey_portrait_concept_v1.png")
 
 enum SelectionPage { RULES, CHARACTERS }
 enum ResultSound { NONE, CLEAR, BUST, FAIL }
@@ -62,6 +65,12 @@ const RING_COLORS: Array[Color] = [
 @onready var natural_card: Button = $UI/BuildOverlay/NaturalCard
 @onready var maera_card: Button = $UI/BuildOverlay/MaeraCard
 @onready var vey_card: Button = $UI/BuildOverlay/VeyCard
+@onready var natural_portrait: TextureRect = $UI/BuildOverlay/NaturalCard/Portrait
+@onready var maera_portrait: TextureRect = $UI/BuildOverlay/MaeraCard/Portrait
+@onready var vey_portrait: TextureRect = $UI/BuildOverlay/VeyCard/Portrait
+@onready var natural_card_label: Label = $UI/BuildOverlay/NaturalCard/CardText
+@onready var maera_card_label: Label = $UI/BuildOverlay/MaeraCard/CardText
+@onready var vey_card_label: Label = $UI/BuildOverlay/VeyCard/CardText
 @onready var choose_hint: Label = $UI/BuildOverlay/ChooseHint
 @onready var back_button: Button = $UI/BuildOverlay/BackButton
 @onready var release_player: AudioStreamPlayer = $ReleaseSound
@@ -120,9 +129,15 @@ func _ready() -> void:
 	how_to_play_button.pressed.connect(func() -> void: _set_selection_page(SelectionPage.RULES))
 	archive_button.pressed.connect(func() -> void: archive_page.visible = true)
 	archive_close_button.pressed.connect(func() -> void: archive_page.visible = false)
-	natural_card.text = _card_text(BARE_RIG)
-	maera_card.text = _card_text(GYRO_BRACE)
-	vey_card.text = _card_text(PULSE_SIGHT)
+	natural_card.text = ""
+	maera_card.text = ""
+	vey_card.text = ""
+	natural_card_label.text = _portrait_card_text(BARE_RIG)
+	maera_card_label.text = _portrait_card_text(GYRO_BRACE)
+	vey_card_label.text = _portrait_card_text(PULSE_SIGHT)
+	_setup_portrait(natural_portrait, NATURAL_PORTRAIT)
+	_setup_portrait(maera_portrait, MAERA_PORTRAIT)
+	_setup_portrait(vey_portrait, VEY_PORTRAIT)
 	rules_label.text = "Three trials · 5 shots each. First gate %d–%d; above it busts.\nRings count 1 (edge) to 10 (center); Safe caps at 6, Bold adds 5." % [TrialRules.GOAL_SCORE, TrialRules.BUST_SCORE]
 	safe_rules_label.text = "SAFE · 1–6\nLarge target\nInner half: 6 +1 Focus"
 	standard_rules_label.text = "STANDARD · 1–10\nMedium target"
@@ -330,8 +345,15 @@ func _update_labels() -> void:
 			instruction_label.text = "Hit near Safe's center for Focus.\nHold to shrink the circle."
 
 
-func _card_text(build: BuildDef) -> String:
-	return "%s / %s\n\n%s\n\n%s\n\nSELECT" % [build.operator_name.to_upper(), build.display_name.to_upper(), build.strategy, build.tradeoff]
+func _portrait_card_text(build: BuildDef) -> String:
+	return "%s / %s\n\n%s\n%s\nSELECT" % [build.operator_name.to_upper(), build.display_name.to_upper(), build.strategy, build.tradeoff]
+
+
+func _setup_portrait(portrait: TextureRect, art: Texture2D) -> void:
+	portrait.texture = art
+	portrait.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 
 
 func _upgrade_names() -> String:
