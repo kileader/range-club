@@ -99,6 +99,8 @@ challenging, and the player can compare two upgrades against a bare rig.
       small nods to the range's minimalist veteran and fish-darts sign.
 - [x] Inspect the opening and range in a local browser, and render the reward
       and result screens at 1280 × 800. Export and launch the Windows build.
+- [x] Kevin completed full runs with all three characters, beat the run with
+      each, and found the difficulty mostly balanced.
 - [ ] Kevin playtests whether the module choice changes plans rather than
       merely adding points to the usual route.
 - [ ] Revisit overholding after playtesting: a free cancel makes a late hold
@@ -106,5 +108,6 @@ challenging, and the player can compare two upgrades against a bare rig.
 
 ## Later
 
-Tune the second and third windows from complete-run results before adding
-more content, permanent progression, or persistence.
+The first complete-run playtest did not reveal an immediate score-window
+balance problem. Revisit module choice and overholding when development resumes;
+avoid adding more content, permanent progression, or persistence until then.
