@@ -27,11 +27,14 @@ style as final. The Natural's plain clothes, glasses, and unshowy confidence
 preserve the Yusuf Dikeç reference; his eventual bow should remain simple.
 
 Use these concepts to settle the shared palette and redraw the portraits at
-game resolution. Maera's range sprite is a static concept placed below the
-Safe target. She is **left-handed**: her right arm holds the bow and wears the
-gyro shoulder brace, while her left hand draws the string. Keep that handedness
-in any redraw or animation. Test the still pose before animating the draw or
-adding rig variants. Then draw one **32 × 32 module icon** and one
+game resolution. Each marksman now has a static range concept placed below the
+Safe target. The Natural uses a plain wooden bow, Maera a copper gyro bow with
+a gold string, and Vey a black composite bow with a glowing blue string. Maera
+is **left-handed**: her right arm holds the bow and wears the gyro shoulder
+brace, while her left hand draws the string. Her headpiece sits on the opposite
+side of her head. Vey keeps a small temple eyepiece matching the portrait.
+Keep those details in any redraw or animation. Test the still poses before
+animating the draw. Then draw one **32 × 32 module icon** and one
 **48 × 48 trial emblem** to test how the style reads at smaller sizes. Complete
 those sets before replacing the range backdrop and the case-file/result art.
 
