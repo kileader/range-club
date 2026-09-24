@@ -15,22 +15,23 @@ transparent PNG; keep the editable source beside it. Display at an integer
 multiple with nearest-neighbor filtering.
 
 The current character cards use generated **concept portraits** in
-`assets/art/concepts/`. They establish a shared bust crop, visible bows, and
-palette direction for all three marksmen, each with a visible arrow quiver.
-The bows are separate SVG layers so
-their silhouettes and single strings can be checked directly. Maera's bow and
-brace carry the fantasy-tech detail; The Natural carries a plain wooden bow;
-Vey has a dark, angular speed bow and a smaller pulse sight.
-Maera faces the opposite direction on character select; her bow and brace stay
-together, with the quiver over her draw shoulder.
+`assets/art/concepts/`. They establish a shared bust crop and palette for all
+three marksmen. Each has a visible arrow quiver; Maera faces her braced bow arm,
+with the quiver over the opposite shoulder. The cards focus on character and
+rig details, leaving the full bows for a larger action pose where their shape
+and single string can read clearly.
+
 These are high-resolution pixel-art styled drafts, not finished 96 × 96 sprites.
 Redraw or refine them as original game assets before treating the portrait
-style as final. The Natural's plain
-clothes, glasses, and unshowy confidence preserve the Yusuf Dikeç reference;
-his bow keeps the game-world equipment clear.
+style as final. The Natural's plain clothes, glasses, and unshowy confidence
+preserve the Yusuf Dikeç reference; his eventual bow should remain simple.
 
 Use these concepts to settle the shared palette and redraw the portraits at
-game resolution. Then draw one **32 × 32 module icon** and one
+game resolution. The next presentation slice should be one rear three-quarter
+shooter sprite on the range, low enough not to cover targets. Give it an angled,
+anatomically clear bow with the string outside the riser. Test the still pose
+before animating the draw or
+adding rig variants. Then draw one **32 × 32 module icon** and one
 **48 × 48 trial emblem** to test how the style reads at smaller sizes. Complete
 those sets before replacing the range backdrop and the case-file/result art.
 

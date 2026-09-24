@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
-  <g fill="none" stroke-linecap="square" stroke-linejoin="miter">
-    <path d="M48 8 L29 22 L16 53 L13 76 L24 96 L13 116 L17 145 L29 171 L48 184" stroke="#171d20" stroke-width="17"/>
-    <path d="M48 8 L29 22 L16 53 L13 76 L24 96 L13 116 L17 145 L29 171 L48 184" stroke="#4b5557" stroke-width="10"/>
-    <path id="bowstring" d="M48 8 L48 184" stroke="#9bd4d2" stroke-width="1.5"/>
-  </g>
-  <rect x="9" y="91" width="17" height="10" fill="#202a2c" stroke="#67777a" stroke-width="2"/>
-</svg>

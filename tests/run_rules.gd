@@ -155,7 +155,6 @@ func run() -> void:
 	main.scenarios[2] = &"safe_circuit"
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
 	_check(view.natural_portrait.texture != null and view.maera_portrait.texture != null and view.vey_portrait.texture != null, "all character cards show portraits")
-	_check(view.natural_bow.texture != null and view.maera_bow.texture != null and view.vey_bow.texture != null, "all character cards show separate bows")
 	view.maera_card.emit_signal("pressed")
 	_check(main.phase == RunController.RunPhase.SHOOT and main.equipped.id == &"gyro_brace" and main.focus == 1, "choosing Maera starts the first trial")
 	_check(view.get_node("UI/BuildButton").visible, "character can change before the first shot")
