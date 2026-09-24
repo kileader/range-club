@@ -95,6 +95,8 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Add an in-trial rig menu showing installed modules and their effects.
 - [x] Right-click cancels an active hold without spending a shot or Focus;
       Esc remains a menu-back key.
+- [x] Add an optional, skippable Case File 3909 with the 21XX setting and
+      small nods to the range's minimalist veteran and fish-darts sign.
 - [x] Inspect the opening and range in a local browser, and render the reward
       and result screens at 1280 × 800. Export and launch the Windows build.
 - [ ] Kevin playtests whether the module choice changes plans rather than

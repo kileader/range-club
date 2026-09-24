@@ -56,6 +56,9 @@ const RING_COLORS: Array[Color] = [
 @onready var control_rules_label: Label = $UI/BuildOverlay/ControlRules
 @onready var rules_next_button: Button = $UI/BuildOverlay/RulesNextButton
 @onready var how_to_play_button: Button = $UI/BuildOverlay/HowToPlayButton
+@onready var archive_button: Button = $UI/BuildOverlay/ArchiveButton
+@onready var archive_page: ColorRect = $UI/BuildOverlay/ArchivePage
+@onready var archive_close_button: Button = $UI/BuildOverlay/ArchivePage/CloseButton
 @onready var natural_card: Button = $UI/BuildOverlay/NaturalCard
 @onready var maera_card: Button = $UI/BuildOverlay/MaeraCard
 @onready var vey_card: Button = $UI/BuildOverlay/VeyCard
@@ -115,6 +118,8 @@ func _ready() -> void:
 	back_button.pressed.connect(func() -> void: build_screen_closed.emit())
 	rules_next_button.pressed.connect(func() -> void: _set_selection_page(SelectionPage.CHARACTERS))
 	how_to_play_button.pressed.connect(func() -> void: _set_selection_page(SelectionPage.RULES))
+	archive_button.pressed.connect(func() -> void: archive_page.visible = true)
+	archive_close_button.pressed.connect(func() -> void: archive_page.visible = false)
 	natural_card.text = _card_text(BARE_RIG)
 	maera_card.text = _card_text(GYRO_BRACE)
 	vey_card.text = _card_text(PULSE_SIGHT)
@@ -176,7 +181,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		cancel_requested.emit()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		back_requested.emit()
+		if archive_page.visible:
+			archive_page.visible = false
+		else:
+			back_requested.emit()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_F and not _selection_open:
 		focus_requested.emit()
@@ -246,6 +254,8 @@ func present(
 	if selection_open and not _selection_open:
 		_selection_page = SelectionPage.CHARACTERS if build_selected else SelectionPage.RULES
 	_selection_open = selection_open
+	if not _selection_open:
+		archive_page.visible = false
 	_build_selected = build_selected
 	_target_centers = TargetLayout.centers_at(_range_time)
 	for target: int in range(target_labels.size()):
@@ -363,6 +373,7 @@ func _update_selection_page() -> void:
 	vey_card.visible = not showing_rules
 	choose_hint.visible = not showing_rules
 	how_to_play_button.visible = not showing_rules
+	archive_button.visible = true
 
 
 func _draw() -> void:

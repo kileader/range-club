@@ -139,6 +139,18 @@ func run() -> void:
 	_check(main.phase == RunController.RunPhase.SELECT and main.selection_open and not main.build_selected, "new run begins at character selection")
 	_check(main.scenarios.size() == 3 and main.scenarios[0] == &"triad", "new run has three scenarios")
 	_check(view.get_node("UI/BuildOverlay/Rules").visible, "opening screen explains rules")
+	view.get_node("UI/BuildOverlay/ArchiveButton").emit_signal("pressed")
+	_check(view.get_node("UI/BuildOverlay/ArchivePage").visible and view.get_node("UI/BuildOverlay/ArchivePage/ArchiveBody").text.contains("YEAR 21XX"), "optional case file opens with the 21XX setting")
+	_check(view.get_node("UI/BuildOverlay/ArchivePage/ArchiveBody").text.contains("aquatic applicants"), "case file carries the fish-darts reference")
+	var archive_escape := InputEventKey.new()
+	archive_escape.pressed = true
+	archive_escape.keycode = KEY_ESCAPE
+	view.get_viewport().push_input(archive_escape, true)
+	await process_frame
+	_check(not view.get_node("UI/BuildOverlay/ArchivePage").visible and main.phase == RunController.RunPhase.SELECT, "Escape closes only the case file")
+	view.get_node("UI/BuildOverlay/ArchiveButton").emit_signal("pressed")
+	view.get_node("UI/BuildOverlay/ArchivePage/CloseButton").emit_signal("pressed")
+	_check(not view.get_node("UI/BuildOverlay/ArchivePage").visible and main.phase == RunController.RunPhase.SELECT, "closing the case file returns to selection")
 	main.scenarios[1] = &"standard_relay"
 	main.scenarios[2] = &"safe_circuit"
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")

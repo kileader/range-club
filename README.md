@@ -63,6 +63,8 @@ Each build turns the same rules into a different plan:
 The character screen shows each bonus and drawback before play; the rules
 screen can be revisited from there. Character choice is fixed after the first
 shot. A new run resets the character, modules, Focus, and encounter order.
+The optional **Case File 3909** on character select gives a glimpse of the
+club's overly serious 21XX setting and its equipment bureaucracy.
 
 The later trials draw two different rules from Safe Circuit (Safe inner hits
 score +3), Standard Relay (Standard inner hits score +2), and Bold Surge (Bold
@@ -157,6 +159,8 @@ settings, select **GitHub Actions** as the build and deployment source.
 - `docs/prototype_checklist.md` tracks the immediate acceptance checks and next step.
 - `docs/reference_ideas.md` records the small references already in the range
   and the character/build direction for later slices.
+- `docs/art_direction.md` records the planned SNES-inspired art coverage and
+  the first portrait brief.
 
 The presentation uses a 1280 × 800 design canvas, scaled proportionally with
 letterboxing at other aspect ratios. Scoring uses target-local coordinates with

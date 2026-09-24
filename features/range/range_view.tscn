@@ -333,12 +333,20 @@ text = "Pick a character for three trials. Build your rig between clears."
 
 [node name="HowToPlayButton" type="Button" parent="UI/BuildOverlay"]
 visible = false
+offset_left = 410.0
+offset_top = 665.0
+offset_right = 588.0
+offset_bottom = 704.0
+theme_override_font_sizes/font_size = 16
+text = "HOW TO PLAY"
+
+[node name="ArchiveButton" type="Button" parent="UI/BuildOverlay"]
 offset_left = 220.0
 offset_top = 665.0
 offset_right = 398.0
 offset_bottom = 704.0
 theme_override_font_sizes/font_size = 16
-text = "HOW TO PLAY"
+text = "CASE FILE 3909"
 
 [node name="BackButton" type="Button" parent="UI/BuildOverlay"]
 visible = false
@@ -348,3 +356,55 @@ offset_right = 1061.0
 offset_bottom = 702.0
 theme_override_font_sizes/font_size = 16
 text = "RETURN TO RANGE"
+
+[node name="ArchivePage" type="ColorRect" parent="UI/BuildOverlay"]
+visible = false
+offset_left = 190.0
+offset_top = 90.0
+offset_right = 1090.0
+offset_bottom = 725.0
+color = Color(0.095, 0.143, 0.122, 1)
+
+[node name="ArchiveEyebrow" type="Label" parent="UI/BuildOverlay/ArchivePage"]
+offset_left = 30.0
+offset_top = 29.0
+offset_right = 870.0
+offset_bottom = 55.0
+theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
+theme_override_font_sizes/font_size = 16
+text = "RANGE AUTHORITY / RESTRICTED RECORD"
+
+[node name="ArchiveHeading" type="Label" parent="UI/BuildOverlay/ArchivePage"]
+offset_left = 30.0
+offset_top = 65.0
+offset_right = 870.0
+offset_bottom = 112.0
+theme_override_colors/font_color = Color(0.94, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 34
+text = "THE RANGE INCIDENT"
+
+[node name="ArchiveBody" type="Label" parent="UI/BuildOverlay/ArchivePage"]
+offset_left = 30.0
+offset_top = 135.0
+offset_right = 855.0
+offset_bottom = 510.0
+theme_override_colors/font_color = Color(0.76, 0.83, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+text = "YEAR 21XX\nA district lane was allocated for recreational target shooting.\nBy dusk, three strangers had classified it as a critical facility.\nNo emergency has been identified.\n\nEQUIPMENT REVIEW\nOne veteran declined the visor, brace, and prescribed stance.\nThe committee recorded no objection. It could not record a reason.\n\nANNEX: PAIR APPLICATION\nTwo aquatic applicants requested a shared dart permit.\nThe request remains under review."
+
+[node name="ArchiveStamp" type="Label" parent="UI/BuildOverlay/ArchivePage"]
+offset_left = 30.0
+offset_top = 522.0
+offset_right = 500.0
+offset_bottom = 558.0
+theme_override_colors/font_color = Color(0.87, 0.72, 0.43, 1)
+theme_override_font_sizes/font_size = 18
+text = "CLEARED FOR PRACTICE · 3909-C"
+
+[node name="CloseButton" type="Button" parent="UI/BuildOverlay/ArchivePage"]
+offset_left = 650.0
+offset_top = 562.0
+offset_right = 870.0
+offset_bottom = 609.0
+theme_override_font_sizes/font_size = 17
+text = "RETURN TO SELECTION"
