@@ -16,9 +16,13 @@ multiple with nearest-neighbor filtering.
 
 The current character cards use generated **concept portraits** in
 `assets/art/concepts/`. They establish a shared bust crop, visible bows, and
-palette direction for all three marksmen. Maera's bow and brace carry the
-fantasy-tech detail; The Natural carries a plain wooden bow; Vey has a dark,
-angular speed bow and a smaller pulse sight. Each bow has one visible string.
+palette direction for all three marksmen, each with a visible arrow quiver.
+The bows are separate SVG layers so
+their silhouettes and single strings can be checked directly. Maera's bow and
+brace carry the fantasy-tech detail; The Natural carries a plain wooden bow;
+Vey has a dark, angular speed bow and a smaller pulse sight.
+Maera faces the opposite direction on character select; her bow and brace stay
+together, with the quiver over her draw shoulder.
 These are high-resolution pixel-art styled drafts, not finished 96 × 96 sprites.
 Redraw or refine them as original game assets before treating the portrait
 style as final. The Natural's plain

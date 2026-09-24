@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <g fill="none" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M48 8 L39 19 L29 38 L20 60 L16 78 L14 96 L16 114 L21 138 L30 160 L39 176 L48 184" stroke="#18201e" stroke-width="15"/>
+    <path d="M48 8 L39 19 L29 38 L20 60 L16 78 L14 96 L16 114 L21 138 L30 160 L39 176 L48 184" stroke="#8d5834" stroke-width="10"/>
+    <path id="bowstring" d="M48 8 L48 184" stroke="#d8c6a0" stroke-width="1.5"/>
+  </g>
+</svg>
