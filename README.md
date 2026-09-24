@@ -32,8 +32,9 @@ for Natural and Maera, or 1.0 second for Vey. A Quickset String gets there
 It then widens and pulses as a penalty for holding longer, unless a Stabilizing
 Sight extends the smallest-circle window. Release after
 **READY**; the shot lands at a random point inside the last circle actually
-shown. A miss still spends a shot. Releasing early or pressing **Esc** cancels
-without spending one. There is no passive aim sway.
+shown. A miss still spends a shot. **Right-click** during a hold to cancel
+without spending one; releasing before READY also cancels. There is no passive
+aim sway.
 
 Each target has ten rings. The outer ring is 1 and each ring inward adds 1.
 Safe caps the ring score at 6 (range 1–6), Standard scores the ring value
@@ -45,7 +46,8 @@ button before a shot to arm it. Focus makes the landing circle smaller.
 It also halves target speed for The Natural and Vey; Maera's targets keep
 moving at full speed. Focus is spent when you release a ready shot.
 A Safe inner hit (ring 6–10) restores
-one Focus. An early release or **Esc** cancels without spending a shot or Focus.
+one Focus. Right-click or an early release cancels without spending a shot or
+Focus. **Esc** returns from an open character or rig menu.
 
 Each build turns the same rules into a different plan:
 

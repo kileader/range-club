@@ -149,6 +149,24 @@ func run() -> void:
 	view.primary_pressed.emit(view.mouse_aim())
 	view.primary_released.emit()
 	_check(main.impacts.is_empty(), "early release spends no shot")
+	view.focus_requested.emit()
+	view.primary_pressed.emit(centers[1])
+	main.shot.tick(1.5, centers[1])
+	var escape_event := InputEventKey.new()
+	escape_event.pressed = true
+	escape_event.keycode = KEY_ESCAPE
+	view.get_viewport().push_input(escape_event, true)
+	await process_frame
+	_check(main.shot.phase == ShotModel.Phase.READY, "Escape does not cancel an active shot")
+	var right_click := InputEventMouseButton.new()
+	right_click.pressed = true
+	right_click.button_index = MOUSE_BUTTON_RIGHT
+	view.get_viewport().push_input(right_click, true)
+	await process_frame
+	_check(main.shot.phase == ShotModel.Phase.IDLE and main.focus == 1 and main.impacts.is_empty(), "right-click cancels a ready focused shot without cost")
+	view.primary_released.emit()
+	_check(main.impacts.is_empty(), "left release after right-click does not fire")
+	view.focus_requested.emit()
 	for index: int in range(5):
 		_shoot_at(main, view, centers[1], centers)
 	_check(main.total_score == 50 and main.impacts.size() == 5, "five Standard centers clear the opening trial")
@@ -175,6 +193,10 @@ func run() -> void:
 	_check(main.shot.phase == ShotModel.Phase.IDLE and main.impacts.is_empty(), "rig details block shooting")
 	main._physics_process(0.5)
 	_check(is_equal_approx(main.range_time, time_before_menu), "rig details pause target motion")
+	view.get_viewport().push_input(escape_event, true)
+	await process_frame
+	_check(main.phase == RunController.RunPhase.SHOOT and not run_ui.visible, "Escape returns from rig details")
+	view.get_node("UI/RigDetailsButton").emit_signal("pressed")
 	run_ui.get_node("Panel/CloseButton").emit_signal("pressed")
 	_check(main.phase == RunController.RunPhase.SHOOT and not run_ui.visible and main.upgrades == [first_upgrade], "closing rig details resumes the same trial")
 	_shoot_at(main, view, centers[0], centers)

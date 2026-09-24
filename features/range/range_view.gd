@@ -9,6 +9,7 @@ signal rig_details_requested
 signal build_screen_closed
 signal focus_requested
 signal cancel_requested
+signal back_requested
 
 const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
 const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
@@ -121,8 +122,8 @@ func _ready() -> void:
 	safe_rules_label.text = "SAFE · 1–6\nLarge target\nInner half: 6 +1 Focus"
 	standard_rules_label.text = "STANDARD · 1–10\nMedium target"
 	bold_rules_label.text = "BOLD · 6–15\nSmall target"
-	focus_rules_label.text = "FOCUS · Each trial starts with %d (max %d). Press F to tighten the circle.\nNatural/Vey also slow targets. Ready release spends 1; early release cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
-	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hold until they meet.\nRelease after READY. Waiting longer widens gold; hits land randomly inside."
+	focus_rules_label.text = "FOCUS · Each trial starts with %d (max %d). Press F to tighten the circle.\nNatural/Vey also slow targets. Ready release spends 1; right-click cancels." % [TrialRules.START_FOCUS, TrialRules.MAX_FOCUS]
+	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hits land inside gold.\nRelease after READY; long holds widen gold. Right-click to cancel."
 
 
 func play_shot_feedback(hit: bool, result: ResultSound) -> void:
@@ -171,8 +172,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif not _selection_open and not event.pressed:
 			primary_released.emit()
 			get_viewport().set_input_as_handled()
-	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and not _selection_open:
 		cancel_requested.emit()
+		get_viewport().set_input_as_handled()
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		back_requested.emit()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_F and not _selection_open:
 		focus_requested.emit()
@@ -289,7 +293,7 @@ func _update_labels() -> void:
 			status_label.text = "FOCUS — CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS — SLOW + TIGHT"
 		else:
 			status_label.text = "CHARGING — WAIT FOR READY"
-		instruction_label.text = "Hold to shrink the circle.\nEarly release cancels."
+		instruction_label.text = "Hold to shrink the circle.\nRight-click to cancel."
 	elif _shot.phase == ShotModel.Phase.READY:
 		if _equipped.id == &"pulse_sight":
 			var quick_remaining: float = maxf(TrialRules.VEY_TEMPO_SECONDS - _shot.elapsed, 0.0)
@@ -299,7 +303,7 @@ func _update_labels() -> void:
 				status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else _spread_status()
 		else:
 			status_label.text = _spread_status()
-		instruction_label.text = "Cyan ring = smallest possible.\nGold circle = possible hit area."
+		instruction_label.text = "Cyan = smallest; gold = possible hit.\nRight-click to cancel this hold."
 	else:
 		status_label.text = "%s / %s" % [_equipped.operator_name.to_upper(), _equipped.operator_role]
 		if _last_score == 0:

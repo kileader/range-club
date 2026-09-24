@@ -93,10 +93,14 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [x] Replace two more score modules with Quickset String and Recovery Cell;
       four of five offers now affect handling or Focus instead of adding points.
 - [x] Add an in-trial rig menu showing installed modules and their effects.
+- [x] Right-click cancels an active hold without spending a shot or Focus;
+      Esc remains a menu-back key.
 - [x] Inspect the opening and range in a local browser, and render the reward
       and result screens at 1280 × 800. Export and launch the Windows build.
 - [ ] Kevin playtests whether the module choice changes plans rather than
       merely adding points to the usual route.
+- [ ] Revisit overholding after playtesting: a free cancel makes a late hold
+      easy to abandon, so the widening circle may not create a useful decision.
 
 ## Later
 

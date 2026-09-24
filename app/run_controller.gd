@@ -45,6 +45,7 @@ func _ready() -> void:
 	range_view.build_screen_closed.connect(_on_build_screen_closed)
 	range_view.focus_requested.connect(_on_focus_requested)
 	range_view.cancel_requested.connect(_on_cancel_requested)
+	range_view.back_requested.connect(_on_back_requested)
 	run_view.upgrade_selected.connect(_on_upgrade_selected)
 	run_view.new_run_requested.connect(_start_new_run)
 	run_view.loadout_closed.connect(_on_loadout_closed)
@@ -204,17 +205,19 @@ func _on_gear_requested(gear_id: StringName) -> void:
 
 
 func _on_cancel_requested() -> void:
-	if phase == RunPhase.LOADOUT:
-		_on_loadout_closed()
-		return
-	if phase == RunPhase.SELECT:
-		_on_build_screen_closed()
-		return
 	if phase != RunPhase.SHOOT:
 		return
 	shot.cancel()
 	shot_focused = false
 	_refresh_view()
+
+
+func _on_back_requested() -> void:
+	if phase == RunPhase.LOADOUT:
+		_on_loadout_closed()
+		return
+	if phase == RunPhase.SELECT:
+		_on_build_screen_closed()
 
 
 func _start_new_run() -> void:
