@@ -64,7 +64,14 @@ func _on_primary_pressed(aim_position: Vector2) -> void:
 		return
 	if shot.phase == ShotModel.Phase.IDLE:
 		shot_focused = focus_armed and focus > 0
-		shot.configure(equipped.steering_scale, equipped.focus_spread_scale if shot_focused else 1.0, equipped.precision_peak_seconds, ShotModel.STABILIZING_SIGHT_HOLD_SECONDS if upgrades.has(&"stabilizing_sight") else 0.0)
+		var quickset_seconds: float = ShotModel.QUICKSET_SECONDS if upgrades.has(&"quickset_string") else 0.0
+		var sight_hold_seconds: float = ShotModel.STABILIZING_SIGHT_HOLD_SECONDS if upgrades.has(&"stabilizing_sight") else 0.0
+		shot.configure(
+			equipped.steering_scale,
+			equipped.focus_spread_scale if shot_focused else 1.0,
+			equipped.precision_peak_seconds - quickset_seconds,
+			quickset_seconds + sight_hold_seconds
+		)
 		shot.start_hold(aim_position)
 	_refresh_view()
 
@@ -87,7 +94,7 @@ func _on_primary_released() -> void:
 
 func _accept_shot(impact: Vector2) -> void:
 	var result: Dictionary = TargetLayout.score_at(impact, range_view.visible_target_centers)
-	var resolved: Dictionary = TrialRules.resolve_hit(result, equipped.id, shot_focused, shot.elapsed, scenarios[stage], upgrades, impacts.size() + 1)
+	var resolved: Dictionary = TrialRules.resolve_hit(result, equipped.id, shot_focused, shot.elapsed, scenarios[stage], upgrades)
 	last_score = resolved.points
 	last_target = result.target
 	last_bonus = resolved.bonus

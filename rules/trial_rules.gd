@@ -27,7 +27,7 @@ static func is_trial_over(score: int, shots_taken: int, goal: int = GOAL_SCORE, 
 
 static func resolve_hit(
 	hit: Dictionary, build_id: StringName, spent_focus: bool, shot_time: float,
-	scenario_id: StringName = &"triad", upgrades: Array[StringName] = [], shot_number: int = 1
+	scenario_id: StringName = &"triad", upgrades: Array[StringName] = []
 ) -> Dictionary:
 	var points: int = hit.score
 	var bonus: String = ""
@@ -57,18 +57,15 @@ static func resolve_hit(
 				if hit.target_index == 2:
 					points += 3
 					bonus = _append_bonus(bonus, "SURGE +3")
-		if upgrades.has(&"anchor_coil") and hit.target_index == 0 and hit.ring >= SAFE_FOCUS_RING:
-			points += 2
-			bonus = _append_bonus(bonus, "ANCHOR +2")
 		if upgrades.has(&"edge_fuse") and hit.target_index == 2 and hit.ring <= 5:
 			points += 3
 			bonus = _append_bonus(bonus, "EDGE +3")
 		if upgrades.has(&"recirculator") and spent_focus and hit.target_index == 1 and hit.ring >= 6:
 			focus_gain += 1
 			bonus = _append_bonus(bonus, "FOCUS REFUND")
-		if upgrades.has(&"last_light") and shot_number == SHOTS_PER_TRIAL and hit.target_index == 0:
-			points += 4
-			bonus = _append_bonus(bonus, "LAST LIGHT +4")
+	elif spent_focus and upgrades.has(&"recovery_cell"):
+		focus_gain = 1
+		bonus = "FOCUS REFUND"
 	return {"points": points, "focus_gain": focus_gain, "bonus": bonus}
 
 

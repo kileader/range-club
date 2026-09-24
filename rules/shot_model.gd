@@ -12,6 +12,7 @@ const LATE_BLOOM_PER_SECOND: float = 20.0
 const LATE_PULSE_RADIUS: float = 12.0
 const MAX_SPREAD_RADIUS: float = 90.0
 const STABILIZING_SIGHT_HOLD_SECONDS: float = 0.7
+const QUICKSET_SECONDS: float = 0.3
 
 var phase: Phase = Phase.IDLE
 var aim_point: Vector2 = Vector2.ZERO

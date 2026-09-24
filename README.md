@@ -27,7 +27,8 @@ Use **View Rig** during a trial to review installed modules and their effects.
 The targets move on predictable paths. Aim with the mouse before holding left
 mouse; the shot starts at that position. The gold landing circle shrinks toward
 the dashed cyan ring, which previews its smallest possible size at 1.5 seconds
-for Natural and Maera, or 1.0 second for Vey.
+for Natural and Maera, or 1.0 second for Vey. A Quickset String gets there
+0.3 seconds sooner without starting the later widening sooner.
 It then widens and pulses as a penalty for holding longer, unless a Stabilizing
 Sight extends the smallest-circle window. Release after
 **READY**; the shot lands at a random point inside the last circle actually
@@ -63,10 +64,12 @@ shot. A new run resets the character, modules, Focus, and encounter order.
 
 The later trials draw two different rules from Safe Circuit (Safe inner hits
 score +3), Standard Relay (Standard inner hits score +2), and Bold Surge (Bold
-hits score +3). The five module types support Safe scoring, a Stabilizing Sight
-that holds the minimum landing circle for 0.7 seconds before it widens, Bold
-outer rings, Focus refunds on Standard, or a final Safe shot. Offers
-exclude modules already installed. There is no permanent progression or save.
+hits score +3). Four modules alter shot handling or Focus: Quickset String
+reaches minimum spread sooner, Stabilizing Sight holds it longer,
+Recirculator refunds Focus on focused Standard inner hits, and Recovery Cell
+refunds Focus on focused misses. Edge Fuse is the sole direct score module,
+adding 3 to Bold outer hits. Offers exclude modules already installed. There
+is no permanent progression or save.
 
 The gold circle is the full possible landing area. The footer records your
 best non-busted trial score. Hit marks stay on the moving target; misses stay
@@ -99,8 +102,8 @@ by Git; put a `.gdignore` file inside it if you keep tools there yourself.
 
 The version must start with `4.7.2.stable`. Check the output for errors as well as
 the exit code. The assertions cover ring boundaries, moving targets,
-dispersion, the Stabilizing Sight, Focus, three-trial progression, module offers, win/failure/bust
-paths, and new-run reset. They cannot judge feel.
+dispersion, handling modules, Focus refunds, three-trial progression, module
+offers, win/failure/bust paths, and new-run reset. They cannot judge feel.
 Current visual and export checks are recorded in
 [the prototype checklist](docs/prototype_checklist.md).
 
@@ -164,7 +167,8 @@ input/render mismatch.
 
 Play several complete runs with different characters. Check whether the three
 offered modules lead to different plans for the revealed next trial, whether
-whether starting each trial with one Focus matters, and whether the 52–56 and 56–60 windows remain reachable
-without forcing Bold on every shot. Tune the run before adding more content.
+starting each trial with one Focus matters, and whether the 52–56 and 56–60
+windows remain reachable without forcing Bold on every shot. Tune the run
+before adding more content.
 
 No source license has been selected yet.

@@ -293,7 +293,7 @@ func _update_labels() -> void:
 	elif _shot.phase == ShotModel.Phase.READY:
 		if _equipped.id == &"pulse_sight":
 			var quick_remaining: float = maxf(TrialRules.VEY_TEMPO_SECONDS - _shot.elapsed, 0.0)
-			if quick_remaining > 0.0 and absf(_shot.elapsed - _shot.precision_peak_seconds) <= 0.08:
+			if quick_remaining > 0.0 and _shot.elapsed >= _shot.precision_peak_seconds - 0.08 and _shot.elapsed <= _shot.precision_peak_seconds + maxf(_shot.minimum_hold_seconds, 0.08):
 				status_label.text = "TIGHTEST — +3 AVAILABLE"
 			else:
 				status_label.text = "BONUS +3 — %.1fS LEFT" % quick_remaining if quick_remaining > 0.0 else _spread_status()
@@ -303,7 +303,7 @@ func _update_labels() -> void:
 	else:
 		status_label.text = "%s / %s" % [_equipped.operator_name.to_upper(), _equipped.operator_role]
 		if _last_score == 0:
-			status_label.text = "MISS — TRY THE NEXT SHOT"
+			status_label.text = "MISS — FOCUS REFUNDED" if _last_focus_gain > 0 else "MISS — TRY THE NEXT SHOT"
 		elif _last_score > 0:
 			status_label.text = "%s +%d" % [_last_target, _last_score]
 			if _last_focus_gain > 0:
