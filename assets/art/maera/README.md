@@ -25,10 +25,17 @@ Named animations, timing, scale, and bow socket are editable in
 
 ## Latest correction
 
-The full-draw, focused-hold, and alternate-draw poses were corrected to remove
-the oversized glove from the visible neck. The far-side drawing hand is now
-occluded by the head/jaw, with only a small visible fingertip edge at the anchor.
-The exact built-in imagegen prompt is in `neck_correction_prompt.txt`.
+The full-draw, focused-hold, and alternate-draw poses keep the drawing hand
+fully occluded behind the far side of the head. The visible neck must read as
+skin meeting the white-edged teal collar, without a brown glove/wrist block
+or orange knuckle below the chin. Long holds continue to use full draw;
+Focus alternates full draw and focused hold. Both need the same occlusion.
+
+`neck_correction_prompt.txt` records the initial neck correction.
+`hold_neck_cleanup_prompt.txt` records the follow-up removal of the residual
+brown block, using enlarged neck views as an additional reference.
+The correction was checked in-game after holds longer than 12 seconds, both
+without Focus and in each of the two looping Focus frames.
 
 All eight right bow-hand grips were then corrected to conceal the thumb behind
 the bow/riser. Enlarged views of every grip were checked in Godot, including

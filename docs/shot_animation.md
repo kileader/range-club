@@ -35,6 +35,10 @@ The right hand must remain an anatomical right hand. Its thumb wraps on the
 far side of the grip, behind the bow/riser and hidden from this rear camera;
 do not draw a thumb across the camera-facing side of the fist. The drawing hand,
 bowstring vertex, and arrow nock meet in every pre-release pose.
+At full draw, the drawing hand is hidden behind the far side of the head;
+the visible neck and collar must have no glove or wrist protruding below the
+chin. Overholding uses the same `hold` frame, while `focus` loops the full-draw
+and focused-hold frames. Check both Focus frames when reviewing a long hold.
 
 Grip reference: [Online Archery Academy's hand-position guide](https://www.onlinearcheryacademy.com/archery-hand-position-set/).
 
