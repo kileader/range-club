@@ -31,8 +31,9 @@ The copper right arm holds the bow in the foreground. The left drawing arm is
 on the far side of her body and is occluded by the torso and head where
 appropriate. Its elbow can appear beyond the silhouette. Keep that depth order
 through the whole sequence; do not put the left sleeve across her visible back.
-The right hand must remain an anatomical right hand, with the thumb correctly
-placed at the bow grip and pointing toward the target. The drawing hand,
+The right hand must remain an anatomical right hand. Its thumb wraps on the
+far side of the grip, behind the bow/riser and hidden from this rear camera;
+do not draw a thumb across the camera-facing side of the fist. The drawing hand,
 bowstring vertex, and arrow nock meet in every pre-release pose.
 
 Grip reference: [Online Archery Academy's hand-position guide](https://www.onlinearcheryacademy.com/archery-hand-position-set/).
