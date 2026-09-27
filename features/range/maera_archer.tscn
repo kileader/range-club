@@ -1,0 +1,77 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://features/range/maera_archer.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/art/maera/maera_shooting_v1.png" id="2_atlas"]
+
+[sub_resource type="AtlasTexture" id="Atlas_rest"]
+atlas = ExtResource("2_atlas")
+region = Rect2(0, 0, 443.5, 443.5)
+
+[sub_resource type="AtlasTexture" id="Atlas_draw"]
+atlas = ExtResource("2_atlas")
+region = Rect2(443.5, 0, 443.5, 443.5)
+
+[sub_resource type="AtlasTexture" id="Atlas_full"]
+atlas = ExtResource("2_atlas")
+region = Rect2(887, 0, 443.5, 443.5)
+
+[sub_resource type="AtlasTexture" id="Atlas_focus"]
+atlas = ExtResource("2_atlas")
+region = Rect2(1330.5, 0, 443.5, 443.5)
+
+[sub_resource type="AtlasTexture" id="Atlas_release"]
+atlas = ExtResource("2_atlas")
+region = Rect2(0, 443.5, 443.5, 443.5)
+
+[sub_resource type="AtlasTexture" id="Atlas_follow"]
+atlas = ExtResource("2_atlas")
+region = Rect2(443.5, 443.5, 443.5, 443.5)
+
+[sub_resource type="AtlasTexture" id="Atlas_recover"]
+atlas = ExtResource("2_atlas")
+region = Rect2(887, 443.5, 443.5, 443.5)
+
+[sub_resource type="AtlasTexture" id="Atlas_nock"]
+atlas = ExtResource("2_atlas")
+region = Rect2(1330.5, 443.5, 443.5, 443.5)
+
+[sub_resource type="SpriteFrames" id="Frames_maera"]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_rest")}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_rest")}, {"duration": 1.0, "texture": SubResource("Atlas_draw")}, {"duration": 1.0, "texture": SubResource("Atlas_full")}],
+"loop": false,
+"name": &"draw",
+"speed": 6.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_full")}],
+"loop": true,
+"name": &"hold",
+"speed": 1.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_full")}, {"duration": 1.0, "texture": SubResource("Atlas_focus")}],
+"loop": true,
+"name": &"focus",
+"speed": 3.0
+}, {
+"frames": [{"duration": 1.0, "texture": SubResource("Atlas_release")}, {"duration": 1.4, "texture": SubResource("Atlas_follow")}, {"duration": 1.4, "texture": SubResource("Atlas_recover")}, {"duration": 1.0, "texture": SubResource("Atlas_rest")}],
+"loop": false,
+"name": &"release",
+"speed": 9.0
+}]
+
+[node name="MaeraArcher" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("Frames_maera")
+animation = &"idle"
+centered = false
+
+[node name="BowSocket" type="Marker2D" parent="."]
+position = Vector2(207, 82)

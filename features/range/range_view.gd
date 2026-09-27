@@ -10,6 +10,8 @@ signal build_screen_closed
 signal focus_requested
 signal cancel_requested
 signal back_requested
+signal shot_landed
+signal shot_feedback_finished
 
 const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
 const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
@@ -18,18 +20,9 @@ const NATURAL_PORTRAIT: Texture2D = preload("res://assets/art/concepts/natural_p
 const MAERA_PORTRAIT: Texture2D = preload("res://assets/art/concepts/maera_portrait_concept_v1.png")
 const VEY_PORTRAIT: Texture2D = preload("res://assets/art/concepts/vey_portrait_concept_v1.png")
 const NATURAL_RANGE_SPRITE: Texture2D = preload("res://assets/art/concepts/natural_range_sprite_concept_v1.png")
-const MAERA_RANGE_SPRITE: Texture2D = preload("res://assets/art/concepts/maera_range_sprite_concept_v1.png")
 const VEY_RANGE_SPRITE: Texture2D = preload("res://assets/art/concepts/vey_range_sprite_concept_v1.png")
 
 enum SelectionPage { RULES, CHARACTERS }
-enum ResultSound { NONE, CLEAR, BUST, FAIL }
-
-const RELEASE_SOUND: AudioStream = preload("res://assets/audio/release.wav")
-const HIT_SOUND: AudioStream = preload("res://assets/audio/hit.wav")
-const MISS_SOUND: AudioStream = preload("res://assets/audio/miss.wav")
-const CLEAR_SOUND: AudioStream = preload("res://assets/audio/clear.wav")
-const BUST_SOUND: AudioStream = preload("res://assets/audio/bust.wav")
-const FAIL_SOUND: AudioStream = preload("res://assets/audio/fail.wav")
 
 const AIM_AREA: Rect2 = Rect2(390.0, 122.0, 824.0, 598.0)
 const RING_COLORS: Array[Color] = [
@@ -76,16 +69,16 @@ const RING_COLORS: Array[Color] = [
 @onready var vey_card_label: Label = $UI/BuildOverlay/VeyCard/CardText
 @onready var choose_hint: Label = $UI/BuildOverlay/ChooseHint
 @onready var back_button: Button = $UI/BuildOverlay/BackButton
-@onready var release_player: AudioStreamPlayer = $ReleaseSound
-@onready var impact_player: AudioStreamPlayer = $ImpactSound
-@onready var result_player: AudioStreamPlayer = $ResultSound
-@onready var impact_delay: Timer = $ImpactDelay
-@onready var result_delay: Timer = $ResultDelay
+@onready var maera_archer: MaeraArcher = $MaeraArcher
+@onready var shot_feedback: ShotFeedback = $ShotFeedback
+@onready var draw_player: AudioStreamPlayer = $DrawSound
+@onready var ready_player: AudioStreamPlayer = $ReadySound
 
 var visible_reticle: Vector2 = Vector2.ZERO
 var visible_spread_radius: float = 0.0
 var visible_reticle_valid: bool = false
 var visible_target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
+var visible_range_time: float = 0.0
 
 var _shot: ShotModel
 var _impacts: Array[ImpactRecord] = []
@@ -113,14 +106,13 @@ var _build_selected: bool = false
 var _selection_page: SelectionPage = SelectionPage.RULES
 var _target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
 var _drawn_phase: ShotModel.Phase = ShotModel.Phase.IDLE
-var _pending_hit: bool = false
-var _pending_result: ResultSound = ResultSound.NONE
+var _feedback_active: bool = false
+var _sound_phase: ShotModel.Phase = ShotModel.Phase.IDLE
 
 
 func _ready() -> void:
-	release_player.stream = RELEASE_SOUND
-	impact_delay.timeout.connect(_play_impact_sound)
-	result_delay.timeout.connect(_play_result_sound)
+	shot_feedback.impact_reached.connect(func() -> void: shot_landed.emit())
+	shot_feedback.finished.connect(func() -> void: shot_feedback_finished.emit())
 	focus_button.pressed.connect(func() -> void: focus_requested.emit())
 	build_button.pressed.connect(func() -> void: build_screen_requested.emit())
 	rig_details_button.pressed.connect(func() -> void: rig_details_requested.emit())
@@ -149,42 +141,23 @@ func _ready() -> void:
 	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hits land inside gold.\nRelease after READY; long holds widen gold. Right-click to cancel."
 
 
-func play_shot_feedback(hit: bool, result: ResultSound) -> void:
-	impact_delay.stop()
-	result_delay.stop()
-	_pending_hit = hit
-	_pending_result = result
-	release_player.stop()
-	release_player.play()
-	impact_delay.start()
-	if result != ResultSound.NONE:
-		result_delay.start()
+func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.ResultSound) -> void:
+	draw_player.stop()
+	ready_player.stop()
+	visible_reticle_valid = false
+	var origin: Vector2 = Vector2(1040.0, 610.0)
+	if _equipped.id == &"gyro_brace":
+		origin = maera_archer.arrow_origin()
+		maera_archer.release()
+	shot_feedback.start(origin, impact, points, result)
 
 
 func stop_sound_feedback() -> void:
-	impact_delay.stop()
-	result_delay.stop()
-	release_player.stop()
-	impact_player.stop()
-	result_player.stop()
-
-
-func _play_impact_sound() -> void:
-	impact_player.stream = HIT_SOUND if _pending_hit else MISS_SOUND
-	impact_player.play()
-
-
-func _play_result_sound() -> void:
-	match _pending_result:
-		ResultSound.CLEAR:
-			result_player.stream = CLEAR_SOUND
-		ResultSound.BUST:
-			result_player.stream = BUST_SOUND
-		ResultSound.FAIL:
-			result_player.stream = FAIL_SOUND
-		_:
-			return
-	result_player.play()
+	shot_feedback.reset()
+	maera_archer.reset()
+	draw_player.stop()
+	ready_player.stop()
+	_sound_phase = ShotModel.Phase.IDLE
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -246,7 +219,9 @@ func present(
 	scenario_id: StringName,
 	upgrades: Array[StringName],
 	allow_character_change: bool,
-	allow_rig_details: bool
+	allow_rig_details: bool,
+	feedback_active: bool = false,
+	frozen_centers: Array[Vector2] = []
 ) -> void:
 	_shot = shot
 	_impacts = impacts
@@ -261,6 +236,7 @@ func present(
 	_upgrades = upgrades
 	_allow_character_change = allow_character_change
 	_allow_rig_details = allow_rig_details
+	_feedback_active = feedback_active
 	_equipped = equipped
 	_last_target = last_target
 	_last_bonus = last_bonus
@@ -275,7 +251,20 @@ func present(
 	if not _selection_open:
 		archive_page.visible = false
 	_build_selected = build_selected
-	_target_centers = TargetLayout.centers_at(_range_time)
+	_target_centers = frozen_centers.duplicate() if feedback_active else TargetLayout.centers_at(_range_time)
+	maera_archer.visible = not _selection_open and _equipped.id == &"gyro_brace"
+	if maera_archer.visible:
+		maera_archer.present_shot(shot, feedback_active, shot_focused)
+	if shot.phase != _sound_phase:
+		if shot.phase == ShotModel.Phase.DRAW and not feedback_active:
+			draw_player.play()
+		elif shot.phase == ShotModel.Phase.READY and not feedback_active:
+			draw_player.stop()
+			ready_player.play()
+		else:
+			draw_player.stop()
+			ready_player.stop()
+		_sound_phase = shot.phase
 	for target: int in range(target_labels.size()):
 		var label: Label = target_labels[target]
 		label.position = Vector2(_target_centers[target].x - label.size.x * 0.5, _target_centers[target].y + TargetLayout.RADII[target] + 20.0)
@@ -287,7 +276,7 @@ func present(
 
 func _update_labels() -> void:
 	var completed: bool = TrialRules.is_trial_over(_total_score, _impacts.size(), _goal_score, _cap_score)
-	var shot_number: int = _impacts.size() if completed else _impacts.size() + 1
+	var shot_number: int = _impacts.size() if completed or (_feedback_active and shot_feedback.has_landed) else _impacts.size() + 1
 	title_label.text = "Choose your\nmark."
 	description_label.text = "Reach %d–%d in up to five shots.\nAbove %d busts." % [_goal_score, _cap_score, _cap_score]
 	score_label.text = "SHOT %d / %d     SCORE %d / %d–%d" % [shot_number, _round_size, _total_score, _goal_score, _cap_score]
@@ -300,7 +289,7 @@ func _update_labels() -> void:
 	build_button.disabled = not _allow_character_change or _shot.phase != ShotModel.Phase.IDLE
 	rig_details_button.visible = _allow_rig_details
 	rig_details_button.disabled = _shot.phase != ShotModel.Phase.IDLE
-	focus_button.disabled = _selection_open or _focus <= 0 or _shot.phase != ShotModel.Phase.IDLE or completed
+	focus_button.disabled = _selection_open or _feedback_active or _focus <= 0 or _shot.phase != ShotModel.Phase.IDLE or completed
 	if _shot_focused:
 		focus_button.text = "FOCUS ACTIVE · CIRCLE TIGHTER" if _equipped.id == &"gyro_brace" else "FOCUS ACTIVE · SLOW + TIGHT"
 	elif _focus_armed:
@@ -309,7 +298,10 @@ func _update_labels() -> void:
 		focus_button.text = "FOCUS %d / %d · ARM (F)" % [_focus, TrialRules.MAX_FOCUS]
 	var best_text: String = "—" if _best_score < 0 else str(_best_score)
 	footer_label.text = "%s / %s     BEST %s     FOCUS %d / %d     RIG %s" % [_equipped.operator_name.to_upper(), _equipped.display_name.to_upper(), best_text, _focus, TrialRules.MAX_FOCUS, _upgrade_names()]
-	if completed:
+	if _feedback_active and not shot_feedback.has_landed:
+		status_label.text = "ARROW IN FLIGHT"
+		instruction_label.text = ""
+	elif completed:
 		if TrialRules.is_bust(_total_score, _cap_score):
 			status_label.text = "BUST — OVER %d" % _cap_score
 			instruction_label.text = "The run is over."
@@ -410,6 +402,9 @@ func _draw() -> void:
 	for impact: ImpactRecord in _impacts:
 		_draw_impact_mark(impact.position_at(visible_target_centers))
 	visible_reticle_valid = false
+	if _feedback_active:
+		_drawn_phase = ShotModel.Phase.IDLE
+		return
 	if _shot == null or TrialRules.is_trial_over(_total_score, _impacts.size(), _goal_score, _cap_score):
 		_drawn_phase = ShotModel.Phase.IDLE
 		return
@@ -428,6 +423,7 @@ func _draw() -> void:
 
 func _draw_range() -> void:
 	visible_target_centers = _target_centers.duplicate()
+	visible_range_time = _range_time
 	draw_style_box(_panel_style(Color("182720"), 24), AIM_AREA)
 	for plank: int in range(7):
 		var x: float = 426.0 + plank * 124.0
@@ -438,15 +434,10 @@ func _draw_range() -> void:
 		match _equipped.id:
 			&"bare_rig":
 				range_sprite = NATURAL_RANGE_SPRITE
-			&"gyro_brace":
-				range_sprite = MAERA_RANGE_SPRITE
 			&"pulse_sight":
 				range_sprite = VEY_RANGE_SPRITE
 	if range_sprite != null:
-		if _equipped.id == &"gyro_brace":
-			draw_set_transform(Vector2(700.0, 535.0), 0.0, Vector2(-1.0, 1.0))
-		else:
-			draw_set_transform(Vector2(990.0, 535.0))
+		draw_set_transform(Vector2(990.0, 535.0))
 		draw_texture_rect(range_sprite, Rect2(0.0, 0.0, 200.0, 200.0), false)
 		draw_set_transform(Vector2.ZERO)
 	for target: int in range(visible_target_centers.size()):

@@ -1,7 +1,7 @@
 class_name RunController
 extends Node
 
-enum RunPhase { SELECT, SHOOT, REWARD, RESULT, LOADOUT }
+enum RunPhase { SELECT, SHOOT, SHOT_FEEDBACK, REWARD, RESULT, LOADOUT }
 
 const BARE_RIG: BuildDef = preload("res://content/equipment/bare_rig.tres")
 const GYRO_BRACE: BuildDef = preload("res://content/equipment/gyro_brace.tres")
@@ -32,6 +32,10 @@ var upgrades: Array[StringName] = []
 var offers: Array[StringName] = []
 var impact_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var offer_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var pending_hit: Dictionary = {}
+var pending_resolution: Dictionary = {}
+var pending_impact: Vector2 = Vector2.ZERO
+var release_target_centers: Array[Vector2] = []
 
 
 func _ready() -> void:
@@ -46,6 +50,8 @@ func _ready() -> void:
 	range_view.focus_requested.connect(_on_focus_requested)
 	range_view.cancel_requested.connect(_on_cancel_requested)
 	range_view.back_requested.connect(_on_back_requested)
+	range_view.shot_landed.connect(_on_shot_landed)
+	range_view.shot_feedback_finished.connect(_on_shot_feedback_finished)
 	run_view.upgrade_selected.connect(_on_upgrade_selected)
 	run_view.new_run_requested.connect(_start_new_run)
 	run_view.loadout_closed.connect(_on_loadout_closed)
@@ -94,36 +100,62 @@ func _on_primary_released() -> void:
 
 
 func _accept_shot(impact: Vector2) -> void:
-	var result: Dictionary = TargetLayout.score_at(impact, range_view.visible_target_centers)
-	var resolved: Dictionary = TrialRules.resolve_hit(result, equipped.id, shot_focused, shot.elapsed, scenarios[stage], upgrades)
+	# Resolve from the last drawn frame now; reveal that result when the arrow lands.
+	release_target_centers = range_view.visible_target_centers.duplicate()
+	range_time = range_view.visible_range_time
+	pending_impact = impact
+	pending_hit = TargetLayout.score_at(impact, release_target_centers)
+	pending_resolution = TrialRules.resolve_hit(pending_hit, equipped.id, shot_focused, shot.elapsed, scenarios[stage], upgrades)
+	if shot_focused:
+		focus -= 1
+	focus_armed = false
+	shot_focused = false
+	shot.cancel()
+	phase = RunPhase.SHOT_FEEDBACK
+	var projected_score: int = total_score + int(pending_resolution.points)
+	var result_sound: ShotFeedback.ResultSound = ShotFeedback.ResultSound.NONE
+	if TrialRules.is_bust(projected_score, _cap()):
+		result_sound = ShotFeedback.ResultSound.BUST
+	elif TrialRules.is_cleared(projected_score, _goal(), _cap()):
+		result_sound = ShotFeedback.ResultSound.CLEAR
+	elif TrialRules.is_trial_over(projected_score, impacts.size() + 1, _goal(), _cap()):
+		result_sound = ShotFeedback.ResultSound.FAIL
+	range_view.play_shot_feedback(impact, int(pending_resolution.points), result_sound)
+	_refresh_view()
+
+
+func _on_shot_landed() -> void:
+	if phase != RunPhase.SHOT_FEEDBACK or pending_resolution.is_empty():
+		return
+	var result: Dictionary = pending_hit
+	var resolved: Dictionary = pending_resolution
 	last_score = resolved.points
 	last_target = result.target
 	last_bonus = resolved.bonus
 	last_focus_gain = resolved.focus_gain
 	total_score += last_score
 	var hit_target: int = result.target_index
-	var stored_point: Vector2 = impact
+	var stored_point: Vector2 = pending_impact
 	if hit_target >= 0:
-		stored_point -= range_view.visible_target_centers[hit_target]
+		stored_point -= release_target_centers[hit_target]
 	impacts.append(ImpactRecord.new(hit_target, stored_point))
-	if shot_focused:
-		focus -= 1
 	focus = mini(focus + last_focus_gain, TrialRules.MAX_FOCUS)
-	focus_armed = false
-	shot_focused = false
-	shot.cancel()
-	var result_sound: RangeView.ResultSound = RangeView.ResultSound.NONE
-	if TrialRules.is_bust(total_score, _cap()):
-		result_sound = RangeView.ResultSound.BUST
-	elif TrialRules.is_cleared(total_score, _goal(), _cap()):
-		result_sound = RangeView.ResultSound.CLEAR
-	elif _trial_over():
-		result_sound = RangeView.ResultSound.FAIL
-	range_view.play_shot_feedback(last_score > 0, result_sound)
+	pending_hit = {}
+	pending_resolution = {}
+	_refresh_view()
+
+
+func _on_shot_feedback_finished() -> void:
+	if phase != RunPhase.SHOT_FEEDBACK or not pending_resolution.is_empty():
+		return
 	if _trial_over():
 		if not TrialRules.is_bust(total_score, _cap()):
 			best_score = maxi(best_score, total_score)
 		_advance_after_trial()
+	else:
+		phase = RunPhase.SHOOT
+	release_target_centers.clear()
+	_refresh_view()
 
 
 func _advance_after_trial() -> void:
@@ -236,6 +268,9 @@ func _start_new_run() -> void:
 
 func _reset_trial() -> void:
 	range_view.stop_sound_feedback()
+	pending_hit = {}
+	pending_resolution = {}
+	release_target_centers.clear()
 	shot.cancel()
 	impacts.clear()
 	total_score = 0
@@ -269,5 +304,6 @@ func _refresh_view() -> void:
 		last_bonus, last_focus_gain, range_time, focus, focus_armed,
 		shot_focused, selection_open, build_selected, stage, scenarios[stage],
 		upgrades, phase == RunPhase.SHOOT and stage == 0 and impacts.is_empty(),
-		phase == RunPhase.SHOOT and build_selected and not _trial_over()
+		phase == RunPhase.SHOOT and build_selected and not _trial_over(),
+		phase == RunPhase.SHOT_FEEDBACK, release_target_centers
 	)

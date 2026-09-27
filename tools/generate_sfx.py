@@ -27,16 +27,36 @@ def write_sound(name: str, duration: float, synth) -> None:
         audio.writeframes(frames)
 
 
+def draw(t: float, duration: float, noise: random.Random) -> float:
+    envelope = math.sin(math.pi * t / duration) ** 0.6
+    creak = math.sin(2 * math.pi * (115 * t + 110 * t * t))
+    grain = 0.5 + 0.5 * math.sin(2 * math.pi * 31 * t)
+    return envelope * (0.24 * creak * grain + 0.035 * noise.uniform(-1, 1))
+
+
+def ready(t: float, _duration: float, _noise: random.Random) -> float:
+    envelope = (1 - math.exp(-t * 170)) * math.exp(-t * 30)
+    return 0.25 * envelope * (math.sin(2 * math.pi * 880 * t) + 0.3 * math.sin(2 * math.pi * 1320 * t))
+
+
 def release(t: float, duration: float, noise: random.Random) -> float:
-    envelope = math.sin(math.pi * t / duration) ** 0.7
-    chirp = math.sin(2 * math.pi * (780 * t - 1800 * t * t))
-    return envelope * (0.24 * chirp + 0.12 * noise.uniform(-1, 1))
+    # A short string snap, damped bow-body resonance, then air through the flight.
+    pluck = math.exp(-t * 28) * (
+        0.3 * math.sin(2 * math.pi * 145 * t)
+        + 0.16 * math.sin(2 * math.pi * 290 * t)
+        + 0.08 * math.sin(2 * math.pi * 720 * t)
+    )
+    snap = 0.3 * math.exp(-t * 180) * noise.uniform(-1, 1)
+    air = 0.09 * math.sin(math.pi * t / duration) * noise.uniform(-1, 1)
+    return pluck + snap + air
 
 
 def hit(t: float, _duration: float, noise: random.Random) -> float:
-    envelope = (1 - math.exp(-t * 180)) * math.exp(-t * 15)
-    ring = math.sin(2 * math.pi * 660 * t) + 0.35 * math.sin(2 * math.pi * 1320 * t)
-    return 0.43 * envelope * ring + 0.045 * math.exp(-t * 80) * noise.uniform(-1, 1)
+    envelope = (1 - math.exp(-t * 500)) * math.exp(-t * 23)
+    thud = 0.48 * math.sin(2 * math.pi * 105 * t) + 0.16 * math.sin(2 * math.pi * 235 * t)
+    crack = 0.28 * math.exp(-t * 95) * noise.uniform(-1, 1)
+    shaft = 0.1 * math.exp(-t * 14) * math.sin(2 * math.pi * 540 * t)
+    return envelope * thud + crack + shaft
 
 
 def miss(t: float, _duration: float, noise: random.Random) -> float:
@@ -61,7 +81,9 @@ def notes(t: float, pitches: tuple[int, ...], step: float, decay: float) -> floa
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    write_sound("release.wav", 0.14, release)
+    write_sound("draw.wav", 0.52, draw)
+    write_sound("ready.wav", 0.15, ready)
+    write_sound("release.wav", 0.22, release)
     write_sound("hit.wav", 0.24, hit)
     write_sound("miss.wav", 0.20, miss)
     write_sound("clear.wav", 0.60, lambda t, _d, _n: notes(t, (523, 659, 784, 1047), 0.09, 10))

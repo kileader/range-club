@@ -136,6 +136,8 @@ func run() -> void:
 	await process_frame
 	var view: RangeView = main.get_node("RangeView")
 	var run_ui: RunView = main.get_node("RunView")
+	# Drive the presentation clock explicitly so these checks do not depend on wall time.
+	view.shot_feedback.set_process(false)
 	_check(main.phase == RunController.RunPhase.SELECT and main.selection_open and not main.build_selected, "new run begins at character selection")
 	_check(main.scenarios.size() == 3 and main.scenarios[0] == &"triad", "new run has three scenarios")
 	_check(view.get_node("UI/BuildOverlay/Rules").visible, "opening screen explains rules")
@@ -179,7 +181,29 @@ func run() -> void:
 	_check(main.shot.phase == ShotModel.Phase.IDLE and main.focus == 1 and main.impacts.is_empty(), "right-click cancels a ready focused shot without cost")
 	view.primary_released.emit()
 	_check(main.impacts.is_empty(), "left release after right-click does not fire")
+	_shoot_at(main, view, centers[1], centers, 1.5, false)
+	_check(main.phase == RunController.RunPhase.SHOT_FEEDBACK and main.impacts.is_empty() and main.total_score == 0, "release reserves one shot and waits for visible impact")
+	_check(main.focus == 0 and view.focus_button.disabled, "focused release spends Focus once and disables arming during flight")
+	var release_time: float = main.range_time
+	var release_centers: Array[Vector2] = main.release_target_centers.duplicate()
+	main._physics_process(0.5)
+	view.primary_pressed.emit(centers[2])
+	view.primary_released.emit()
+	view.cancel_requested.emit()
 	view.focus_requested.emit()
+	view.rig_details_requested.emit()
+	_check(main.phase == RunController.RunPhase.SHOT_FEEDBACK and main.shot.phase == ShotModel.Phase.IDLE and not main.focus_armed, "flight ignores firing, cancellation, Focus, and rig-menu input")
+	_check(main.range_time == release_time and view._target_centers == release_centers, "feedback freezes the target snapshot that was scored")
+	view.shot_feedback.advance(view.shot_feedback.flight_seconds * 0.5)
+	_check(main.impacts.is_empty(), "halfway through flight has no impact mark")
+	view.shot_feedback.advance(view.shot_feedback.flight_seconds * 0.5 + 0.001)
+	_check(main.impacts.size() == 1 and main.total_score == 13, "landing reveals Maera's release-time Focus bonus")
+	view.shot_landed.emit()
+	_check(main.impacts.size() == 1 and main.total_score == 13, "duplicate landing notification cannot score twice")
+	view.shot_feedback.advance(view.shot_feedback.recovery_seconds)
+	_check(main.phase == RunController.RunPhase.SHOOT, "ordinary shot returns control after recovery")
+	main._reset_trial()
+	_check(not view.shot_feedback.active and main.pending_resolution.is_empty(), "reset clears feedback and pending results")
 	for index: int in range(5):
 		_shoot_at(main, view, centers[1], centers)
 	_check(main.total_score == 50 and main.impacts.size() == 5, "five Standard centers clear the opening trial")
@@ -257,9 +281,32 @@ func run() -> void:
 	view.focus_requested.emit()
 	_shoot_at(main, view, Vector2(820, 645), centers)
 	_check(main.impacts.size() == 1 and main.focus == 1 and view.get_node("UI/Status").text == "MISS — FOCUS REFUNDED", "Recovery Cell restores spent Focus after a miss")
+	main._start_new_run()
+	view.gear_requested.emit(&"gyro_brace")
+	main.total_score = 40
+	_shoot_at(main, view, centers[1], centers, 1.5, false)
+	view.shot_feedback.advance(view.shot_feedback.flight_seconds + 0.001)
+	_check(main.total_score == 50 and main.phase == RunController.RunPhase.SHOT_FEEDBACK and not run_ui.visible, "winning impact stays visible before the reward screen")
+	view.shot_feedback.advance(view.shot_feedback.recovery_seconds)
+	_check(main.phase == RunController.RunPhase.SHOT_FEEDBACK, "winning shot allows a longer result beat")
+	view.shot_feedback.advance(view.shot_feedback.result_recovery_seconds)
+	_check(main.phase == RunController.RunPhase.REWARD and run_ui.visible, "reward opens after the winning animation")
+	main._start_new_run()
+	view.gear_requested.emit(&"gyro_brace")
+	_shoot_at(main, view, centers[2], centers, 1.5, false)
+	main._start_new_run()
+	view.shot_feedback.advance(2.0)
+	view.shot_landed.emit()
+	view.shot_feedback_finished.emit()
+	_check(main.phase == RunController.RunPhase.SELECT and main.total_score == 0 and main.impacts.is_empty(), "restart during flight cannot deliver a stale score or transition")
 	if failures == 0:
 		print("All target, Focus, build, trial, and run assertions passed.")
-	quit(1 if failures > 0 else 0)
+	view.stop_sound_feedback()
+	# Rapid synthetic shots can leave playback objects queued on the audio thread.
+	await create_timer(0.1).timeout
+	main.queue_free()
+	await process_frame
+	call_deferred("quit", 1 if failures > 0 else 0)
 
 
 func _check(condition: bool, description: String) -> void:
@@ -268,7 +315,7 @@ func _check(condition: bool, description: String) -> void:
 		push_error("FAIL: " + description)
 
 
-func _shoot_at(main: Node, view: RangeView, point: Vector2, centers: Array[Vector2], hold_seconds: float = 1.5) -> void:
+func _shoot_at(main: Node, view: RangeView, point: Vector2, centers: Array[Vector2], hold_seconds: float = 1.5, finish_feedback: bool = true) -> void:
 	view.primary_pressed.emit(point)
 	main.shot.tick(hold_seconds, point)
 	view.visible_reticle = point
@@ -276,3 +323,5 @@ func _shoot_at(main: Node, view: RangeView, point: Vector2, centers: Array[Vecto
 	view.visible_reticle_valid = true
 	view.visible_target_centers = centers
 	view.primary_released.emit()
+	if finish_feedback:
+		view.shot_feedback.advance(view.shot_feedback.flight_seconds + view.shot_feedback.result_recovery_seconds + 0.01)
