@@ -107,6 +107,7 @@ var _selection_page: SelectionPage = SelectionPage.RULES
 var _target_centers: Array[Vector2] = TargetLayout.centers_at(0.0)
 var _drawn_phase: ShotModel.Phase = ShotModel.Phase.IDLE
 var _feedback_active: bool = false
+var _visible_range_sprite_transform: Transform2D = Transform2D(0.0, Vector2(990.0, 535.0))
 var _sound_phase: ShotModel.Phase = ShotModel.Phase.IDLE
 
 
@@ -145,7 +146,7 @@ func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.Resul
 	draw_player.stop()
 	ready_player.stop()
 	visible_reticle_valid = false
-	var origin: Vector2 = Vector2(1040.0, 610.0)
+	var origin: Vector2 = _visible_range_sprite_transform * Vector2(50.0, 75.0)
 	if _equipped.id == &"gyro_brace":
 		origin = maera_archer.arrow_origin()
 		maera_archer.release()
@@ -156,6 +157,7 @@ func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.Resul
 func stop_sound_feedback() -> void:
 	shot_feedback.reset()
 	maera_archer.reset()
+	_visible_range_sprite_transform = Transform2D(0.0, Vector2(990.0, 535.0))
 	draw_player.stop()
 	ready_player.stop()
 	_sound_phase = ShotModel.Phase.IDLE
@@ -438,7 +440,8 @@ func _draw_range() -> void:
 			&"pulse_sight":
 				range_sprite = VEY_RANGE_SPRITE
 	if range_sprite != null:
-		draw_set_transform(Vector2(990.0, 535.0))
+		_visible_range_sprite_transform = _range_sprite_transform()
+		draw_set_transform_matrix(_visible_range_sprite_transform)
 		draw_texture_rect(range_sprite, Rect2(0.0, 0.0, 200.0, 200.0), false)
 		draw_set_transform(Vector2.ZERO)
 	for target: int in range(visible_target_centers.size()):
@@ -457,6 +460,26 @@ func _draw_range() -> void:
 			draw_line(center + Vector2(0, -radius), center + Vector2(0, radius), Color(0.1, 0.13, 0.12, 0.12), 1.0)
 			draw_line(center - Vector2(5, 0), center + Vector2(5, 0), Color("67532b"), 1.0, true)
 			draw_line(center - Vector2(0, 5), center + Vector2(0, 5), Color("67532b"), 1.0, true)
+
+
+func _range_sprite_transform() -> Transform2D:
+	var lean: float = 0.0
+	var recoil: float = 0.0
+	if _feedback_active:
+		# Presentation only: a quick release, then settle before control returns.
+		var kick: float = smoothstep(0.0, 0.065, shot_feedback.elapsed)
+		var recovery: float = smoothstep(0.065, 0.42, shot_feedback.elapsed)
+		lean = 1.0 - kick
+		recoil = kick * (1.0 - recovery)
+	elif _shot != null and _shot.phase != ShotModel.Phase.IDLE:
+		lean = smoothstep(0.0, ShotModel.DRAW_READY_SECONDS, _shot.elapsed)
+	var pose_rotation: float = deg_to_rad(-1.4) * lean + deg_to_rad(0.8) * recoil
+	var offset: Vector2 = Vector2(-2.5, -1.0) * lean + Vector2(5.0, 1.0) * recoil
+	# Rotate around the lower body rather than the texture's upper-left corner.
+	var pivot: Vector2 = Vector2(100.0, 200.0)
+	var pose := Transform2D(pose_rotation, Vector2(990.0, 535.0) + pivot + offset)
+	pose.origin -= pose.basis_xform(pivot)
+	return pose
 
 
 func _draw_impact_mark(point: Vector2, direction: Vector2) -> void:

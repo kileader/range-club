@@ -117,6 +117,8 @@ challenging, and the player can compare two upgrades against a bare rig.
       viewport sizes, and Windows export startup (4 October 2026).
 - [x] Announce resolved bonuses and Focus gains/refunds at impact, preserving
       flight/recovery timing; verify stacked effects, reset, and both sizes.
+- [x] Add subtle procedural draw/recoil/recovery to Natural and Vey; verify
+      long hold, cancellation, release origins, restart, and both sizes.
 - [x] Verify snapshot scoring, blocked flight input, Focus, duplicate events,
       final-shot timing, and reset; inspect at 1280 × 800 and 960 × 720.
 - [x] Export and run the Windows build through two scripted shots outside the

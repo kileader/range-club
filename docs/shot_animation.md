@@ -1,7 +1,8 @@
 # Maera shooting animation
 
 The first presentation slice animates Maera's draw, hold, Focus, release,
-follow-through, and recovery. Natural and Vey still use their static concepts.
+follow-through, and recovery. Natural and Vey use their existing range sprites
+with a small procedural lean, release recoil, and smooth recovery in `RangeView`.
 All three characters share the arrow flight, impact, score popup, and sounds.
 
 ## Edit the presentation
@@ -12,6 +13,9 @@ All three characters share the arrow flight, impact, score popup, and sounds.
   readiness threshold; holding at full draw uses `hold` or `focus`.
 - `BowSocket` sets the flight's visual origin. Keep it at the arrow's exit from
   the bow if changing the sprite's size or placement.
+- `RangeView._range_sprite_transform()` moves Natural and Vey around a lower-body
+  pivot using the shot/feedback clocks. Their flight origin follows the last
+  drawn transform; Maera continues to use her scene's bow socket.
 - Open `features/range/shot_feedback.tscn` to change flight and recovery timing
   or replace hit/miss/result sounds in the Inspector. The default flight is
   0.22 seconds, followed by 0.38 seconds of feedback, or 0.82 seconds for a

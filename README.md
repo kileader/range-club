@@ -79,8 +79,9 @@ is no permanent progression or save.
 The gold circle is the full possible landing area. The footer records your
 best non-busted trial score. Small procedural arrows retain their flight
 direction and stay on the moving target; misses stay on the backstop.
-Maera now has draw, hold, release, and recovery sprite animations. Every
-character's shot has a 0.22-second visible arrow flight, impact burst, and score
+Natural and Vey use a subtle procedural lean, release recoil, and recovery on
+their existing range sprites. Maera has draw, hold, release, and recovery sprite
+animations. Every character's shot has a 0.22-second visible arrow flight, impact burst, and score
 popup, with a secondary line for triggered bonuses and Focus gains or refunds.
 Targets pause on the release snapshot through the short feedback beat;
 the score is still calculated from the circle and target positions shown at
