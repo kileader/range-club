@@ -21,6 +21,7 @@ enum ResultSound { NONE, CLEAR, BUST, FAIL }
 @onready var impact_player: AudioStreamPlayer = $ImpactSound
 @onready var result_player: AudioStreamPlayer = $ResultSound
 @onready var score_popup: Label = $ScorePopup
+@onready var effect_popup: Label = $EffectPopup
 
 var active: bool = false
 var has_landed: bool = false
@@ -32,7 +33,7 @@ var _result: ResultSound = ResultSound.NONE
 var _result_played: bool = false
 
 
-func start(origin: Vector2, impact: Vector2, points: int, result: ResultSound) -> void:
+func start(origin: Vector2, impact: Vector2, points: int, result: ResultSound, bonus: String = "", focus_gain: int = 0) -> void:
 	reset()
 	_origin = origin
 	_impact = impact
@@ -42,6 +43,13 @@ func start(origin: Vector2, impact: Vector2, points: int, result: ResultSound) -
 	visible = true
 	score_popup.text = "+%d" % points if points > 0 else "MISS"
 	score_popup.modulate = Color("ffe2a0") if points > 0 else Color("c3cfcc")
+	effect_popup.text = bonus.replace(" · ", "\n")
+	if focus_gain > 0 and not bonus.contains("FOCUS REFUND"):
+		if not effect_popup.text.is_empty():
+			effect_popup.text += "\n"
+		effect_popup.text += "FOCUS +%d" % focus_gain
+	effect_popup.size.y = 0.0
+	effect_popup.modulate = Color("8bd7c7")
 	release_player.play()
 	queue_redraw()
 
@@ -55,6 +63,8 @@ func reset() -> void:
 	impact_player.stop()
 	result_player.stop()
 	score_popup.hide()
+	effect_popup.hide()
+	effect_popup.text = ""
 	queue_redraw()
 
 
@@ -71,6 +81,7 @@ func advance(delta: float) -> void:
 		impact_player.stream = hit_sound if _points > 0 else miss_sound
 		impact_player.play()
 		score_popup.show()
+		effect_popup.visible = not effect_popup.text.is_empty()
 		impact_reached.emit()
 	if _result != ResultSound.NONE and not _result_played and elapsed >= flight_seconds + 0.14:
 		_result_played = true
@@ -80,12 +91,16 @@ func advance(delta: float) -> void:
 			ResultSound.FAIL: result_player.stream = fail_sound
 		result_player.play()
 	var impact_age: float = maxf(elapsed - flight_seconds, 0.0)
-	score_popup.position = Vector2(clampf(_impact.x - 64.0, 398.0, 1080.0), maxf(_impact.y - 54.0 - impact_age * 32.0, 130.0))
+	var effect_height: float = effect_popup.get_minimum_size().y if not effect_popup.text.is_empty() else 0.0
+	score_popup.position = Vector2(clampf(_impact.x - 64.0, 398.0, 1080.0), maxf(_impact.y - 54.0 - effect_height - impact_age * 32.0, 130.0))
+	effect_popup.position = score_popup.position + Vector2(-86.0, 38.0)
 	score_popup.modulate.a = clampf(1.0 - maxf(impact_age - 0.3, 0.0) * 2.0, 0.0, 1.0)
+	effect_popup.modulate.a = score_popup.modulate.a
 	var recovery: float = result_recovery_seconds if _result != ResultSound.NONE else recovery_seconds
 	if elapsed >= flight_seconds + recovery:
 		active = false
 		score_popup.hide()
+		effect_popup.hide()
 		finished.emit()
 	queue_redraw()
 

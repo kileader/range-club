@@ -16,6 +16,8 @@ All three characters share the arrow flight, impact, score popup, and sounds.
   or replace hit/miss/result sounds in the Inspector. The default flight is
   0.22 seconds, followed by 0.38 seconds of feedback, or 0.82 seconds for a
   terminal shot.
+- `EffectPopup` shows already-resolved bonuses and Focus gains/refunds below
+  the points at impact. It floats and fades with `ScorePopup` on the same clock.
 - Draw/readiness audio players live in `range_view.tscn`; release, impact, and
   result players live in `shot_feedback.tscn`. WAV sources are reproducible
   with `python tools/generate_sfx.py`.

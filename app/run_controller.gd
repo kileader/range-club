@@ -121,7 +121,10 @@ func _accept_shot(impact: Vector2) -> void:
 		result_sound = ShotFeedback.ResultSound.CLEAR
 	elif TrialRules.is_trial_over(projected_score, impacts.size() + 1, _goal(), _cap()):
 		result_sound = ShotFeedback.ResultSound.FAIL
-	pending_arrow_direction = range_view.play_shot_feedback(impact, int(pending_resolution.points), result_sound)
+	pending_arrow_direction = range_view.play_shot_feedback(
+		impact, int(pending_resolution.points), result_sound,
+		pending_resolution.bonus, int(pending_resolution.focus_gain)
+	)
 	_refresh_view()
 
 

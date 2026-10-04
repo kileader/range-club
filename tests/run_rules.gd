@@ -200,12 +200,15 @@ func run() -> void:
 	_check(main.range_time == release_time and view._target_centers == release_centers, "feedback freezes the target snapshot that was scored")
 	view.shot_feedback.advance(view.shot_feedback.flight_seconds * 0.5)
 	_check(main.impacts.is_empty(), "halfway through flight has no impact mark")
+	_check(not view.shot_feedback.score_popup.visible and not view.shot_feedback.effect_popup.visible, "points and proc labels stay hidden during flight")
 	view.shot_feedback.advance(view.shot_feedback.flight_seconds * 0.5 + 0.001)
 	_check(main.impacts.size() == 1 and main.total_score == 13, "landing reveals Maera's release-time Focus bonus")
+	_check(view.shot_feedback.effect_popup.visible and view.shot_feedback.effect_popup.text == "BRACED +3", "impact announces the resolved character bonus")
 	view.shot_landed.emit()
 	_check(main.impacts.size() == 1 and main.total_score == 13, "duplicate landing notification cannot score twice")
 	view.shot_feedback.advance(view.shot_feedback.recovery_seconds)
 	_check(main.phase == RunController.RunPhase.SHOOT, "ordinary shot returns control after recovery")
+	_check(not view.shot_feedback.effect_popup.visible, "proc label ends at the existing recovery boundary")
 	main._reset_trial()
 	_check(not view.shot_feedback.active and main.pending_resolution.is_empty(), "reset clears feedback and pending results")
 	for index: int in range(5):
@@ -313,6 +316,30 @@ func run() -> void:
 		for target: int in range(centers.size()):
 			_check(main.impacts[target].position_at(view._target_centers).is_equal_approx(view._target_centers[target] + Vector2(2, -3)), "%s old arrow follows moving target %d after later shots" % [gear_id, target])
 		_check(main.impacts[3].position_at(view._target_centers) == Vector2(700, 620), "%s miss stays in the backstop after target motion" % gear_id)
+	var feedback_cases: Array[Dictionary] = [
+		{"gear": &"gyro_brace", "scenario": &"triad", "upgrades": [&"edge_fuse"], "focused": false, "point": centers[2] + Vector2(13, 0), "hold": 1.5, "text": "EDGE +3", "points": 13},
+		{"gear": &"pulse_sight", "scenario": &"triad", "upgrades": [], "focused": false, "point": centers[2], "hold": 0.52, "text": "QUICK HIT +3", "points": 18},
+		{"gear": &"gyro_brace", "scenario": &"safe_circuit", "upgrades": [], "focused": false, "point": centers[0], "hold": 1.5, "text": "CIRCUIT +3\nFOCUS +1", "points": 9},
+		{"gear": &"gyro_brace", "scenario": &"standard_relay", "upgrades": [&"recirculator"], "focused": true, "point": centers[1], "hold": 1.5, "text": "BRACED +3\nRELAY +2\nFOCUS REFUND", "points": 15},
+		{"gear": &"gyro_brace", "scenario": &"triad", "upgrades": [&"recovery_cell"], "focused": true, "point": Vector2(700, 620), "hold": 1.5, "text": "FOCUS REFUND", "points": 0},
+		{"gear": &"gyro_brace", "scenario": &"triad", "upgrades": [], "focused": false, "point": centers[1], "hold": 1.5, "text": "", "points": 10},
+	]
+	for feedback_case: Dictionary in feedback_cases:
+		main._start_new_run()
+		view.gear_requested.emit(feedback_case.gear)
+		main.scenarios[0] = feedback_case.scenario
+		main.upgrades.assign(feedback_case.upgrades)
+		if feedback_case.focused:
+			view.focus_requested.emit()
+		_shoot_at(main, view, feedback_case.point, centers, feedback_case.hold, false)
+		_check(not view.shot_feedback.effect_popup.visible, "resolved effects are hidden until impact")
+		view.shot_feedback.advance(view.shot_feedback.flight_seconds + 0.001)
+		_check(view.shot_feedback.effect_popup.text == feedback_case.text and view.shot_feedback.effect_popup.visible == not feedback_case.text.is_empty(), "proc popup reflects resolved bonuses and Focus without duplicate refunds")
+		_check(main.total_score == feedback_case.points, "proc presentation preserves resolved points")
+		view.shot_feedback.advance(0.15)
+		_check(is_equal_approx(view.shot_feedback.effect_popup.modulate.a, view.shot_feedback.score_popup.modulate.a), "proc label shares the points fade")
+		main._start_new_run()
+		_check(not view.shot_feedback.effect_popup.visible and view.shot_feedback.effect_popup.text.is_empty(), "reset clears proc text and visibility")
 	if failures == 0:
 		print("All target, Focus, build, trial, and run assertions passed.")
 	view.stop_sound_feedback()

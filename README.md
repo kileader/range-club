@@ -81,7 +81,8 @@ best non-busted trial score. Small procedural arrows retain their flight
 direction and stay on the moving target; misses stay on the backstop.
 Maera now has draw, hold, release, and recovery sprite animations. Every
 character's shot has a 0.22-second visible arrow flight, impact burst, and score
-popup. Targets pause on the release snapshot through the short feedback beat;
+popup, with a secondary line for triggered bonuses and Focus gains or refunds.
+Targets pause on the release snapshot through the short feedback beat;
 the score is still calculated from the circle and target positions shown at
 release. Focus is spent at release; points and Focus refunds appear on impact.
 The final impact remains visible before rewards or results open.

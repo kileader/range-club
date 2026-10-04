@@ -141,7 +141,7 @@ func _ready() -> void:
 	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hits land inside gold.\nRelease after READY; long holds widen gold. Right-click to cancel."
 
 
-func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.ResultSound) -> Vector2:
+func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.ResultSound, bonus: String = "", focus_gain: int = 0) -> Vector2:
 	draw_player.stop()
 	ready_player.stop()
 	visible_reticle_valid = false
@@ -149,7 +149,7 @@ func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.Resul
 	if _equipped.id == &"gyro_brace":
 		origin = maera_archer.arrow_origin()
 		maera_archer.release()
-	shot_feedback.start(origin, impact, points, result)
+	shot_feedback.start(origin, impact, points, result, bonus, focus_gain)
 	return impact - origin
 
 
