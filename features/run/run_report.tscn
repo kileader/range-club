@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://features/run/run_report.gd" id="1_report"]
+
+[node name="RunReport" type="Control"]
+layout_mode = 0
+offset_right = 916.0
+offset_bottom = 350.0
+mouse_filter = 2
+script = ExtResource("1_report")

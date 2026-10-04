@@ -1,6 +1,28 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://features/run/run_view.gd" id="1_view"]
+[ext_resource type="PackedScene" path="res://features/run/run_report.tscn" id="2_report"]
+
+[sub_resource type="StyleBoxFlat" id="ReportButton_normal"]
+bg_color = Color(0.929, 0.737, 0.298, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[sub_resource type="StyleBoxFlat" id="ReportButton_hover"]
+bg_color = Color(0.99, 0.82, 0.43, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+
+[sub_resource type="StyleBoxFlat" id="ReportButton_pressed"]
+bg_color = Color(0.78, 0.62, 0.25, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
 
 [node name="RunView" type="CanvasLayer"]
 visible = false
@@ -91,10 +113,16 @@ text = "EDGE FUSE\n\nBold outer rings 1–5 score +3.\n\nINSTALL"
 
 [node name="NewRunButton" type="Button" parent="Panel"]
 visible = false
-offset_left = 359.0
-offset_top = 355.0
-offset_right = 641.0
-offset_bottom = 420.0
+offset_left = 42.0
+offset_top = 565.0
+offset_right = 324.0
+offset_bottom = 620.0
+theme_override_colors/font_color = Color(0.067, 0.125, 0.098, 1)
+theme_override_colors/font_hover_color = Color(0.067, 0.125, 0.098, 1)
+theme_override_colors/font_pressed_color = Color(0.067, 0.125, 0.098, 1)
+theme_override_styles/normal = SubResource("ReportButton_normal")
+theme_override_styles/hover = SubResource("ReportButton_hover")
+theme_override_styles/pressed = SubResource("ReportButton_pressed")
 theme_override_font_sizes/font_size = 20
 text = "NEW RUN"
 
@@ -128,3 +156,10 @@ offset_right = 641.0
 offset_bottom = 610.0
 theme_override_font_sizes/font_size = 20
 text = "RETURN TO RANGE"
+
+[node name="Report" parent="Panel" instance=ExtResource("2_report")]
+visible = false
+offset_left = 42.0
+offset_top = 185.0
+offset_right = 958.0
+offset_bottom = 535.0

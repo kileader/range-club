@@ -76,6 +76,13 @@ refunds Focus on focused misses. Edge Fuse is the sole direct score module,
 adding 3 to Bold outer hits. Offers exclude modules already installed. There
 is no permanent progression or save.
 
+The end-of-run report shows cumulative points across all trials, accuracy
+(target hits / landed arrows), best shot, ring-10 bullseyes, and the longest
+consecutive hit streak across the run. Its trial ledger distinguishes clears,
+busts, failures below the window, and trials not reached. The marksman portrait,
+rig, and installed modules complete the report. Cancelled holds do not count;
+New Run clears the report's shot history.
+
 The gold circle is the full possible landing area. The footer records your
 best non-busted trial score. Small procedural arrows retain their flight
 direction and stay on the moving target; misses stay on the backstop.
@@ -119,6 +126,8 @@ The version must start with `4.7.2.stable`. Check the output for errors as well 
 the exit code. The assertions cover ring boundaries, moving targets,
 dispersion, handling modules, Focus refunds, three-trial progression, module
 offers, win/failure/bust paths, and new-run reset. They cannot judge feel.
+Report checks cover cumulative totals, accuracy, bullseyes, hit streaks,
+duplicate impact events, trial resets, and new-run cleanup.
 Current visual and export checks are recorded in
 [the prototype checklist](docs/prototype_checklist.md).
 

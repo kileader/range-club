@@ -12,6 +12,7 @@ const PULSE_SIGHT: BuildDef = preload("res://content/equipment/pulse_sight.tres"
 
 var shot: ShotModel = ShotModel.new()
 var impacts: Array[ImpactRecord] = []
+var run_shots: Array[Dictionary] = []
 var total_score: int = 0
 var last_score: int = -1
 var best_score: int = -1
@@ -143,6 +144,7 @@ func _on_shot_landed() -> void:
 	if hit_target >= 0:
 		stored_point -= release_target_centers[hit_target]
 	impacts.append(ImpactRecord.new(hit_target, stored_point, pending_arrow_direction))
+	run_shots.append({"stage": stage, "points": last_score, "target_index": hit_target, "ring": int(result.ring)})
 	focus = mini(focus + last_focus_gain, TrialRules.MAX_FOCUS)
 	pending_hit = {}
 	pending_resolution = {}
@@ -166,14 +168,14 @@ func _advance_after_trial() -> void:
 	if TrialRules.is_cleared(total_score, _goal(), _cap()):
 		if stage == RunRules.TRIAL_COUNT - 1:
 			phase = RunPhase.RESULT
-			run_view.show_result(true, stage, total_score, upgrades, equipped.operator_name)
+			run_view.show_result(true, stage, total_score, upgrades, equipped, _run_report())
 		else:
 			phase = RunPhase.REWARD
 			offers = RunRules.draw_offers(upgrades, offer_rng)
 			run_view.show_reward(stage, total_score, scenarios[stage + 1], offers, upgrades, equipped.operator_name)
 	else:
 		phase = RunPhase.RESULT
-		run_view.show_result(false, stage, total_score, upgrades, equipped.operator_name)
+		run_view.show_result(false, stage, total_score, upgrades, equipped, _run_report())
 
 
 func _on_upgrade_selected(upgrade_id: StringName) -> void:
@@ -266,6 +268,7 @@ func _start_new_run() -> void:
 	build_selected = false
 	selection_open = true
 	best_score = -1
+	run_shots.clear()
 	run_view.hide_screen()
 	_reset_trial()
 
@@ -287,6 +290,36 @@ func _reset_trial() -> void:
 	focus_armed = false
 	shot_focused = false
 	_refresh_view()
+
+
+func _run_report() -> Dictionary:
+	var report: Dictionary = {"total_score": 0, "shots": run_shots.size(), "hits": 0, "bullseyes": 0, "best_shot": 0, "longest_streak": 0, "trials": []}
+	var streak: int = 0
+	for trial: int in range(RunRules.TRIAL_COUNT):
+		report.trials.append({"scenario": scenarios[trial], "score": 0, "shots": 0, "status": "NOT REACHED"})
+	for record: Dictionary in run_shots:
+		report.total_score += int(record.points)
+		report.best_shot = maxi(report.best_shot, record.points)
+		var trial: Dictionary = report.trials[int(record.stage)]
+		trial.score += int(record.points)
+		trial.shots += 1
+		if int(record.target_index) >= 0:
+			report.hits += 1
+			streak += 1
+			report.longest_streak = maxi(report.longest_streak, streak)
+		else:
+			streak = 0
+		if int(record.ring) == 10:
+			report.bullseyes += 1
+	for trial: int in range(stage + 1):
+		var row: Dictionary = report.trials[trial]
+		if TrialRules.is_bust(row.score, RunRules.cap_for_stage(trial)):
+			row.status = "BUST"
+		elif TrialRules.is_cleared(row.score, RunRules.goal_for_stage(trial), RunRules.cap_for_stage(trial)):
+			row.status = "CLEARED"
+		else:
+			row.status = "BELOW WINDOW"
+	return report
 
 
 func _goal() -> int:

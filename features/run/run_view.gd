@@ -6,6 +6,7 @@ signal new_run_requested
 signal loadout_closed
 
 @onready var heading: Label = $Panel/Heading
+@onready var eyebrow: Label = $Panel/Eyebrow
 @onready var summary: Label = $Panel/Summary
 @onready var next_trial: Label = $Panel/NextTrial
 @onready var installed: Label = $Panel/Installed
@@ -13,6 +14,7 @@ signal loadout_closed
 @onready var new_run_button: Button = $Panel/NewRunButton
 @onready var close_button: Button = $Panel/CloseButton
 @onready var loadout_cards: Array[Label] = [$Panel/LoadoutOne, $Panel/LoadoutTwo]
+@onready var report: RunReport = $Panel/Report
 
 var _offers: Array[StringName] = []
 
@@ -27,6 +29,7 @@ func _ready() -> void:
 
 
 func show_reward(completed_stage: int, score: int, next_id: StringName, offers: Array[StringName], upgrades: Array[StringName], character: String) -> void:
+	_set_report_visible(false)
 	_offers = offers.duplicate()
 	heading.text = "TRIAL %d CLEARED" % (completed_stage + 1)
 	summary.text = "%s scored %d. Choose one rig module for the next trial." % [character, score]
@@ -43,12 +46,13 @@ func show_reward(completed_stage: int, score: int, next_id: StringName, offers: 
 	visible = true
 
 
-func show_result(won: bool, stage: int, score: int, upgrades: Array[StringName], character: String) -> void:
+func show_result(won: bool, stage: int, score: int, upgrades: Array[StringName], character: BuildDef, stats: Dictionary) -> void:
 	_offers.clear()
 	heading.text = "RUN COMPLETE" if won else "RUN ENDED"
-	summary.text = "%s · Trial %d / %d · %d points" % [character, stage + 1, RunRules.TRIAL_COUNT, score]
-	next_trial.text = "Three trials cleared." if won else "The score missed the window or went over the cap."
-	installed.text = "INSTALLED · %s" % _upgrade_list(upgrades)
+	var outcome: String = "FINAL WINDOW %d–%d" % [RunRules.goal_for_stage(stage), RunRules.cap_for_stage(stage)] if won else ("BUST · ABOVE %d" % RunRules.cap_for_stage(stage) if TrialRules.is_bust(score, RunRules.cap_for_stage(stage)) else "BELOW THE SCORE WINDOW")
+	summary.text = "%d / %d trials cleared · %s" % [RunRules.TRIAL_COUNT if won else stage, RunRules.TRIAL_COUNT, outcome]
+	_set_report_visible(true)
+	report.present(stats, character, upgrades)
 	for button: Button in offer_buttons:
 		button.visible = false
 	new_run_button.visible = true
@@ -58,6 +62,7 @@ func show_result(won: bool, stage: int, score: int, upgrades: Array[StringName],
 
 
 func show_loadout(character: BuildDef, stage: int, scenario_id: StringName, upgrades: Array[StringName], focus: int) -> void:
+	_set_report_visible(false)
 	_offers.clear()
 	heading.text = "CURRENT RIG"
 	summary.text = "%s / %s · Focus %d / %d" % [character.operator_name, character.display_name, focus, TrialRules.MAX_FOCUS]
@@ -80,11 +85,19 @@ func show_loadout(character: BuildDef, stage: int, scenario_id: StringName, upgr
 
 func hide_screen() -> void:
 	visible = false
+	_set_report_visible(false)
 
 
 func _set_loadout_cards_visible(show_cards: bool) -> void:
 	for card: Label in loadout_cards:
 		card.visible = show_cards
+
+
+func _set_report_visible(show_report: bool) -> void:
+	report.visible = show_report
+	eyebrow.text = "RANGE CLUB · RUN REPORT" if show_report else "RANGE CLUB · THE RUN"
+	next_trial.visible = not show_report
+	installed.visible = not show_report
 
 
 func _choose(index: int) -> void:

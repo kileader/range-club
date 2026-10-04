@@ -200,16 +200,20 @@ func run() -> void:
 	_check(main.range_time == release_time and view._target_centers == release_centers, "feedback freezes the target snapshot that was scored")
 	view.shot_feedback.advance(view.shot_feedback.flight_seconds * 0.5)
 	_check(main.impacts.is_empty(), "halfway through flight has no impact mark")
+	_check(main.run_shots.is_empty(), "report excludes arrows still in flight")
 	_check(not view.shot_feedback.score_popup.visible and not view.shot_feedback.effect_popup.visible, "points and proc labels stay hidden during flight")
 	view.shot_feedback.advance(view.shot_feedback.flight_seconds * 0.5 + 0.001)
 	_check(main.impacts.size() == 1 and main.total_score == 13, "landing reveals Maera's release-time Focus bonus")
 	_check(view.shot_feedback.effect_popup.visible and view.shot_feedback.effect_popup.text == "BRACED +3", "impact announces the resolved character bonus")
 	view.shot_landed.emit()
 	_check(main.impacts.size() == 1 and main.total_score == 13, "duplicate landing notification cannot score twice")
+	_check(main.run_shots.size() == 1 and main.run_shots[0].points == 13 and main.run_shots[0].ring == 10, "report records one resolved shot despite duplicate landing")
 	view.shot_feedback.advance(view.shot_feedback.recovery_seconds)
 	_check(main.phase == RunController.RunPhase.SHOOT, "ordinary shot returns control after recovery")
 	_check(not view.shot_feedback.effect_popup.visible, "proc label ends at the existing recovery boundary")
 	main._reset_trial()
+	# Start the full-run fixture without the earlier presentation-only shot.
+	main.run_shots.clear()
 	_check(not view.shot_feedback.active and main.pending_resolution.is_empty(), "reset clears feedback and pending results")
 	for index: int in range(5):
 		_shoot_at(main, view, centers[1], centers)
@@ -227,6 +231,7 @@ func run() -> void:
 	run_ui.get_node("Panel/OfferOne").emit_signal("pressed")
 	_check(main.stage == 1 and main.phase == RunController.RunPhase.SHOOT and not run_ui.visible, "choosing a module starts trial two")
 	_check(main.upgrades == [first_upgrade] and main.focus == 1 and main.total_score == 0 and main.impacts.is_empty(), "empty Focus resets to one while the module carries")
+	_check(main.run_shots.size() == 5, "report retains shots when the next trial resets")
 	_check(view.get_node("UI/StageLabel").text.contains("STANDARD RELAY"), "range displays the active scenario")
 	_check(not view.get_node("UI/BuildButton").visible, "character is fixed after trial one")
 	var time_before_menu: float = main.range_time
@@ -247,6 +252,7 @@ func run() -> void:
 	for index: int in range(4):
 		_shoot_at(main, view, centers[1], centers)
 	_check(main.total_score >= 52 and main.total_score <= 56 and main.phase == RunController.RunPhase.REWARD, "Safe then four Standard hits clear the relay")
+	var relay_score: int = main.total_score
 	_check(main.focus == 2, "Safe can raise Focus to two within a trial")
 	_check(main.offers.size() == 3 and not main.offers.has(first_upgrade), "later offers exclude installed modules")
 	var second_upgrade: StringName = main.offers[0]
@@ -258,14 +264,22 @@ func run() -> void:
 	_shoot_at(main, view, centers[1], centers)
 	_check(main.total_score == 56 and main.phase == RunController.RunPhase.RESULT, "mixed target route clears the final trial")
 	_check(run_ui.get_node("Panel/Heading").text == "RUN COMPLETE" and run_ui.visible, "winning run shows result")
+	var winning_report: Dictionary = main._run_report()
+	_check(winning_report.total_score == 106 + relay_score and winning_report.shots == 15 and winning_report.hits == 15, "report sums all three trials rather than only the final score")
+	_check(winning_report.bullseyes == 14 and winning_report.longest_streak == 15 and winning_report.best_shot == 15, "report uses resolved rings and points for notable stats")
+	_check(winning_report.trials[0].score == 50 and winning_report.trials[1].score == relay_score and winning_report.trials[2].score == 56 and winning_report.trials[2].status == "CLEARED", "report preserves the per-trial ledger")
+	_check(run_ui.report.visible and not run_ui.next_trial.visible and not run_ui.installed.visible, "results use the self-contained report area")
 	run_ui.get_node("Panel/NewRunButton").emit_signal("pressed")
 	_check(main.phase == RunController.RunPhase.SELECT and main.stage == 0 and main.upgrades.is_empty() and main.focus == 1, "new run clears all temporary progression")
 	_check(not run_ui.visible and not main.build_selected and view.get_node("UI/BuildOverlay/Rules").visible, "new run returns to opening rules")
+	_check(main.run_shots.is_empty() and not run_ui.report.visible, "new run clears report history and hides the report")
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
 	view.gear_requested.emit(&"bare_rig")
 	for index: int in range(5):
 		_shoot_at(main, view, Vector2(700, 620), centers)
 	_check(main.phase == RunController.RunPhase.RESULT and run_ui.get_node("Panel/Heading").text == "RUN ENDED", "five misses end the run")
+	var miss_report: Dictionary = main._run_report()
+	_check(miss_report.hits == 0 and miss_report.shots == 5 and miss_report.best_shot == 0 and miss_report.trials[0].status == "BELOW WINDOW" and miss_report.trials[1].status == "NOT REACHED", "miss-only report has zero accuracy and distinguishes unplayed trials")
 	run_ui.get_node("Panel/NewRunButton").emit_signal("pressed")
 	view.get_node("UI/BuildOverlay/RulesNextButton").emit_signal("pressed")
 	view.gear_requested.emit(&"pulse_sight")
@@ -273,6 +287,7 @@ func run() -> void:
 		_shoot_at(main, view, centers[2], centers, 0.52)
 	_check(main.total_score == 54 and main.impacts.size() == 3 and main.phase == RunController.RunPhase.RESULT, "Vey quick Bold streak busts early")
 	_check(run_ui.get_node("Panel/Heading").text == "RUN ENDED", "bust ends the run")
+	_check(main._run_report().total_score == 54 and main._run_report().trials[0].status == "BUST", "bust report retains all points including the busting arrow")
 	view.primary_pressed.emit(centers[0])
 	_check(main.impacts.size() == 3, "ended run rejects another shot")
 	run_ui.get_node("Panel/NewRunButton").emit_signal("pressed")
@@ -306,6 +321,7 @@ func run() -> void:
 	view.shot_landed.emit()
 	view.shot_feedback_finished.emit()
 	_check(main.phase == RunController.RunPhase.SELECT and main.total_score == 0 and main.impacts.is_empty(), "restart during flight cannot deliver a stale score or transition")
+	_check(main.run_shots.is_empty(), "restart during flight cannot add a stale report record")
 	for gear_id: StringName in [&"bare_rig", &"gyro_brace", &"pulse_sight"]:
 		main._start_new_run()
 		view.gear_requested.emit(gear_id)
@@ -340,6 +356,12 @@ func run() -> void:
 		_check(is_equal_approx(view.shot_feedback.effect_popup.modulate.a, view.shot_feedback.score_popup.modulate.a), "proc label shares the points fade")
 		main._start_new_run()
 		_check(not view.shot_feedback.effect_popup.visible and view.shot_feedback.effect_popup.text.is_empty(), "reset clears proc text and visibility")
+	main._start_new_run()
+	view.gear_requested.emit(&"gyro_brace")
+	for point: Vector2 in [centers[0], centers[0], Vector2(700, 620), centers[0], Vector2(700, 620)]:
+		_shoot_at(main, view, point, centers)
+	var mixed_report: Dictionary = main._run_report()
+	_check(mixed_report.total_score == 18 and mixed_report.shots == 5 and mixed_report.hits == 3 and mixed_report.longest_streak == 2, "mixed report counts misses and breaks the hit streak")
 	if failures == 0:
 		print("All target, Focus, build, trial, and run assertions passed.")
 	view.stop_sound_feedback()
