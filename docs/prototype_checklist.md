@@ -106,6 +106,18 @@ challenging, and the player can compare two upgrades against a bare rig.
 - [ ] Revisit overholding after playtesting: a free cancel makes a late hold
       easy to abandon, so the widening circle may not create a useful decision.
 
+## Now — Maera shooting presentation
+
+- [x] Add editable draw/hold/release/recovery frames, preserving the rear-view,
+      left-handed pose toward screen right and far-side drawing arm.
+- [x] Show arrow flight, impact burst, score popup, and synchronized sound;
+      reveal the saved release result at impact and finish before changing screens.
+- [x] Verify snapshot scoring, blocked flight input, Focus, duplicate events,
+      final-shot timing, and reset; inspect at 1280 × 800 and 960 × 720.
+- [x] Export and run the Windows build through two scripted shots outside the
+      editor (26 September 2026, exit code 0). Save a local video preview.
+- [ ] Kevin judges the animation, sound balance, and feedback pacing in play.
+
 ## Later
 
 The first complete-run playtest did not reveal an immediate score-window

@@ -1,0 +1,37 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://features/range/shot_feedback.gd" id="1_script"]
+[ext_resource type="AudioStream" path="res://assets/audio/release.wav" id="2_release"]
+[ext_resource type="AudioStream" path="res://assets/audio/hit.wav" id="3_hit"]
+[ext_resource type="AudioStream" path="res://assets/audio/miss.wav" id="4_miss"]
+[ext_resource type="AudioStream" path="res://assets/audio/clear.wav" id="5_clear"]
+[ext_resource type="AudioStream" path="res://assets/audio/bust.wav" id="6_bust"]
+[ext_resource type="AudioStream" path="res://assets/audio/fail.wav" id="7_fail"]
+
+[node name="ShotFeedback" type="Node2D"]
+script = ExtResource("1_script")
+hit_sound = ExtResource("3_hit")
+miss_sound = ExtResource("4_miss")
+clear_sound = ExtResource("5_clear")
+bust_sound = ExtResource("6_bust")
+fail_sound = ExtResource("7_fail")
+
+[node name="ReleaseSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_release")
+volume_db = -5.0
+
+[node name="ImpactSound" type="AudioStreamPlayer" parent="."]
+volume_db = -4.0
+
+[node name="ResultSound" type="AudioStreamPlayer" parent="."]
+volume_db = -4.0
+
+[node name="ScorePopup" type="Label" parent="."]
+visible = false
+offset_right = 128.0
+offset_bottom = 42.0
+mouse_filter = 2
+theme_override_colors/font_outline_color = Color(0.05, 0.08, 0.07, 1)
+theme_override_constants/outline_size = 7
+theme_override_font_sizes/font_size = 30
+horizontal_alignment = 1

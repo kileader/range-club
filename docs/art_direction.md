@@ -27,8 +27,10 @@ style as final. The Natural's plain clothes, glasses, and unshowy confidence
 preserve the Yusuf Dikeç reference; his eventual bow should remain simple.
 
 Use these concepts to settle the shared palette and redraw the portraits at
-game resolution. Each marksman now has a static range concept placed below the
-targets. The Natural and Vey are right-handed and stand on the right side of
+game resolution. Natural and Vey use static range concepts below the targets;
+Maera's first animated sheet is in `assets/art/maera/`. See
+`docs/shot_animation.md` for its editable scene and timing workflow.
+The Natural and Vey are right-handed and stand on the right side of
 the lane, facing left. The Natural uses a plain wooden bow; Vey uses a black
 composite bow with a glowing blue string and a small temple eyepiece matching
 the portrait. Maera is **left-handed** and stands on the left side: her right
