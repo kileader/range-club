@@ -141,7 +141,7 @@ func _ready() -> void:
 	control_rules_label.text = "Gold = possible hits; cyan = smallest circle. Hits land inside gold.\nRelease after READY; long holds widen gold. Right-click to cancel."
 
 
-func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.ResultSound) -> void:
+func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.ResultSound) -> Vector2:
 	draw_player.stop()
 	ready_player.stop()
 	visible_reticle_valid = false
@@ -150,6 +150,7 @@ func play_shot_feedback(impact: Vector2, points: int, result: ShotFeedback.Resul
 		origin = maera_archer.arrow_origin()
 		maera_archer.release()
 	shot_feedback.start(origin, impact, points, result)
+	return impact - origin
 
 
 func stop_sound_feedback() -> void:
@@ -400,7 +401,7 @@ func _draw() -> void:
 		return
 	_draw_range()
 	for impact: ImpactRecord in _impacts:
-		_draw_impact_mark(impact.position_at(visible_target_centers))
+		_draw_impact_mark(impact.position_at(visible_target_centers), impact.direction)
 	visible_reticle_valid = false
 	if _feedback_active:
 		_drawn_phase = ShotModel.Phase.IDLE
@@ -458,10 +459,13 @@ func _draw_range() -> void:
 			draw_line(center - Vector2(0, 5), center + Vector2(0, 5), Color("67532b"), 1.0, true)
 
 
-func _draw_impact_mark(point: Vector2) -> void:
-	draw_circle(point, 8.0, Color("14211c"), true, -1.0, true)
-	draw_line(point + Vector2(-5, -5), point + Vector2(5, 5), Color("f5dea3"), 2.0, true)
-	draw_line(point + Vector2(-5, 5), point + Vector2(5, -5), Color("f5dea3"), 2.0, true)
+func _draw_impact_mark(point: Vector2, direction: Vector2) -> void:
+	var tail: Vector2 = point - direction * 18.0
+	var normal: Vector2 = direction.orthogonal()
+	draw_line(tail, point, Color("14211c"), 4.5, true)
+	draw_line(tail, point, Color("f5dea3"), 2.0, true)
+	draw_colored_polygon(PackedVector2Array([point, point - direction * 7.0 + normal * 4.0, point - direction * 7.0 - normal * 4.0]), Color("14211c"))
+	draw_colored_polygon(PackedVector2Array([point, point - direction * 5.0 + normal * 2.5, point - direction * 5.0 - normal * 2.5]), Color("fff0cb"))
 
 
 func _draw_crosshair(point: Vector2, color: Color, size: float) -> void:

@@ -64,10 +64,14 @@ func run() -> void:
 	_check(TrialRules.resolve_hit(miss, &"gyro_brace", true, 1.5, &"triad", [&"recovery_cell"]).focus_gain == 1, "Recovery Cell refunds a focused miss")
 	_check(TrialRules.resolve_hit(miss, &"gyro_brace", false, 1.5, &"triad", [&"recovery_cell"]).focus_gain == 0, "Recovery Cell leaves ordinary misses alone")
 	_check(TrialRules.resolve_hit(standard_center, &"gyro_brace", true, 1.5, &"triad", [&"recovery_cell"]).focus_gain == 0, "Recovery Cell does not refund a hit")
-	var attached_mark := ImpactRecord.new(1, Vector2(5, -4))
+	var attached_mark := ImpactRecord.new(1, Vector2(5, -4), Vector2(-3, -4))
 	_check(attached_mark.position_at(later) == later[1] + Vector2(5, -4), "hit mark follows its target")
-	var miss_mark := ImpactRecord.new(-1, Vector2(700, 600))
+	_check(attached_mark.direction.is_equal_approx(Vector2(-0.6, -0.8)), "embedded arrow preserves a unit travel direction as its target moves")
+	var miss_mark := ImpactRecord.new(-1, Vector2(700, 600), Vector2(3, -4))
 	_check(miss_mark.position_at(later) == Vector2(700, 600), "miss mark stays on the backstop")
+	_check(miss_mark.direction.is_equal_approx(Vector2(0.6, -0.8)), "miss preserves its travel direction")
+	var coincident_mark := ImpactRecord.new(-1, Vector2(1040, 610), Vector2.ZERO)
+	_check(coincident_mark.direction == Vector2.UP, "coincident shot origin keeps a visible embedded arrow")
 
 	var shot: ShotModel = ShotModel.new()
 	shot.start_hold(centers[1])
@@ -299,6 +303,16 @@ func run() -> void:
 	view.shot_landed.emit()
 	view.shot_feedback_finished.emit()
 	_check(main.phase == RunController.RunPhase.SELECT and main.total_score == 0 and main.impacts.is_empty(), "restart during flight cannot deliver a stale score or transition")
+	for gear_id: StringName in [&"bare_rig", &"gyro_brace", &"pulse_sight"]:
+		main._start_new_run()
+		view.gear_requested.emit(gear_id)
+		for target: int in range(centers.size()):
+			_shoot_at(main, view, centers[target] + Vector2(2, -3), centers)
+		_shoot_at(main, view, Vector2(700, 620), centers)
+		main._physics_process(2.0)
+		for target: int in range(centers.size()):
+			_check(main.impacts[target].position_at(view._target_centers).is_equal_approx(view._target_centers[target] + Vector2(2, -3)), "%s old arrow follows moving target %d after later shots" % [gear_id, target])
+		_check(main.impacts[3].position_at(view._target_centers) == Vector2(700, 620), "%s miss stays in the backstop after target motion" % gear_id)
 	if failures == 0:
 		print("All target, Focus, build, trial, and run assertions passed.")
 	view.stop_sound_feedback()
@@ -323,5 +337,12 @@ func _shoot_at(main: Node, view: RangeView, point: Vector2, centers: Array[Vecto
 	view.visible_reticle_valid = true
 	view.visible_target_centers = centers
 	view.primary_released.emit()
+	var expected_direction: Vector2 = (point - view.shot_feedback._origin).normalized()
+	var old_directions: Array[Vector2] = []
+	for impact: ImpactRecord in main.impacts:
+		old_directions.append(impact.direction)
 	if finish_feedback:
 		view.shot_feedback.advance(view.shot_feedback.flight_seconds + view.shot_feedback.result_recovery_seconds + 0.01)
+		_check(main.impacts.back().direction.is_equal_approx(expected_direction), "embedded arrow matches the actual flight origin at release")
+		for index: int in range(old_directions.size()):
+			_check(main.impacts[index].direction == old_directions[index], "later shots preserve old arrow orientations")

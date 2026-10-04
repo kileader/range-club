@@ -112,6 +112,9 @@ challenging, and the player can compare two upgrades against a bare rig.
       left-handed pose toward screen right and far-side drawing arm.
 - [x] Show arrow flight, impact burst, score popup, and synchronized sound;
       reveal the saved release result at impact and finish before changing screens.
+- [x] Replace impact X marks with procedural arrows retaining release direction;
+      verify all characters, moving-target attachment, backstop misses, both
+      viewport sizes, and Windows export startup (4 October 2026).
 - [x] Verify snapshot scoring, blocked flight input, Focus, duplicate events,
       final-shot timing, and reset; inspect at 1280 × 800 and 960 × 720.
 - [x] Export and run the Windows build through two scripted shots outside the

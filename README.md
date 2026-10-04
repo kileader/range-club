@@ -77,8 +77,8 @@ adding 3 to Bold outer hits. Offers exclude modules already installed. There
 is no permanent progression or save.
 
 The gold circle is the full possible landing area. The footer records your
-best non-busted trial score. Hit marks stay on the moving target; misses stay
-on the backstop.
+best non-busted trial score. Small procedural arrows retain their flight
+direction and stay on the moving target; misses stay on the backstop.
 Maera now has draw, hold, release, and recovery sprite animations. Every
 character's shot has a 0.22-second visible arrow flight, impact burst, and score
 popup. Targets pause on the release snapshot through the short feedback beat;

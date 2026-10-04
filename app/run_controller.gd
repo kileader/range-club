@@ -35,6 +35,7 @@ var offer_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var pending_hit: Dictionary = {}
 var pending_resolution: Dictionary = {}
 var pending_impact: Vector2 = Vector2.ZERO
+var pending_arrow_direction: Vector2 = Vector2.ZERO
 var release_target_centers: Array[Vector2] = []
 
 
@@ -120,7 +121,7 @@ func _accept_shot(impact: Vector2) -> void:
 		result_sound = ShotFeedback.ResultSound.CLEAR
 	elif TrialRules.is_trial_over(projected_score, impacts.size() + 1, _goal(), _cap()):
 		result_sound = ShotFeedback.ResultSound.FAIL
-	range_view.play_shot_feedback(impact, int(pending_resolution.points), result_sound)
+	pending_arrow_direction = range_view.play_shot_feedback(impact, int(pending_resolution.points), result_sound)
 	_refresh_view()
 
 
@@ -138,7 +139,7 @@ func _on_shot_landed() -> void:
 	var stored_point: Vector2 = pending_impact
 	if hit_target >= 0:
 		stored_point -= release_target_centers[hit_target]
-	impacts.append(ImpactRecord.new(hit_target, stored_point))
+	impacts.append(ImpactRecord.new(hit_target, stored_point, pending_arrow_direction))
 	focus = mini(focus + last_focus_gain, TrialRules.MAX_FOCUS)
 	pending_hit = {}
 	pending_resolution = {}
