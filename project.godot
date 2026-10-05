@@ -3,9 +3,11 @@ config_version=5
 
 [application]
 config/name="Range Club"
-run/main_scene="res://app/main.tscn"
+run/main_scene="res://app/startup.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/description="A fantasy-tech target range and buildcraft prototype."
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0, 0, 0, 1)
 
 [display]
 window/size/viewport_width=1280
@@ -18,4 +20,4 @@ window/stretch/aspect="keep"
 [rendering]
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-environment/defaults/default_clear_color=Color(0.055, 0.078, 0.071, 1)
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)

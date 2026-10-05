@@ -24,6 +24,11 @@ Use **View Rig** during a trial to review installed modules and their effects.
 3. Open the project and press **F6** to run the selected scene, or **F5** to run the project.
 4. Choose a character and play a run of up to three five-shot trials; close the window to exit.
 
+Project startup plays the standard [Phicid Productions splash](studio/README.md)
+through `app/startup.tscn`, then opens `app/main.tscn`. A fresh key, mouse click,
+or gamepad button skips it. New runs reset the game directly without replaying
+the intro. Run `app/main.tscn` with F6 to bypass the intro during development.
+
 The targets move on predictable paths. Aim with the mouse before holding left
 mouse; the shot starts at that position. The gold landing circle shrinks toward
 the dashed cyan ring, which previews its smallest possible size at 1.5 seconds
@@ -118,8 +123,9 @@ by Git; put a `.gdignore` file inside it if you keep tools there yourself.
 ```powershell
 & $godot --version
 & $godot --headless --path . --editor --import
-& $godot --headless --path . --quit-after 3
+& $godot --headless --path . --quit-after 180 --max-fps 60
 & $godot --headless --path . --script tests/run_rules.gd
+& $godot --headless --path . --script tests/run_startup.gd
 ```
 
 The version must start with `4.7.2.stable`. Check the output for errors as well as
@@ -128,6 +134,8 @@ dispersion, handling modules, Focus refunds, three-trial progression, module
 offers, win/failure/bust paths, and new-run reset. They cannot judge feel.
 Report checks cover cumulative totals, accuracy, bullseyes, hit streaks,
 duplicate impact events, trial resets, and new-run cleanup.
+Startup checks cover normal completion, keyboard/mouse/gamepad skipping,
+skip input isolation, ignored repeats/stick drift, and resets without intro replay.
 Current visual and export checks are recorded in
 [the prototype checklist](docs/prototype_checklist.md).
 

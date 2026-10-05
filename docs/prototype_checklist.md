@@ -127,6 +127,16 @@ challenging, and the player can compare two upgrades against a bare rig.
       editor (26 September 2026, exit code 0). Save a local video preview.
 - [ ] Kevin judges the animation, sound balance, and feedback pacing in play.
 
+## Now — studio startup (5 October 2026)
+
+- [x] Inherit the shared splash in `app/startup.tscn`; open `app/main.tscn`
+      after the intro and use black engine boot/clear backgrounds.
+- [x] Preserve all shared studio files; inspect the rendered logo and opening.
+- [x] Verify normal completion, keyboard/mouse/gamepad skipping, input isolation,
+      ignored repeats/stick drift, duplicate skips, and reset without replay.
+- [x] Pass import and rule checks; export and launch Windows outside the editor.
+      Run startup checks against the exported pack with Godot's test runner.
+
 ## Later
 
 The first complete-run playtest did not reveal an immediate score-window
